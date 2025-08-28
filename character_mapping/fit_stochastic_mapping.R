@@ -20,16 +20,16 @@ data(sunfish.tree)
 data(sunfish.data)
 
 ## extract discrete character (feeding mode)
-fmode<-setNames(sunfish.data$feeding.mode,
+sunfish_tipdata <-setNames(sunfish.data$feeding.mode,
     rownames(sunfish.data))
 
 ## fit "ER" model
-fit.ER<-fitMk(sunfish.tree,fmode,model="ER")
+fit.ER<-fitMk(sunfish.tree,sunfish_tipdata,model="ER")
 print(fit.ER)
 
 # this will run for a while, and you should see traceplots updating
 # in real time until it finishes:
-fit.mcmc <- mcmcMk(sunfish.tree, fmode, model="ER", ngen=10000)
+fit.mcmc <- mcmcMk(sunfish.tree, sunfish_tipdata, model="ER", ngen=10000)
 
 # the dimensions of fit.mcmc will be ngen * (number of parameters in the Mk model + 2),
 # which for this run will be 10000 x 3
@@ -60,27 +60,119 @@ plot(fit.mcmc[,'logLik']~fit.mcmc[,'[pisc,non]'])
 ## ^^ This helps us visualize the peak of the likelihood surface. Can be useful for
 ## diagnosing convergence problems
 
+####################################################
+####################################################
+####################################################
+# Exercise set 1: 
+#	1. Did the fitMk routine produce the same estimates as mcmcMk? How would you 
+#		determine this?
+#	2. Running mcmcMk gives you distributions over the parameters. This is nice for
+#		visualizing/quantifying uncertainty in the estimates. Does fitMk produce
+#		something analagous?
+#	3. What was assumed about the root states in these models? Examine the help pages
+#		for fitMk and mcmcMk, and re-run results for a different choice of the
+#		"root prior". Are estimates of the transition rate sensitive to your choice?
+####################################################
+####################################################
+####################################################
 
-# We could fit a more complicated model with two rates:
-fit.mcmc <- mcmcMk(sunfish.tree, fmode, model="ARD", ngen=10000)
+
+# We can fit a more complicated model with two rates:
+fit.mcmc_2rates <- mcmcMk(sunfish.tree, sunfish_tipdata, model="ARD", ngen=10000)
 
 # Now, we have profile log-likelihoods in two parameters:
 
 par(mfrow=c(2,1))
-plot(fit.mcmc[,'logLik']~fit.mcmc[,'[pisc,non]'])
-plot(fit.mcmc[,'logLik']~fit.mcmc[,'[non,pisc]'])
-# ^^ this one looked weird. Let's discard MCMC transients:
+plot(fit.mcmc_2rates[,'logLik']~fit.mcmc_2rates[,'[pisc,non]'])
+plot(fit.mcmc_2rates[,'logLik']~fit.mcmc_2rates[,'[non,pisc]'])
  
-par(mfrow=c(2,1))
-plot(fit.mcmc[9000:10000,'logLik']~fit.mcmc[9000:10000,'[pisc,non]'])
-plot(fit.mcmc[9000:10000,'logLik']~fit.mcmc[9000:10000,'[non,pisc]'])
-
 
 # We can also visualize correlations in parameters:
-plot(fit.mcmc[,'[pisc,non]'], fit.mcmc[,'[non,pisc]'])
+par(mfrow=c(1,1))
+plot(fit.mcmc_2rates[,'[pisc,non]'], fit.mcmc[,'[non,pisc]'])
 
-## 1. Comment on any interesting things you see in profile loglikelihoods for models with
-##	many parameters. How many local optima does it look like your MCMC runs find?
-## 2. 
+
+
+# We're going to write down a function that accepts the two transition rates
+#	and spits out a character mapping (a make.simmap output).
+#	We'll want to estimate the root state probabilities too,
+#	but for now we can just set them to something fixed.
+
+# This is just so to make the algorithm below a little easier to read.
+
+get_simmap <- function(q12, q21, tree, tipdata){
+	# Specify a transition rate matrix for two states (A and B).
+	## In practice, we would want to estimate this from data. Let's pretend we've done that step,
+	##  and this can be taken as known without error:
+	Q <- matrix(c(-q12,q12,
+		      q21,-q21),2,2)
+	rownames(Q) <- colnames(Q) <- levels(tipdata) 
+
+	### We simulate from the root to the tips. We have to specify an initial condition at the root:
+	Pi <- c(0,1)
+
+	# let's just simulate 1 character mapping for each parameter update for now; can
+	#	change this later
+	sims <- make.simmap(tree, tipdata, Q=Q, pi=Pi, nsim=1)
+	return(sims)
+}
+
+# let's now simulate a mapping for each step of our MCMC:
+# (but let's just use the last 1000 rows of the fit.mcmc_2rates object)
+
+simmaps <- apply(fit.mcmc_2rates[9001:10000,], 1, function(x) {
+	get_simmap(x[2],x[3], sunfish.tree, sunfish_tipdata)
+
+})
+
+# Let's start by summarizing the number of mutations that happen across the whole tree:
+counts <- lapply(simmaps, countSimmap)
+numMutations <- sapply(counts, function(x) x$N)
+transitions <- lapply(counts, function(x)x$Tr)
+transitions_non_pisc <- sapply(transitions, function(x) x[1,2])
+transitions_pisc_non <- sapply(transitions, function(x) x[2,1])
+
+### plot an example character mapped tree, and histograms of number of mutations
+sim = simmaps[[1]]
+#  overall, and by type
+par(mfrow=c(2,2))
+## plot the character mapped tree
+sim$tip.label <- paste(sim$tip.label, "(", sunfish_tipdata, ")", sep="")
+plotSimmap(sim, fsize = 0.8)
+## plottig make.simmap objects messes up margins, let's reset these:
+par(mar=c(5,4,4,1))
+## histogram of total mutations:
+hist(numMutations)
+## histogram of mutations non -> pisc 
+hist(transitions_non_pisc)
+## histogram of mutations pisc -> non 
+hist(transitions_pisc_non)
+
+####################################################
+####################################################
+####################################################
+# Exercise set 2
+####################################################
+####################################################
+####################################################
+
+# 1. Why do you think the mcmcMk routine does not propose character mappings alongside parameters? 
+#	Would anything be gained by treating character mappings as latent variables in MCMC 
+#	and estimating those alongside parameters?
+
+# Check this paper out if you are interested in MCMC and character mapping:
+#  Mutations as Missing Data: Inferences on the Ages and 
+#	Distributions of Nonsynonymous and Synonymous Mutations,
+#	by Rasmus Nielsen
+#	Genetics 159: 401-411 (September 2001)
+
+
+# 2. Comment on any interesting things you see in profile loglikelihoods for models with
+#	multiple parameters. Can you deduce anything interesting about the geometry of the 
+#	likelihood surface? 
+
+# 3. In the previous runs, how did we estimate Pi, the probability of the root states? Examine
+#		the fitMk and mcmcMk help page to determine what the default is. Try fitting the model
+#		under a different setting to see how results change.
 
 

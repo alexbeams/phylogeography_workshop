@@ -94,9 +94,15 @@ hist(transitions_BA)
 
 # 1. Try changing the initial condition at the root (Pi, also called the "root prior") to see how results change
 # 2. Look at the logL values in the sims. What do you think that describes?
+# 	In particular, do you think the reported logL is 
+#		P(tip data | Q),
+#		or
+#		P(tip data, character mapping | Q)?
 # 2.a. Create a new sims list, replacing Q with jitter(Q). What do you notice about the logL values?
 # 2.b. Create a new sims list, replacing Pi with different values. What do you notice about the logL values in this case?
 # 3. In light of the previous questions, can you figure out what the form of the log-likelihood is for make.simmap? (is it actually a likelihood, or is it a conditional likelihood?)
+#	That is, do you think the form of the log-likelihood is
+#	P(tip data | Q) or P(tip data | Q, Pi) ?
 # 4. Calculate the log-likelihood of the tip data on the tree under the assumed Q matrix. Compare the log-likelihood reported from ace with the log-likelihood returned by make.simmap. What do you notice?
 # 5. Do ace and make.simmap use the same log-likelihood? If not, what is the key difference? Use ?ace and ?make.simmap in your investigation.
 
