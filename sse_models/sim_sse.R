@@ -57,5 +57,38 @@ numdieoffs <- sum(dieoffs)
 #	Organize the results of your simulations in a nice display.
 
 
+lambdas <- c(20, 50, 100)
+mus <- c(20, 50, 100)
+numtaxas <- c(10, 20, 30, 40, 50)
 
 
+gettrees <- function(lambda, mu, numtaxa, numtrees){
+	trees <- lapply(1:numtrees, 
+		function(x){ 
+			tree.bd(c(lambda=lambda, mu=mu), 
+				max.taxa = numtaxa)
+		})
+	return(trees)
+}
+
+pars <- expand.grid(lambdas, mus, numtaxas)
+colnames(pars) <- c('lambda','mu','numtaxa')
+
+getnumdieoffs <- function(lambda, mu, numtaxa, numtrees){
+	trees <- gettrees(lambda, mu, numtaxa, numtrees)
+	numdieoffs <- sum(sapply(trees, is.null))
+	return(numdieoffs)
+}
+
+# let's count number of dieoffs for 100-taxa trees:
+simdieoffs <- cbind(pars, apply(pars, 1, function(x){
+	getnumdieoffs(x[1],x[2],x[3],100)
+}))
+
+colnames(simdieoffs)[3] <- c('numtaxa')
+colnames(simdieoffs)[4] <- c('numdieoffs')
+
+
+# 2. Try to simulate trees with lambda = 1, mu = 2, and 10 taxa.
+#	Use simulations to approximate the probability that the 
+#	the process
