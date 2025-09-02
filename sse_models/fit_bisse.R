@@ -1,158 +1,220 @@
 rm(list=ls())
 
+library(diversitree)
+library(mcmcensemble)
+
+
 # Now that we have some familiarity with the behavior of the BISSE
-#	model, we will try to use the model for parameter inference,
-#	i.e. model fitting.
+#	model, we will try to use the model for parameter estimation,
+#	i.e. inference via model fitting.
 
-# Model fitting just consists of selecting parameters of the model so
-#	that the simulated outputs match our data as closely as possible.
-#	The dumbest way imaginable is to use the "eyeball test". The most
-#	sophisticated approach is to use likelihood.
+# Goals:
+#	1. Learn how to specify a BiSSE model log-likelihood
+#	2. Learn how to fit a BiSSE model
+#	3. Learn how to constrain models to estimate fewer parameters
+#	4. Develop an intuition for how well we can estimate parameters
 
-# The diversitree package has a convenient class of functions that can be
-#	used to define likelihood functions for different models. We will
-#	start with the simplest case - the birth death model.
 
-# Example 1: Benchmarking from simulations
 
-# simulate a list of bd trees here
+# Example: Benchmarking from simulations
 
-tree <- tree.bd(c(lambda=5,mu=0), max.taxa = 20)
+# simulate a BiSSE tree here
 
-loglik <- make.bd(tree)
+pars <- c(
+        lambda0=1,
+        lambda1=5,
+        mu0=0.8,
+        mu1=0.8,
+        q01=0.1,
+        q10=0.12)
 
-# the make.bd function is a scalar function of two variables
+tree <- tree.bisse(pars, max.taxa=50, x0=0)
+
+# the make.bisse function is a scalar function of two variables
 #	of the form loglik = loglik(c(lambda,mu))
 
+loglik <- make.bisse(tree, tree$tip.state)
+
+# What are the MLEs?
+mles <- find.mle(loglik, pars)
+
+# these are the parmeter values that this infers: 
+mlepars <- mles$par
+
 # Let's visualize the likelihood surface one parameter at a time 
-#	(holding the other parameter at the true value):
+#	(holding the other parameter at the MLE; not exactly profile 
+#	likelihoods, but pretty close):
 
-loglik_lambda <- function(lambda) loglik(c(lambda,0))
-loglik_mu <- function(mu) loglik(c(1,mu))
+loglik_lambda0 <- function(lambda0) loglik(c(lambda0,mlepars[-1]))
+loglik_lambda1 <- function(lambda1) loglik(c(mlepars[1],lambda1,mlepars[3:6]))
+
+loglik_mu0 <- function(mu0) loglik(c(mlepars[1:2],mu0,mlepars[4:6]))
+loglik_mu1 <- function(mu1) loglik(c(mlepars[1:3],mu1,mlepars[5:6]))
+
+loglik_q01 <- function(q01) loglik(c(mlepars[1:4],q01,mlepars[6]))
+loglik_q10 <- function(q10) loglik(c(mlepars[1:5],q10))
+
+lambdavals <- exp( seq(-5,2,length=50))
+muvals <- exp( seq(-9,2,length=50))
+qvals <- exp( seq(-9,2, length=50) )
+
+loglik_lambda0_vals <- sapply(lambdavals, loglik_lambda0)
+loglik_lambda1_vals <- sapply(lambdavals, loglik_lambda1)
+
+loglik_mu0_vals <- sapply(muvals, loglik_mu0)
+loglik_mu1_vals <- sapply(muvals, loglik_mu1)
+
+loglik_q01_vals <- sapply(qvals, loglik_q01)
+loglik_q10_vals <- sapply(qvals, loglik_q10)
+
+par(mfrow=c(3,2))
+
+plot(lambdavals,loglik_lambda0_vals)
+abline(v=pars['lambda0'],col='red')
+
+plot(lambdavals,loglik_lambda1_vals)
+abline(v=pars['lambda1'],col='red')
+
+plot(muvals,loglik_mu0_vals)
+abline(v=pars['mu0'],col='red')
+
+plot(muvals,loglik_mu1_vals)
+abline(v=pars['mu1'],col='red')
+
+plot(qvals,loglik_q01_vals)
+abline(v=pars['q01'],col='red')
+plot(qvals,loglik_q10_vals)
+abline(v=pars['q10'],col='red')
+
+# So, varying each parameter while holding the others at the values used
+#	to produce the simulated BiSSE tree indicate MLEs may be a good 
+#	approach to estimating parameters.
+
+# The MLE differs from the "true" values used to produce the simulation, but
+#	that is expected.
+
+# Of course, the profile likelihoods don't show how correlated some of these
+#	parameters are with each other. We might as well use MCMC to do this:
+
+# This will take quite a lot longer than our birth-death model with 
+#	just 2 parameters:
+#mcmc_fit <- mcmc(loglik, pars, nsteps = 1000, w=1) 
 
 
-lambdavals <- exp( seq(-3,3,length=30))
-muvals <- exp( seq(-6,2,length=30))
-loglik_lambda_vals <- sapply(lambdavals, loglik_lambda)
-loglik_mu_vals <- sapply(muvals, loglik_mu)
+# let's use an ensemble MCMC sampler:
+# make.bisse will throw errors if we try to plug in negative parameters:
+#loglik(-pars)
 
-loglik_max <- max(c(loglik_lambda_vals, loglik_mu_vals))
+# For an MCMC routine that isn't included in diversitree, we need to ensure that
+#	we can do an unrestricted search in parameter space.
 
-par(mfrow=c(2,1))
-plot(lambdavals, loglik_lambda_vals, ylim=c(loglik_max-10,loglik_max+2))
-plot(muvals, loglik_mu_vals, ylim=c(loglik_max-10,loglik_max+2))
-
-# The maximum of the log-likelihood function roughly coincides with the
-#	parameters we used. How variable is this? Let's simulate more 
-#	trees:
-
-treelist <- trees(c(lambda=5,mu=0), 
-		type=c("bd"), n=100, 
-		max.taxa=20)
-
-# make a log-likelihood function for each tree:
-logliklist <- lapply(treelist, make.bd )
-
-loglik_lambda_list <- lapply(logliklist, function(x){
-			function(lambda) x(c(lambda,0))
-	})
-
-loglik_mu_list <- lapply(logliklist, function(x){
-			function(mu) x(c(mu,0))
-	})
-
-
-lambdavals <- exp( seq(-2,2,length=30))
-muvals <- exp( seq(-6,2,length=30))
-
-loglik_lambda_list_vals <- sapply(loglik_lambda_list,
-	function(x){sapply(lambdavals, x)})
-
-loglik_mu_list_vals <- sapply(loglik_mu_list,
-	function(x){sapply(muvals, x)})
-
-loglik_max <- max(c(loglik_lambda_list_vals,loglik_mu_list_vals))
-loglik_min <- min(c(loglik_lambda_list_vals,loglik_mu_list_vals))
-
-
-par(mfrow=c(2,1))
-plot(lambdavals, loglik_lambda_list_vals[,1]/abs(max(loglik_lambda_list_vals[,1])))
-for(i in 2:100){
-	lines(lambdavals, loglik_lambda_list_vals[,i]/abs(max(loglik_lambda_list_vals[,i])))
+loglik_transformed <- function(pars){
+	pars <- exp(pars)
+	loglik <- loglik(pars)
+	return(loglik)
 }
 
-plot(muvals, loglik_mu_list_vals[,1]/abs(max(loglik_mu_list_vals[,1])))
-for(i in 2:100){
-	lines(muvals, loglik_mu_list_vals[,i]/abs(max(loglik_mu_list_vals[,i])))
-}
+loglik_transformed(log(pars))
+# This looks ok.
 
-# So, most of these have a maximum in the vicinity of the true parameter values that we
-#	suppied, but not all.
+loglik_transformed(-log(pars))
+# Calculates a value without error. Good to go.
 
-# The "Maximum Likelihood Estimates" are the values of (lambda,mu) where the likelihood function is
-#	maximized. What does the distribution of MLEs look like for this set of trees?
+nwalkers <- 100 #ensemble size
+nsteps <- 50 #number of times to update entire nsemble
 
-mles <- lapply(logliklist, function(x){find.mle(x, c(1,0), method='subplex')})
+# initialize the ensemble:
+mcmc_inits <- matrix(nrow=nwalkers, ncol=6)
+for(i in 1:nwalkers) mcmc_inits[i,] <- jitter(log(mlepars))
 
-mles_pars <- t(sapply(mles, function(x) x$par))
+# run the ensemble MCMC:
+mcmc_fit <- MCMCEnsemble(loglik_transformed, 
+	inits=mcmc_inits, 
+	max.iter=nwalkers*nsteps, 
+	n.walkers = nwalkers)
 
-par(mfrow=c(1,2))
-hist(mles_pars[,1],main='',
-	xlab=bquote(hat(lambda)))
-hist(mles_pars[,2],main='',
-	xlab=bquote(hat(mu)))
+# Now, let's try to visualize the profile log-likelihoods (including
+#	the curves we generated earlier):
 
-# Remember that the true value of mu we used was mu=0. A lot of the models suggest values of 
-#	mu > 0, which is interesting. This tells us that, in practice, we will probably not
-#	be able to reliably estimate mu when it is close to zero but positive.
+par(mfrow=c(3,2))
 
-# We can frame a hypothesis test. Null hypothesis: mu=0. Alternative hypothesis: mu > 0. 
-#	Supposing we wish to keep false-positives at 5% or less, we could propose the statistical
-#	test that we reject the null hypothesis if our estimate of mu is at the 95-th percentile or greater
-#	of this "null" distribution. In our case, this critical value of mu would be approximately
+plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,1],xlab=bquote(lambda[0]))
+#lines(log(lambdavals), loglik_lambda0_vals, col='red') 
 
-mu_critical <- quantile(mles_pars[,'mu'], 0.95) 
+plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,2],xlab=bquote(lambda[1]))
+#lines(log(lambdavals), loglik_lambda1_vals, col='red') 
 
-# So in the future, if we estimate a value of mu greater than mu_critical, and we say "this appears 
-#	significantly different from zero, therefore we reject the null hypothesis", we will be making a 
-#	type 1 error ("false-positive") less than 5% of the time. A 1/20 chance of a mistake is reasonable
-#	in some circumstances, but less so in others.
+plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,3],xlab=bquote(mu[0]))
+#lines(log(muvals), loglik_mu0_vals, col='red') 
 
-##############
-# Exercises:
-##############
+plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,4],xlab=bquote(mu[1]))
+#lines(log(muvals), loglik_mu1_vals, col='red') 
 
-# 1. Suppose we want a more stringent statistical test for the previous example. What is the critical
-#	value of mu corresponding to a 1% chance of comitting a Type 1 error?
+plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,5],xlab=bquote(q[0~1]))
+#lines(log(qvals), loglik_q01_vals, col='red') 
 
-# 2. Modify the previous example to see how things change for a different value of lambda. Try lambda = 5.
-#	Does the critical value of mu change? 
+plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,6],xlab=bquote(q[1~0]))
+#lines(log(qvals), loglik_q10_vals, col='red') 
 
-# 3. The Generalized Likelihood Ratio Test: another way to assess whether mu is significantly different from 
-#	zero is to fit two versions of the log-Likelihood function: the one we already did, and a constrained
-#	version of the model with the constraint mu=0 hard-coded in (so that we just estimate lambda). The 
-#	model with more parameters will always fit the data better, but it may not fit the data "that much" 
-#	better. The GLT looks a log(ratio of likelihoods) = difference(log-Likelihoods) to produce a test
-#	statistic (also, rather annoyingly in this case, called lambda). Use constrain(loglik, mu ~ 0) to 
-#	create the constrained log-likelihood functions, and fit them to obtain new estimates for lambda. 
-#	Use Wikipedia, Google, or your favorite (work-safe) AI companion to help you formulate GLT test 
-#	statistics and assess significant departues from the null hypothesis mu=0. Do the results of this
-#	statistical test match with those from earlier? If not, why not?  
- 
-# 4. Consider a different null hypothesis: lambda > mu. Develop a test statistic for this hypothesis, and 
-#	identify critical values of your test statistic for 95% and 99% confidence regions.
+# In the vicinity of the MLE, the MCMC results should closely match
+#	the profile likelihood curves (but far away from the MLE there
+#	is no reason why they should be similar). (Why?)
 
-# 5. If your simulation produced trees with estimated values of lambda < mu, plot these trees and comment
-#	on any features they exhibit that stand out to you. If your simulation did not produce trees with
-#	MLEs having lambda < mu, simulate as necessary until you find some.
+# Looking at the different plots, are you able to say which parameters
+#	that are more difficult to estimate than others?
 
 
+# What if we look at parameter correlations?
+#plot(mcmc_fit$samples[,,1] ~ mcmc_fit$samples[,,2],
+#	xlab=bquote(lambda[1]),
+#	ylab=bquote(lambda[0]))
 
-# 6. The previous exercises and examples used the max.taxa argument to condition on trees of a particular
-#	size. Flip a coin ( rbinom(1,1,0.5)). If it comes up heads (=1), change max.taxa to a different number
-#	and repeat Exercises 1-5. If it comes up tails (=0), replace max.taxa with max.t to simulate trees 
-#	for a fixed amount of time (with variable numbers of taxa), and then repeat Exercises 1-5. (Caution:
-#	injudicious choices of lambda and max.t can make your computer explode. Ctrl + c is useful (on Mac, 
-#	anyway) for cancelling calculations in the Terminal.  
+# Exercise 1. What parameters seem to exhibit the highest correlations? The lowest?
+#	(You will need to plot all the pairwise combinations.) How do parameter
+#	estimates compare to the values used in the simulation? Is it easier to
+#	estimate one diversification rate or the other? Ditto for the mu's and q's.
+#	Why do you think that is?
+
+# Exercise 2. Increase the number of taxa in your tree. How does your ability
+#	to estimate parameters change? Does it become easier to estimate migration
+#	rates, or death rates? Using 200 taxa should be doable, but see how high
+#	you can go before computations get bogged down. Be sure to describe 
+#	bias as well as precision of estimates. 
+
+# Exercise 3. You may notice that the "data" (putting it in quotes b/c we simulated it)
+#	contain more information about one of the migration rates than the other. Which
+#	migration rate is it, and why do you think it might be easier to estimate
+#	it with greater precision than the other one? It might be helpful to plot
+#	the tree. 
+
+#plot(history.from.sim.discrete(tree, states=c(0,1)),
+#                tree, col=c('0'='black','1'='red'))
+
+# Exercise 4. Set migrations to be the same order of magnitude as the 
+#	the diversification rates and repat the analysis. Does it always
+#	become easier to estimate q_ij?
+
+# Exercise 5. Set migration to be asymmetric. How easy is this to detect?
+#	You can start by assuming diversification and extinction rates
+#	are the same in each location.
+
+# Exercise 6. Under what circumstances do you think it is possible to reliably
+#	estimate extinction rates? Carry out an analysis to confirm or refute your
+#	hypothesis.
+
+# Exercise 7. Are there are any situations where it is difficult to estimate 
+#	diversification rates? Comment on bias and variance. 
+
+# Exercise 8. Naively, one might think that having larger differences between
+#	parameters (lambda0 vs lambda1, for example) would make estimation easier. 
+#	Why is that not necessarily the case with BiSSE models?
+#	Think back to aeons ago when we simulated these models under different
+#	parameter combinations...
+
+# Exercise 9. Try setting a constraint in the log-likelihood function that mu0=mu1.
+#	Does this help estimate the other parameters? Does it make it easier to 
+#	estimate the overall exctinction rate (mu)?
+
+# Hint: it works like this: loglik_constrained <- constrain(loglik, mu0 ~ mu1)
 
 
