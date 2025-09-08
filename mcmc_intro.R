@@ -301,7 +301,172 @@ sum(tailsample > 5)/length(tailsample)
 tailsample <- rnorm(1e6)
 sum(tailsample > 5)/length(tailsample)
 
-# I'm seeing that I usually get 0 or 1 value larger than 5.
+# I'm seeing that I usually get 0 or 1 value larger than 5, so that our 
+# Monte Carlo approximation to the tail probability is either 0 or 1e-6.
+
+# The problem is that we are simulating rare events. We need a workaround.
+
+# This is what Importance Sampling is designed to accommodate. The key is to
+# multiply by 1:
+# Pr(Z>5) = \int_5^\infty h(x) dx
+# 	= \int_5^\infty h(x)/w(x) w(x) dx = \int h/w dw
+
+# The interpretation of these two integrals is different:
+
+# \int f(x) dx means to sample x uniformly, and then average the f(x)'s
+# \int f(x)/w(x) dw means to sample x from a PDF w(x), instead of uniformly
+# 	and then average the ratios f(x)/w(x) to obtain the integral
+
+# (If you're familiar with Measure theory, this is using the Radon Nikodym derivative.)
 
 
+# Here's an example:
+h <- function(x) dnorm(x)
+w <- function(x) dexp(x-5, rate=1/10)
+
+
+getimportanceest <- function(ndarts){
+	importance_sample <- 5 + rexp(ndarts, rate=1/10)
+
+	ratios <- sapply(importance_sample[importance_sample>5], 
+			function(x){h(x)/w(x)} ) 
+
+	return(mean(ratios))
+}
+
+# Exercise: What happens if you change the shift in w(x) to be something
+# different from 5?  
+
+
+################################
+## Metropolis-Hastings and MCMC
+################################
+
+# All of the previous methods assume that we can sample from a particular distribution.
+# Mostly we sampled from the uniform distribution, but the importance sampling exmaple
+# also relied on us being able to sample from the exponential distribution.
+
+# What if we can't sample from a distribution directly using a built-in R function? 
+# This is basically the problem that Markov Chain Monte Carlo, and the Metropolis-
+# Hastings algorithm are designed to solve.
+
+
+# If you've worked through the substitution model exercises in a different code,
+# you should be somewhat familiar with Markov chains -- specifically, the fact
+# that they approach a stationary distribution after lots of simulation time.
+
+# MCMC simulates a Markov chain whose stationary distribution happens to coincide
+# with the particular distribution f(x) we are interested to sample from.
+# We may not be able to sample from f(x) directly, but if we can simulate a Markov
+# chain that has f(x) as its stationary distribution, then we can obtain samples
+# with the same statistical properties.
+
+# The key is how to construct such a Markov chain in the first place. This is what
+# the Metropolis Hastings algorithm does.
+
+# Example: Metropolis Hastings algorithm for a Normal distribution
+# Obviously we could just sample using rnorm, but this is to show that
+# the algorithm we are about to use works.
+
+# Target distribution (we want to obtain samples from this
+# distribution, and are pretending that we are unable to do so
+# directly at the moment):
+# We DO need to be able to evaluate f(x) for this to work:
+
+f <- function(x) dnorm(x,mean=0)
+
+# The Metropolis-Hastings algorithm works as follows:
+#  At iteration k:
+#	propose an update, y, which may become x_{k+1}
+#	Evaluate f(y), and compare to f(x_k)
+#	 if f(y) > f(x_k), accept y as x_{k+1} = y;
+		otherwise, accept y as x_{k+1} = y with probability less than one;
+# Repeat ad infinitum
+
+# We have most of the ingredients we need; what remains is how to propose updates.
+# The MH algorithm is very flexible, in the sense that we can update parameters however
+# we like: we can sample y ~ w(x), where w(x) is any distribution whatsoever (or almost so).
+# The catch is: some choices of w(x) result in a Markov chain that converges to the 
+# stationary distribution more rapidly than others.
+
+# For this first example, we will set w(x) to a uniform distribution centered at the
+# current state, x_k, and adds a small increment in the interval [-\delta, \delta]:
+
+w <- function(x, delta) runif(1, min=x-delta, max=x+delta)
+
+
+# Let's write the algorithm:
+
+# initialize state (and allocate into a vector):
+ninits <- 100000 # how long to run
+xk <- rep(0, length=ninits) 
+
+# to illustrate the method, let's make the initial value 
+# different from zero (in practice, it's good for the initial
+# value to not be in the tails of f(x)):
+
+# But I will chose a "bad" guess in the tails to illustrate the algorithm's behavior:
+xk[1] <- 20
+
+for(i in 1:ninits){
+	y <- w(xk[i],1)
+	
+	# Calculate the "acceptance ratio":
+	alpha <- f(y)/f(xk[i])
+	
+	# alpha > 1 means we always accept y; alpha < 1 means we only sometimes do:
+	u <- runif(1)
+	if(alpha > u){xk[i+1] <- y}else{xk[i+1]=xk[i]}	
+}
+
+par(mfrow=c(2,1))
+plot(xk, type='l', xlab='Iteration of MH algorithm', ylab=bquote(x[k]))
+hist(xk, xlab=bquote(x[k]), freq=F, ylim=c(0,0.5), breaks=100, xlim=c(-20,20))
+lines(seq(-20,20,length=1000), sapply(seq(-20,20,length=1000), f), col='red')
+legend('topright',legend=c('f(x) (true)'),col='red',lty=1)
+
+# From looking at the "traceplot" (time series, top row), you will notice that there is
+# a clear transient period toward the start of the simulation. MCMC practitioners usually
+# discard the early portion of their MCMC runs as a "burn-in" period. The histogram in the second
+# row obviously has a tail that is much larger than it should be, by virtue of the bad
+# initial guess. 
+
+# However, it is a nice feature of MCMC that in teh long run it will wander to the
+# current distribution.
+
+# The steps of the Metropolis-Hastings algorithm are very similar to importance 
+# sampling. We have near-total freedom to choose the proposal distribution, in much the
+# same way that we have near-total freedom to choose the sampling distribution in
+# importance sampling.
+
+# One key difference is that, usually in Metropolis-Hastings, we center the proposal
+# distribution on the current value, x_k, which can change each iteration. 
+# Above, we did this by proposing values uniformly form [x_k - delta, x_k + delta].
+
+## Might need to edit this section:
+
+# Also, instead of sampling a large number of samples from the proposal distribution w(x),
+# and then calculating the average of the ratios f/w, we just sample one value from the 
+# distribution w(y|x)f(x) and compare it to w(x|y)f(y)
+
+# In the algorithm above, w(x|y) and w(x|y) cancel in the acceptance ratio because our
+# uniform distribution is symmetric. Most proposal distribution in practice will have
+# this property, but not all. 
+
+
+# Exercises:
+# 0. Modify the example above to use different values of delta in the Uniform proposal distribution.
+#	What happens if you make delta very small or very large? In either case, you should observe
+#	"poor mixing" of the Markov chain, but for different reasons.
+# 1. Modify the MH algorithm above to approximate samples from a Poisson distribution with
+# 	mean 10. Is there a convenient alternative to runif for your proposals, y?
+# 2. Use the acf function to determine the autocorellation in your MCMC runs. Compare this
+#	to what you should see from an equal number of samples drawn using rnorm or rpois.
+#	In light of this, are your MCMC samples "independent and identically distributed (iid)"?
+# 3. Modify the MH algorithm for f(x) = p*f1(x) + (1-p)*f2(x), where f1 and f2 are both
+#	normal distributions but with means of mu1=-10 and mu2=+10, respectively (you can
+#	assume they both have unit variance). This is called a "mixture" distribution.
+#	See how the MH algorithm performs for p=1/2,
+#	and modify your proposal distribution to see if you can ever approximate the full
+#	distribution (rather than just one of the mixture components).  
 
