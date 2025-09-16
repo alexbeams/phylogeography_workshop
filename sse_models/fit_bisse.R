@@ -217,4 +217,9 @@ plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,6],xlab=bquote(q[1~0]))
 
 # Hint: it works like this: loglik_constrained <- constrain(loglik, mu0 ~ mu1)
 
-
+# Exercise 10. Load the phangorn package, and use the nni function to get all of
+#	the trees that are one nni move away from your simulated tree. Evaluate
+#	the likelihood of all of the trees (but just use the MLE for the other
+#	parameters). Does the true tree carry the highest likelihood? Do you
+#	think the tree itself is identifiable? (Hint: use the chronos function
+#	to produce ultrametric trees from the nni output).
