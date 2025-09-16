@@ -98,7 +98,7 @@ throwDarts <- function(ndarts){
 # How does this help us evaluate pi? Remember that Area(circle) = pi * radius^2,
 # and Area(square) = radius^2 = 1, because we deliberately chose radius=1.
 
-# So, the area of the circle is just pi, and the area of the rectangle is 1.
+# So, the area of the circle is just pi/4, and the area of the rectangle is 1.
 
 # Another way of saying this is that pi = Area(circle)/Area(rectangle).
 
