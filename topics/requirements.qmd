@@ -1,0 +1,53 @@
+# Workshop Requirements
+
+## Background
+Phylogeography, broadly speaking, is concerned with reconstructing evolutionary histories to explain spatial distributions of present-day organisms (be they pathogens, species of mammals, or anything else that evolves). Many of the methods used in phylogeography are common to other areas of evolutionary biology, and some are useful for answering questions like "Does a particular trait influence speciation?" We will attempt to cover as many of these different areas as time allows, but our emphasis will be to work towards an understanding of the mathematical models underpinning these methods, with a particular focus on the key assumptions they make that render them appropriate for certain types of analyses and not others. 
+
+Prior experience in phylogenetics or evolution is not required or assumed, but enthusiasm is. Familiarity with statistics, Markov chains, R, and working in the terminal is great, but not strictly required. The target audience for this workshop includes all of the graduate students in MAGPIE, as well as anyone else who is interested to learn about mathematical models used in phylogeography and evolution of traits more generally.
+
+
+Install all of the following things before Monday, September 29, so that we can hit the ground running. 
+
+## Requirements for R
+
+You need to have R on your machine. It is usually good to have the latest version. Download it at [https://www.r-project.org/](https://www.r-project.org/)
+
+You will need the following R packages:
+
+	ape
+	expm
+	phytools
+	coda
+	mcmcensemble
+	diversitree
+
+
+These will have their own dependencies -- be sure to install those as necessary in order to get these packages to work.
+
+You can use Rstudio if you wish, but it is not required. If you are OK with copying-and-pasting things into a terminal, you will be able to accomplish all of the tasks in this workshop.
+
+You will probably like to have a text editor to modify the coding exercises to work through problems efficiently. If you want to do this workshop on Expert mode, consider learning how to use Vim at [https://vim-adventures.com](https://vim-adventures.com/)
+ 
+## Requirements for BEAST2
+BEAST2 carries out Markov Chain Monte Carlo to reconstruct phylogenetic trees (and can do so jointly with geographic histories). There are a number of things you need to install to get this to work:
+
+
+BEAST2 (running MCMC): download at [https://www.beast2.org/](https://www.beast2.org/)
+
+Tracer (analyzing MCMC): download at [https://tree.bio.ed.ac.uk/software/tracer/](https://tree.bio.ed.ac.uk/software/tracer/)
+
+FigTree (examining trees produced by BEAST2): [https://tree.bio.ed.ac.uk/software/figtree/
+](https://tree.bio.ed.ac.uk/software/figtree/)
+
+AliView (useful for looking at multiple sequence alignments): [https://ormbunkar.se/aliview/
+](https://ormbunkar.se/aliview/)
+
+## Requirements for Compute Canada
+
+On Thursday, we will try to get BEAST2 to run on the Fir server. You will need an account with the Digital Research Alliance of Canada. Create one here if you don't have one aready:
+
+[https://ccdb.alliancecan.ca/security/login
+](https://ccdb.alliancecan.ca/security/login)
+
+
+

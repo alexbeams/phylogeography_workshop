@@ -1,0 +1,106 @@
+---
+title: MAGPIE PhylogeogRaphy Workshop (with BEAST 2)
+description: |
+  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.   
+
+  <center>[Register](https://docs.google.com/forms/d/e/1FAIpQLSeOv8vuo_HdsrBvmoONwcjoCHNAPPXnRvYSXVJmDQBSgpsrJw/viewform?usp=dialog){.btn .btn-outline-primary}</center>
+
+toc: false
+title-block-banner: true
+anchor-sections: false
+---
+
+Welcome to Day Two! We will briefly recap things we learned on Monday before moving on to birth-death models and state-dependent speciation and extinction (SSE) models in R.
+
+
+<!-- ================= Day 2 ================= -->
+:::{layout="[[12]]"}
+
+:::{.date}
+Wednesday<br>[October 1, 2025]
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[0930-1030: Intro to birth-death models](topics/sse_models/birth_death_models.pdf){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides
+:::
+:::
+:::
+
+:::{.card .mb-3}
+:::{.card-body}
+[1030-1130: Estimating parameters of basic birth-death models](topics/sse_models/fit_bd.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in R
+:::
+:::
+:::
+
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[1130-1230: Intro to State-dependent Speciation and Extinction (SSE) models](topics/sse_models/sse_models.pdf){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides
+:::
+:::
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[1330-1430: Simulating State-dependent Speciation and Extinction (SSE) models](topics/sse_models/sim_sse.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in R
+:::
+:::
+:::
+
+:::{.card .mb-3}
+:::{.card-body}
+[1430-1530: Fitting BiSSE models](topics/sse_models/fit_bisse.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in R
+:::
+:::
+:::
+
+:::{.card .mb-3}
+:::{.card-body}
+[1530-1630: Ancestral state reconstruction with BiSSE](topics/sse_models/asr_bisse.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in R
+:::
+:::
+:::
+
+
+
+
+<!--
+Can repeat for more days and sessions...
+-->
+
+<!--
+<br><br>
+![](img/duck_coffee.png){fig-alt="front logo"}
+-->
+
+<br>
+<center>Hosted by:</center>
+<br>
+
+<center>![](img/magpieLogo/lightBackground/transparentcircle_darktext.png){fig-alt="host logo" width="35%"}</center>

@@ -1,0 +1,132 @@
+---
+title: MAGPIE PhylogeogRaphy Workshop (with BEAST 2)
+description: |
+  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.   
+
+  <center>[Register](https://docs.google.com/forms/d/e/1FAIpQLSeOv8vuo_HdsrBvmoONwcjoCHNAPPXnRvYSXVJmDQBSgpsrJw/viewform?usp=dialog){.btn .btn-outline-primary}</center>
+
+toc: false
+title-block-banner: true
+anchor-sections: false
+---
+
+Welcome to the PhylogeogRaphy workshop (with BEAST2)! 
+
+
+Sessions are split into roughly two-hour chunks that align with typical start/end times of classes, and are meant to be as self-contained as possible -- so, feel free to come and go as necessary! All materials will posted here for you to catch up on content if desired.
+
+Participants should bring their own laptops for hands-on exercises.  
+
+For specific requirements, see the Requirements for workshop page.<br><br>
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[Requirements for workshop](topics/requirements.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Pre-workshop instructions
+:::
+:::
+:::
+:::
+
+
+
+
+<!-- ================= Day 1 ================= -->
+:::{layout="[[12]]"}
+
+:::{.date}
+Monday<br>[September 29, 2025]
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[Monday: Discrete trait analysis I in R](monday.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Introduction, ancestral character estimation, and stochastic character mapping
+:::
+:::
+:::
+:::
+
+<!-- ================= Day 2 ================= -->
+:::{layout="[[12]]"}
+
+:::{.date}
+Wednesday<br>[October 1, 2025]
+:::
+
+
+:::{.card .mb-3}
+:::{.card-body}
+[Wednesday: Discrete trait analysis II in R](wednesday.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Birth-death models, state-dependent speciation and extinction (SSE) models
+:::
+:::
+:::
+:::
+
+<!-- ================= Day 3 ================= -->
+:::{layout="[[12]]"}
+
+:::{.date}
+Thursday<br>[October 2, 2025]
+:::
+
+
+
+:::{.card .mb-3}
+:::{.card-body}
+[Thursday: Phylodynamics I in R and BEAST2](thursday.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Phylodynamics models (multi-type birth-death models, structured coalescents), and analysis in BEAST2
+:::
+:::
+:::
+:::
+
+<!-- ================= Day 4 ================= -->
+:::{layout="[[12]]"}
+
+:::{.date}
+Friday<br>[October 3, 2025]
+:::
+
+
+:::{.card .mb-3}
+:::{.card-body}
+[Friday: Phylodynamics II in BEAST2](friday.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Analysis in BEAST2 and advanced topics (Bayesian stochastic search variable selection)
+:::
+:::
+:::
+:::
+
+
+
+
+<!--
+Can repeat for more days and sessions...
+-->
+
+<!--
+<br><br>
+![](img/duck_coffee.png){fig-alt="front logo"}
+-->
+
+<br>
+<center>Hosted by:</center>
+<br>
+
+<center>![](img/magpieLogo/lightBackground/transparentcircle_darktext.png){fig-alt="host logo" width="35%"}</center>

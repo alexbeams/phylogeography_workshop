@@ -1,0 +1,138 @@
+# Simulating nucleotide substitution models
+## A refresher on continuous time discrete state Markov chains
+
+```{r}
+rm(list=ls())
+library(ape)
+library(expm) # matrix exponential
+```
+
+# 1. Basic Markov chains
+
+Let's begin by considering a simple 2-state Markov chain
+defined in continuous time.
+
+The vector P has entries that sum to one, and the components
+are the probability the state resides in one state or the
+other at a particular time.
+
+Probabilities evolve over time according to the Kolmogorov equation
+
+\begin{align*}
+ dP_1/dt &= - q_{12} P_1 + q_{21} P_2,\\
+ dP_2/dt &= q_{12}P_1 - q_{21} P_2. 
+\end{align*}
+
+If we treat P as a column vector,
+this can be written in vector-matrix form
+\begin{align*}
+	dP/dt = Q P,
+\end{align*}
+where Q is a stochastic rate matrix with columns summing to zero.
+
+In some cases, the row vector $P^T$ is used instead. In this case,
+the equation takes the form $dP^T/dt = P^T Q^T$. Pay attention to the
+help pages in the coming days to ensure that $Q_{ij}$ represents the
+state change that you think it does...
+
+We can solve these differential equations by hand, using the fact
+that $P_1 + P_2 = 1$
+
+\begin{align*}
+dP_1/dt &= -q_{12}(P_1) + q_{21}  (1-P_1)
+	&= - (q_{12} + q_{21})  P_1 + q_{21}
+\end{align*}
+
+rearrange to:
+\begin{align*}
+dP_1/dt + (q_{12}+q_{21})  P_1 = q_{21}
+\end{align*}
+
+A standard approach to solving this type of equation is to use an
+integrating factor $e^{(q_{12}+q_{21})t}$
+
+\begin{align*}
+d/dt (P_1  e^{(q_{12}+q_{21})t}) = q_{21}  e^{(q_{12}+q_{21})t} 
+\end{align*}
+
+We can integrate this up once:
+\begin{align*}
+P_1  e^{(q_{12}+q_{21})t} = \frac{q_{21}}{q_{12}+q_{21}}  e^{(q_{12}+q_{21})t} + C
+\end{align*}
+We can now isolate P_1:
+
+\begin{align*}
+P_1 =  \frac{q_{21}}{q_{12}+q_{21}}  + C e^{-(q_{12}+q_{21})t} 
+\end{align*}
+
+We use initial conditions to determine C. Set $P_{1,0} = P_1(0)$:
+
+\begin{align*}
+P_{1,0} &= \frac{q_{21}}{q_{12}+q_{21}}  + C e^{-(q_{12}+q_{21})0} ,\\
+P_{1,0} &= \frac{q_{21}}{q_{12}+q_{21}}  + C 
+\end{align*}
+
+So now we know that
+\begin{align*}
+P1 &=  \frac{q_{21}}{q_{12}+q_{21}}  + (P_{1,0} - \frac{q_{21}}{q_{12}+q_{21}})  e^{-(q_{12}+q_{21})t} 
+P1 &= P_{1,0}  e^{-(q_{12}+q_{21})t} + \frac{q_{21}}{q_{12}+q_{21}}  (1-e^{-(q_{12}+q_{21})t})
+\end{align*}
+Notice that this has a term corresponding to the initial condition that 
+is dominant for t \approx 0, and in the long run P1 \to \frac{q_{21}}{q_{12}+q_{21}}
+
+We can also find $P_2$, using the fact that $P_2 = 1-P1$:
+\begin{align*}
+P_2 &= \frac{q_{12}+q_{21}}{q_{12}+q_{21}} - \frac{q_{21}}{q_{12}+q_{21}} + \frac{q_{21}}{q_{12}+q_{21}}e^{-(q_{12}+q_{21})t} - P_{1,0} e^{-(q_{12}+q_{21})t},\\
+ &= \frac{q_{12}}{q_{12}+q_{21}} + (\frac{q_{21}}{q_{12}+q_{21}} - P_{1,0})e^{-(q_{12}+q_{21})t},\\
+ &= \frac{q_{12}}{q_{12}+q_{21}} + (\frac{q_{21}}{q_{12}+q_{21}} - 1 + P_{2,0})e^{-(q_{12}+q_{21})t},\\
+ &= \frac{q_{12}}{q_{12}+q_{21}} + (\frac{-q_{12}}{q_{12}+q_{21}} + P_{2,0})e^{-(q_{12}+q_{21})t},\\
+ &= \frac{q_{12}}{q_{12}+q_{21}}(1-e^{-(q_{12}+q_{21})t}) + P_{2,0}e^{-(q_{12}+q_{21})t}.
+\end{align*}
+So now, we have our solutions for the Markov chain probabilities over time:
+
+```{r}
+P <- function(t, P0, q12,q21){
+	P1 <- function(t){
+		P0[1]*exp(-(q12+q21)*t) + q21/(q12+q21) * (1-exp(-(q12+q21)*t))
+	}
+	P2 <- function(t){
+		P0[2]*exp(-(q12+q21)*t) + q12/(q12+q21) * (1-exp(-(q12+q21)*t))
+	}
+	P <- c(P1(t), P2(t))
+	return(P)
+}
+```
+
+# Exercises:
+## 1. 
+Write down a 4-state Markov model corresponding to A, C, T, and G 
+	in DNA. Evaluate the transition probabilities as above (hint:
+	the matrix exponential can be calculated in R using 
+	the expm function from the package of the same name. Feel free
+	to assume whatever constraints on parameters you like (or none 
+	at all).
+
+## 2. 
+The Jukes-Cantor model is the simplest nucleotide substitution model.
+	By assumption, the equilibrium probabilities of each nucleotide
+	are equal, and the transition rates between states are likewise
+	all equal. What is the generator for this process? Write a function
+	to describe transition probabilities as a function of time. 
+	(Hint: how many parameters will your generator have
+	if all transitions between states occur at equal rates?)
+
+## 3. 
+The K80 (Kimura, 1980) model elaborates on the Jukes-Cantor model by
+	allowing substitutions within pyrimidines (C,T) and within purines 
+	(A, G) to occur at a different rate than "transversions" between
+	 pyrimidines and purines. In biology, substitutions between two 
+	purines or between two pyrimidines are called "transitions" (but
+	in Markov chains, mathematicians refer to all state changes as
+	transitions -- confusing). Assuming that transitions (in the 
+	biological sense of the word) occur at the same rate regardless of
+	whether the nucleotides are purines or pyrimidines, and assuming
+	that transversions in either direction occur at the same rate, 
+	write the generator for the Markov process and write a function that
+	calculates transition probabilities as a function of time.
+
+

@@ -1,0 +1,92 @@
+---
+title: MAGPIE PhylogeogRaphy Workshop (with BEAST 2)
+description: |
+  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.   
+
+  <center>[Register](https://docs.google.com/forms/d/e/1FAIpQLSeOv8vuo_HdsrBvmoONwcjoCHNAPPXnRvYSXVJmDQBSgpsrJw/viewform?usp=dialog){.btn .btn-outline-primary}</center>
+
+toc: false
+title-block-banner: true
+anchor-sections: false
+---
+
+Welcome to Day 4! We will start by analyzing output from BEAST2 before learning about more advanced functionality (like Bayesian stochastic search variable selection). We will finish by carrying out comparative analyses from discrete trait methods to see what we gain from more computationally intensive analyses in BEAST2.
+
+
+<!-- ================= Day 4 ================= -->
+:::{layout="[[12]]"}
+
+:::{.date}
+Friday<br>[October 3, 2025]
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[Analyze overnight BEAST2 runs](pages/embedR.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in BEAST2
+:::
+:::
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[Advanced BEAST2 topics: BSSVS](pages/embedR.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides
+:::
+:::
+:::
+
+:::{.card .mb-3}
+:::{.card-body}
+[BSSVS](pages/embedPython.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in BEAST2
+:::
+:::
+:::
+
+:::{.card .mb-3}
+:::{.card-body}
+[Comparing discrete trait analysis and phylodynamics](pages/embedPython.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in BEAST2/R
+:::
+:::
+:::
+
+:::{.card .mb-3}
+:::{.card-body}
+[Closing](pages/embedPython.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides/Group discussion
+:::
+:::
+:::
+
+
+
+<!--
+Can repeat for more days and sessions...
+-->
+
+<!--
+<br><br>
+![](img/duck_coffee.png){fig-alt="front logo"}
+-->
+
+<br>
+<center>Hosted by:</center>
+<br>
+
+<center>![](img/magpieLogo/lightBackground/transparentcircle_darktext.png){fig-alt="host logo" width="35%"}</center>

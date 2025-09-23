@@ -1,0 +1,149 @@
+---
+title: MAGPIE PhylogeogRaphy Workshop (with BEAST 2)
+description: |
+  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.   
+
+  <center>[Register](https://docs.google.com/forms/d/e/1FAIpQLSeOv8vuo_HdsrBvmoONwcjoCHNAPPXnRvYSXVJmDQBSgpsrJw/viewform?usp=dialog){.btn .btn-outline-primary}</center>
+
+toc: false
+title-block-banner: true
+anchor-sections: false
+---
+
+Welcome to Day one! 
+
+After an introduction to this week's workshop, we will gain some experience working with phylogenetic trees in R before moving on to learn about ancestral character estimation and stochastic character mapping.
+
+<!-- ================= Day 1 ================= -->
+:::{layout="[[12]]"}
+
+:::{.date}
+Monday<br>[September 29, 2025]
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[0930--1030: Introduction to PhylogeogRaphy workshop](topics/intro_to_workshop/introduction_to_workshop.pdfx){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides
+:::
+:::
+:::
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[1030--1130: Working with phylogenetic trees in R](topics/ancestral_character_estimation/phylogenetics_intro.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in R
+:::
+:::
+:::
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[1030--1130: Simulating nucleotide substitution models](topics/ancestral_character_estimation/nucleotide_models.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in R
+:::
+:::
+:::
+:::
+
+
+:::{.card .mb-3}
+:::{.card-body}
+[1130--1230: Ancestral character estimation models](topics/ancestral_character_estimation/ancestral_character_estimation.pdf){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides
+:::
+:::
+:::
+:::
+
+:::{.card .mb-3}
+:::{.card-body}
+[1330--1430: Simulating and fitting Markov models with ace](topics/ancestral_character_estimation/ace_sims.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in R
+:::
+:::
+:::
+:::
+
+:::{.card .mb-3}
+:::{.card-body}
+[1430--1530: Introduction to Stochastic character mapping](topics/character_mapping/stochastic_character_mapping.pdf){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides
+:::
+:::
+:::
+:::
+
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[1530--1630: Simulating Stochastic character mapping](topics/character_mapping/stochastic_mapping.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in R
+:::
+:::
+:::
+:::
+
+:::{.card .mb-3}
+:::{.card-body}
+[1530--1630: Fitting models with Stochastic character mapping](topics/character_mapping/fit_stochastic_mapping.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Short description
+:::
+:::
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[Optional: MCMC Primer](topics/mcmc_intro.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in R
+:::
+:::
+:::
+:::
+
+
+
+<!--
+Can repeat for more days and sessions...
+-->
+
+<!--
+<br><br>
+![](img/duck_coffee.png){fig-alt="front logo"}
+-->
+
+<br>
+<center>Hosted by:</center>
+<br>
+
+<center>![](img/magpieLogo/lightBackground/transparentcircle_darktext.png){fig-alt="host logo" width="35%"}</center>

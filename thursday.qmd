@@ -1,0 +1,113 @@
+---
+title: MAGPIE PhylogeogRaphy Workshop (with BEAST 2)
+description: |
+  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.   
+
+  <center>[Register](https://docs.google.com/forms/d/e/1FAIpQLSeOv8vuo_HdsrBvmoONwcjoCHNAPPXnRvYSXVJmDQBSgpsrJw/viewform?usp=dialog){.btn .btn-outline-primary}</center>
+
+toc: false
+title-block-banner: true
+anchor-sections: false
+---
+
+Welcome to Day 3! The state-dependent speciation and extinction (SSE) models we learned about yesterday will position us to understand the basic phylodynamics models (multi-type birth death, strucutred coalescent) used in BEAST2.
+
+Review the [Requirements](topics/requirements.qmd) page to make sure you have everything installed for BEAST2.
+
+If you want to get the most out of the afternoon sessions, make sure you have craeted an account with the Digital Research Alliance of Canada [https://ccdb.alliancecan.ca/security/login](https://ccdb.alliancecan.ca/security/login) 
+
+<!-- ================= Day 3 ================= -->
+:::{layout="[[12]]"}
+
+:::{.date}
+Thursday<br>[October 2, 2025]
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[Intro to Phylodynamics](pages/embedR.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides
+:::
+:::
+:::
+
+:::{.card .mb-3}
+:::{.card-body}
+[Basic phylodynamics Models in R/BEAST2](pages/embedPython.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in R (or BEAST2)
+:::
+:::
+:::
+
+:::
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[Intro to BEAST2](beast2/intro/beast_intro.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Short description
+:::
+:::
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[Basic BEAST2 runs](beast2/intro/beast_intro.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in BEAST2
+:::
+:::
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[MTBD and/or Structured Coalescent BEAST2 runs](beast2/intro/beast_intro.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in BEAST2
+:::
+:::
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[Setting up server runs ](beast2/intro/beast_intro.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in BEAST2/remote server
+:::
+:::
+:::
+
+
+<!--
+Can repeat for more days and sessions...
+-->
+
+<!--
+<br><br>
+![](img/duck_coffee.png){fig-alt="front logo"}
+-->
+
+<br>
+<center>Hosted by:</center>
+<br>
+
+<center>![](img/magpieLogo/lightBackground/transparentcircle_darktext.png){fig-alt="host logo" width="35%"}</center>
