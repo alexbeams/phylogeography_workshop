@@ -77,8 +77,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/quarto-contrib/fontawesome6-1.2.0/all.min.css" rel="stylesheet">
-<link href="../../site_libs/quarto-contrib/fontawesome6-1.2.0/latex-fontsize.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -164,26 +162,27 @@ window.Quarto = {
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../pages/session1.qmd"> <i class="bi bi-activity" role="img">
+    <a class="nav-link" href="../../monday.html"> <i class="bi bi-pie-chart" role="img">
 </i> 
-<span class="menu-text">Session 1</span></a>
+<span class="menu-text">Monday: Discrete trait analysis I in R</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../pages/session2.qmd"> <i class="bi bi-box-seam" role="img">
+    <a class="nav-link" href="../../wednesday.html"> <i class="bi bi-map" role="img">
 </i> 
-<span class="menu-text">Session 2</span></a>
+<span class="menu-text">Wednesday: Discrete trait analysis II in R</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../pages/embedR.qmd"> 
-<span class="menu-text"><i class="fa-brands fa-r-project" aria-label="r-project"></i> embedding</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../../pages/embedPDF.qmd"> <i class="bi bi-file-earmark-pdf" role="img">
+    <a class="nav-link" href="../../thursday.html"> <i class="bi bi-activity" role="img">
 </i> 
-<span class="menu-text">PDF embedding</span></a>
+<span class="menu-text">Thursday: Pylodynamics I in R and BEAST2</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../about.html"> <i class="bi bi-airplane-engines" role="img">
+    <a class="nav-link" href="../../friday.html"> <i class="bi bi-tree" role="img">
+</i> 
+<span class="menu-text">Friday: Phylodynamics II in BEAST2</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> <i class="bi bi-space-shuttle" role="img">
 </i> 
 <span class="menu-text">About</span></a>
   </li>  
@@ -206,6 +205,10 @@ window.Quarto = {
 
 
 
+<section id="simulating-nucleotide-substitution-models" class="level1">
+<h1>Simulating nucleotide substitution models</h1>
+<section id="a-refresher-on-continuous-time-discrete-state-markov-chains" class="level2">
+<h2 class="anchored" data-anchor-id="a-refresher-on-continuous-time-discrete-state-markov-chains">A refresher on continuous time discrete state Markov chains</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span>
@@ -228,8 +231,8 @@ Attaching package: 'expm'</code></pre>
     balance</code></pre>
 </div>
 </div>
-<p>This code simulates output from the ace function. We will first try to grasp how the model behaves before we we try fitting it to data.</p>
-<p>Ancestral character estimation methods can be based on a variety of approaches, but we will consider Markov chains superimposed on phylogenies. In the accompanying code to this we will learn how to fit these models using Maximum Likelihood, but for now we focus on simulating Markov chains on trees to understand how the models work.</p>
+</section>
+</section>
 <section id="basic-markov-chains" class="level1">
 <h1>1. Basic Markov chains</h1>
 <p>Let’s begin by considering a simple 2-state Markov chain defined in continuous time.</p>

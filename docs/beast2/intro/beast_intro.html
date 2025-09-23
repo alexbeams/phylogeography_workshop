@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>sim_sse – Template Workshop</title>
+<title>beast_intro – Template Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,41 +19,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -105,35 +70,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="../../css/styles.css">
 </head>
@@ -205,141 +141,21 @@ window.Quarto = {
 
 
 
-<section id="simulating-state-dependent-speciation-and-extinction-sse-models" class="level1">
-<h1>Simulating State-dependent speciation and extinction (SSE) models</h1>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(diversitree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>State-dependent speciation and extion (SSE) models are the subject of this set of exercises. The workhorse of these methods are the various flavors of birth-death models for generating trees.</p>
-<p>So far, we have been treating the trees as given without asking how they are created (by some biologist, presumably). If the traits we are interested in do not influence diversification, extinction/death, or the probability we observe a particular lineage, then the standard Markov models on trees seem sufficient. In some cases, traits might influence the process creating the phylogenetic relationships we observe, and we would like to detect these effects.</p>
-<p>It is for this reason that we start by considering models for tree generation (sometimes called “tree priors” by people who use BEAST, which we will get to later in the week).</p>
-<p>Let’s start by simulating some trees using birth-death models.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">1</span>, <span class="at">mu=</span><span class="dv">0</span>), <span class="at">max.taxa =</span> <span class="dv">50</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Neat-o. But it doesn’t always work if mu&gt;0. Let’s use the lapply function to generate a list of simulated outputs (lapply is like a for loop, but more high-brow).</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>numtrees <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>treelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>numtrees, </span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">function</span>(x) <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">10</span>, <span class="at">mu=</span><span class="dv">5</span>), <span class="at">max.taxa =</span> <span class="dv">50</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>dieoffs <span class="ot">&lt;-</span> <span class="fu">sapply</span>(treelist, is.null)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>numdieoffs <span class="ot">&lt;-</span> <span class="fu">sum</span>(dieoffs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Sometimes we fail to generate a tree with max.taxa number of lineages because they all go extinct (this is stochastic). Let’s see how many we were able to generate:</p>
-</section>
-<section id="exercises" class="level1">
-<h1>Exercises:</h1>
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section">1.</h2>
-<p>The parameter “lambda” is the birth/diversification rate, and the parameter “mu” is the mortality/extinction rate. Try different combinations of the parameters (try lambda = 20, 50, 100, and mu = 20, 50, 100). What do you notice about your simulations? Hint: you should write a function called “getnumdieoffs” that accepts lambda, mu, and numtaxa, and then spits out treelist. Then you can create another function that acts on treelist to return numdieoffs. Organize the results of your simulations in a nice display.</p>
-</section>
-<section id="section-1" class="level2">
-<h2 class="anchored" data-anchor-id="section-1">2.</h2>
-<p>Try to simulate trees with lambda = 1, mu = 2, and 10 taxa. How many simulations do you need to run until you start seeing trees with 10 taxa produced?</p>
-</section>
-<section id="section-2" class="level2">
-<h2 class="anchored" data-anchor-id="section-2">3.</h2>
-<p>Use ?trees to examine the help page for some of other tree simulation models. You will notcie tree.bd and tree.yule toward the bottom. Use your investigative abilities to research the Yule process and compare it to the birth- death process.</p>
-</section>
-<section id="section-3" class="level2">
-<h2 class="anchored" data-anchor-id="section-3">4.</h2>
-<p>Do tree.yule(1, max.taxa=10) and tree.bd(lambda=2,mu=1, max.taxa=10) simulate the same process? Justify your answer.</p>
-</section>
-<section id="section-4" class="level2">
-<h2 class="anchored" data-anchor-id="section-4">5.</h2>
-<p>Do tree.yule(1, max.taxa=10) and tree.bd(lambda=1,mu=0, max.taxa=10) simulate the same process? Justify your answer.</p>
-</section>
-<section id="section-5" class="level2">
-<h2 class="anchored" data-anchor-id="section-5">6.</h2>
-<p>The diversitree package can simulate tip data using Markov models for two discrete states initialized from a particular state at the root. One model is the “mk2” model: sim.character(tree, pars, x0=0, model=“mk2”, br=NULL) the “pars” argument is a vector of the form (q12,q21) corresponding to the transition rates of the stochastic rate matrix, Q (the model argument can also be set to “mkn” to simulate Markov models with n states). Compare sim.character with the simMk function from phytools. Confirm whether these two R functions simulate the same process.</p>
-</section>
-</section>
-<section id="bisse" class="level1">
-<h1>BiSSE</h1>
-<p>So now, we are able to simulate trees using the birth-death process, and we learned earlier this week how to simulate trait evolution on a given tree. Now, we want to explore what happens if the tree generation process interacts with the traits. To do this, we will simulate Binary State Speciation and Extinction (BiSSE) models.</p>
-<p>BiSSE has 5 parameters: birth/diversification rates (lambda0, lambda1) corresponding to the two values of the trait (0 and 1); two death/extinction rates (mu0, mu1), and rates of the stochastic rate matrix, Q, (q01 and q10).</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda0=</span><span class="fl">0.1</span>, </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda1=</span><span class="fl">0.2</span>, </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mu0=</span><span class="fl">0.03</span>, </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mu1=</span><span class="fl">0.03</span>, </span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">q01=</span><span class="fl">0.01</span>, </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">q10=</span><span class="fl">0.01</span>) </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">tree.bisse</span>(pars, <span class="at">max.taxa=</span><span class="dv">50</span>, <span class="at">x0=</span><span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>State change information is available in tree<span class="math inline">\(node.state,
-tree\)</span>tip.state, and tree$edge.state, but for plotting it is convenient to invoke the following:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">history.from.sim.discrete</span>(tree, <span class="at">states=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)),</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    tree, <span class="at">col=</span><span class="fu">c</span>(<span class="st">'0'</span><span class="ot">=</span><span class="st">'black'</span>,<span class="st">'1'</span><span class="ot">=</span><span class="st">'red'</span>)) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>I’m going to write a function to simulate and plot from parameter values I supply:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plotbissesim <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda0=</span><span class="dv">1</span>,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda1=</span><span class="dv">1</span>,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mu0=</span><span class="dv">0</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mu1=</span><span class="dv">0</span>,</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">q01=</span><span class="dv">1</span>,</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">q10=</span><span class="dv">1</span>,</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">maxtaxa=</span><span class="dv">50</span>,</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x0=</span><span class="dv">0</span>){</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">lambda0=</span>lambda0, </span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">lambda1=</span>lambda1, </span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">mu0=</span>mu0, </span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">mu1=</span>mu1, </span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">q01=</span>q01, </span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">q10=</span>q10) </span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    tree <span class="ot">&lt;-</span> <span class="fu">tree.bisse</span>(pars, <span class="at">max.taxa=</span>maxtaxa, <span class="at">x0=</span>x0)</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(<span class="fu">history.from.sim.discrete</span>(tree, <span class="at">states=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)),</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        tree, <span class="at">col=</span><span class="fu">c</span>(<span class="st">'0'</span><span class="ot">=</span><span class="st">'black'</span>,<span class="st">'1'</span><span class="ot">=</span><span class="st">'red'</span>)) </span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">legend</span>(<span class="st">"topleft"</span>, </span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>           <span class="at">legend=</span><span class="fu">c</span>(<span class="st">"state 0"</span>,<span class="st">"state 1"</span>), </span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>           <span class="at">col=</span><span class="fu">c</span>(<span class="st">"black"</span>,<span class="st">"red"</span>), </span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>           <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>, </span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>           <span class="at">bty=</span><span class="st">"n"</span>, <span class="at">cex=</span><span class="fl">0.8</span>)</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Because I supplied defualt values, this will just run:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotbissesim</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Or, I can tweak parameters (as many at a time as I want):</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotbissesim</span>(<span class="at">lambda0=</span><span class="dv">10</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plotbissesim</span>(<span class="at">lambda0=</span><span class="fl">0.1</span>,<span class="at">lambda1=</span><span class="dv">1</span>,<span class="at">q01=</span>.<span class="dv">1</span>,<span class="at">q10=</span><span class="dv">1</span>,<span class="at">x0=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<section id="bisse-simulation-exercises" class="level2">
-<h2 class="anchored" data-anchor-id="bisse-simulation-exercises">BiSSE Simulation Exercises:</h2>
-</section>
-<section id="section-6" class="level2">
-<h2 class="anchored" data-anchor-id="section-6">1 .</h2>
-<p>Simulate a population that starts in a hostile environment but can move to a safer habitat with less predation. Assume the organisms are dumb (or just plants), so that individuals tend to spend the same amount of time in each habitat before moving to the other one. Do the simulations match your intuition about what should happen to the population in this scenario? Do you see different outcomes if migration is slow or fast relative to the birth and death rates? What happens if you simulate more taxa? (Try up to 10^4 or 10^5).</p>
-</section>
-<section id="section-7" class="level2">
-<h2 class="anchored" data-anchor-id="section-7">2.</h2>
-<p>Simulate a population that can move to a new habitat where there are more resources available, and organisms can produce more offspring. Assume that organisms have the same life expectancy in each area. You can also assume that individuals spend the same amount of time in each location. How does this scenario compare to the previous one, in terms of the trees you generate? Try different numbers of taxa.</p>
-</section>
-<section id="section-8" class="level2">
-<h2 class="anchored" data-anchor-id="section-8">3.</h2>
-<p>Now, suppose through no fault of their own that organisms are transported to a terrible environment at a much faster rate than they can escape. If you didn’t know the parameters you used, would it be obvious from the trees that one of the locations is worse than the the other?</p>
-</section>
-<section id="section-9" class="level2">
-<h2 class="anchored" data-anchor-id="section-9">4.</h2>
-<p>Supose the organisms are intelligent, and preferentially move to the location where there is less predation, and/or better resources. Do the phylogenies contain information about the crummy habitat?</p>
+<section id="introduction-to-beast2" class="level1">
+<h1>Introduction to BEAST2</h1>
+<p>For ease of navigation, I am including (most of) the critical information for the workshop on this website, but you may find it valuable to navigate to</p>
+<p>taming-the-beast.org</p>
+<p>which has a wealth of tutorials to help you navigate the BEAST2 ecosystem.</p>
+<p>Several of the example datasets we are using are available in the Taming the Beast tutorials. Briefly, they are:</p>
+<ol type="1">
+<li>Primate mitochrondrial DNA (12 sequences, 898 sites, no location data – for intro BEAST2 runs only)</li>
+<li>Influenza H3N2 (60 sequences, 1762 sites, 2 locations)</li>
+<li>Influenza H5N1 (43 sequences, 1698 sites, 5 locations)</li>
+<li>Bat Rabies (372 sequences, 1353 sites, 14 locations, actually from the BEASTX tutorials but we will use it anyway)</li>
+<li>MERS (274 sequences, 30,130 sites, 2 host types – camel and human)</li>
+</ol>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

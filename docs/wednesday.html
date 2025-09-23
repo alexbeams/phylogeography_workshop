@@ -93,7 +93,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> <i class="bi bi-house" role="img">
+    <a class="nav-link" href="./index.html"> <i class="bi bi-house" role="img">
 </i> 
 <span class="menu-text">Home</span></a>
   </li>  
@@ -103,7 +103,7 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Monday: Discrete trait analysis I in R</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./wednesday.html"> <i class="bi bi-map" role="img">
+    <a class="nav-link active" href="./wednesday.html" aria-current="page"> <i class="bi bi-map" role="img">
 </i> 
 <span class="menu-text">Wednesday: Discrete trait analysis II in R</span></a>
   </li>  
@@ -166,110 +166,133 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p>Welcome to the PhylogeogRaphy workshop (with BEAST2)!</p>
-<p>Sessions are split into roughly two-hour chunks that align with typical start/end times of classes, and are meant to be as self-contained as possible – so, feel free to come and go as necessary! All materials will posted here for you to catch up on content if desired.</p>
-<p>Participants should bring their own laptops for hands-on exercises.</p>
-<p>For specific requirements, see the Requirements for workshop page.<br><br></p>
-<div class="quarto-layout-panel" data-layout="[[10]]">
-<div class="quarto-layout-row">
-<div class="card mb-3 quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div class="card-body">
-<p><a href="./topics/requirements.html" class="card-title stretched-link">Requirements for workshop</a></p>
-<div class="text-muted">
-<p>Pre-workshop instructions</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- ================= Day 1 ================= -->
+<p>Welcome to Day Two! We will briefly recap things we learned on Monday before moving on to birth-death models and state-dependent speciation and extinction (SSE) models in R.</p>
+<!-- ================= Day 2 ================= -->
 <div data-layout="[[12]]">
 <div class="date">
-<p>Monday<br>[September 29, 2025]</p>
+<p>Wednesday<br>[October 1, 2025]</p>
+</div>
+<div data-layout="[[10]]">
+<div class="card mb-3">
+<div class="card-body">
+<p><a href="topics/sse_models/birth_death_models.pdf" class="card-title stretched-link">0930-1030: Intro to birth-death models</a></p>
+<div class="text-muted">
+<p>Slides</p>
+</div>
+</div>
+</div>
+<div class="card mb-3">
+<div class="card-body">
+<p><a href="./topics/sse_models/fit_bd.html" class="card-title stretched-link">1030-1130: Estimating parameters of basic birth-death models</a></p>
+<div class="text-muted">
+<p>Practical session in R</p>
+</div>
+</div>
+</div>
+<div data-layout="[[10]]">
+<div class="card mb-3">
+<div class="card-body">
+<p><a href="topics/sse_models/sse_models.pdf" class="card-title stretched-link">1130-1230: Intro to State-dependent Speciation and Extinction (SSE) models</a></p>
+<div class="text-muted">
+<p>Slides</p>
+</div>
+</div>
 </div>
 <div class="quarto-layout-panel" data-layout="[[10]]">
 <div class="quarto-layout-row">
 <div class="card mb-3 quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
 <div class="card-body">
-<p><a href="./monday.html" class="card-title stretched-link">Monday: Discrete trait analysis I in R</a></p>
+<p><a href="./topics/sse_models/sim_sse.html" class="card-title stretched-link">1330-1430: Simulating State-dependent Speciation and Extinction (SSE) models</a></p>
 <div class="text-muted">
-<p>Introduction, ancestral character estimation, and stochastic character mapping</p>
+<p>Practical session in R</p>
 </div>
 </div>
-</div>
-</div>
-</div>
-<!-- ================= Day 2 ================= -->
-<div class="quarto-layout-panel" data-layout="[[12]]">
-<div class="quarto-layout-row">
-<div class="date quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<p>Wednesday<br>[October 1, 2025]</p>
 </div>
 </div>
 <div class="quarto-layout-row">
 <div class="card mb-3 quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
 <div class="card-body">
-<p><a href="./wednesday.html" class="card-title stretched-link">Wednesday: Discrete trait analysis II in R</a></p>
+<p><a href="./topics/sse_models/fit_bisse.html" class="card-title stretched-link">1430-1530: Fitting BiSSE models</a></p>
 <div class="text-muted">
-<p>Birth-death models, state-dependent speciation and extinction (SSE) models</p>
+<p>Practical session in R</p>
 </div>
 </div>
-</div>
-</div>
-</div>
-<!-- ================= Day 3 ================= -->
-<div class="quarto-layout-panel" data-layout="[[12]]">
-<div class="quarto-layout-row">
-<div class="date quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<p>Thursday<br>[October 2, 2025]</p>
 </div>
 </div>
 <div class="quarto-layout-row">
 <div class="card mb-3 quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
 <div class="card-body">
-<p><a href="./thursday.html" class="card-title stretched-link">Thursday: Phylodynamics I in R and BEAST2</a></p>
+<p><a href="./topics/sse_models/asr_bisse.html" class="card-title stretched-link">1530-1630: Ancestral state reconstruction with BiSSE</a></p>
 <div class="text-muted">
-<p>Phylodynamics models (multi-type birth-death models, structured coalescents), and analysis in BEAST2</p>
+<p>Practical session in R</p>
 </div>
 </div>
-</div>
-</div>
-</div>
-<!-- ================= Day 4 ================= -->
-<div class="quarto-layout-panel" data-layout="[[12]]">
-<div class="quarto-layout-row">
-<div class="date quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<p>Friday<br>[October 3, 2025]</p>
 </div>
 </div>
 <div class="quarto-layout-row">
-<div class="card mb-3 quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div class="card-body">
-<p><a href="./friday.html" class="card-title stretched-link">Friday: Phylodynamics II in BEAST2</a></p>
-<div class="text-muted">
-<p>Analysis in BEAST2 and advanced topics (Bayesian stochastic search variable selection)</p>
-</div>
-</div>
-</div>
-</div>
-</div>
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
 <!--
 Can repeat for more days and sessions...
 -->
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
 <!--
 <br><br>
 ![](img/duck_coffee.png){fig-alt="front logo"}
 -->
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
 <br>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
 <center>
+</center></div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
 Hosted by:
-</center>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
+
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
 <p><br></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
 <center>
+</center></div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
 <img src="img/magpieLogo/lightBackground/transparentcircle_darktext.png" class="img-fluid" style="width:35.0%" alt="host logo">
-</center>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
 
+</div>
+</div>
+<div class="quarto-layout-row">
 
+</div>
+<div class="quarto-layout-row">
+
+</div>
+</div>
+</div>
+</div>
 </div>
 
 </main> <!-- /main -->
