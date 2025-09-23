@@ -88,8 +88,6 @@ Practical session in R
 :::
 
 
-
-
 <!--
 Can repeat for more days and sessions...
 -->

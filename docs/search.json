@@ -200,7 +200,7 @@
     "href": "topics/ancestral_character_estimation/ace_sims.html",
     "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
     "section": "",
-    "text": "rm(list=ls())\n\nlibrary(ape)\nlibrary(expm) # matrix exponential\n\nLoading required package: Matrix\n\n\n\nAttaching package: 'expm'\n\n\nThe following object is masked from 'package:Matrix':\n\n    expm\n\n\nThe following object is masked from 'package:ape':\n\n    balance\n\n\nThis code simulates output from the ace function. We will first try to grasp how the model behaves before we we try fitting it to data.\nAncestral character estimation methods can be based on a variety of approaches, but we will consider Markov chains superimposed on phylogenies. In the accompanying code to this we will learn how to fit these models using Maximum Likelihood, but for now we focus on simulating Markov chains on trees to understand how the models work.\nFirst, let’s simulate a tree and some tip states:\n\ntree &lt;- rcoal(10)\nx &lt;- sample(c(0,1), size=10, replace=T)\n\nplot(tree)\ntiplabels(pch=21,bg=x)\n\n\n\n\n\n\n\nfit &lt;- ace(x, tree, type='discrete', model='ARD')\n\nWarning in sqrt(diag(solve(h))): NaNs produced"
+    "text": "rm(list=ls())\n\nlibrary(ape)\nlibrary(expm) # matrix exponential\n\nLoading required package: Matrix\n\n\n\nAttaching package: 'expm'\n\n\nThe following object is masked from 'package:Matrix':\n\n    expm\n\n\nThe following object is masked from 'package:ape':\n\n    balance\n\n\nThis code simulates output from the ace function. We will first try to grasp how the model behaves before we we try fitting it to data.\nAncestral character estimation methods can be based on a variety of approaches, but we will consider Markov chains superimposed on phylogenies. In the accompanying code to this we will learn how to fit these models using Maximum Likelihood, but for now we focus on simulating Markov chains on trees to understand how the models work.\nFirst, let’s simulate a tree and some tip states:\n\ntree &lt;- rcoal(10)\nx &lt;- sample(c(0,1), size=10, replace=T)\n\nplot(tree)\ntiplabels(pch=21,bg=x)\n\n\n\n\n\n\n\nfit &lt;- ace(x, tree, type='discrete', model='ARD')"
   },
   {
     "objectID": "topics/ancestral_character_estimation/ace_sims.html#section",
@@ -221,7 +221,7 @@
     "href": "topics/ancestral_character_estimation/ace_sims.html#section-1",
     "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
     "section": "3.",
-    "text": "3.\nIn a fitted ace object, there is an elemet called lik.anc which records the probability of ancestral states at each node of the tree. Plot a dataset of your choice with pie charts displaying the ancestral state probabilities associated with models that you fit using ace. Navigate through the help pages (?ace) to specify a few different versions of models that impose constraints on the Markov generator, Q. How sensitive are ancestral state probabilities to your modeling choices?"
+    "text": "3.\nIn a fitted ace object, there is an element called lik.anc which records the probability of ancestral states at each node of the tree. Plot a dataset of your choice with pie charts displaying the ancestral state probabilities associated with models that you fit using ace. Navigate through the help pages (?ace) to specify a few different versions of models that impose constraints on the Markov generator, Q. How sensitive are ancestral state probabilities to your modeling choices?"
   },
   {
     "objectID": "topics/character_mapping/fit_stochastic_mapping.html",
@@ -593,5 +593,12 @@
     "title": "Ancestral state reconstructions using BiSSE",
     "section": "4.",
     "text": "4.\nUse one of the example datasets of your choice, and carry out ancestral state reconstructions using BiSSE, comparing to results from either ace or simmap."
+  },
+  {
+    "objectID": "topics/ancestral_character_estimation/ace_sims.html#hard-or-maybe-impossible",
+    "href": "topics/ancestral_character_estimation/ace_sims.html#hard-or-maybe-impossible",
+    "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
+    "section": "2. (Hard, or maybe impossible)",
+    "text": "2. (Hard, or maybe impossible)\nModify the code above to condition on a particular tip state configuration. This way, we can observe distributions of evolutionary scenarios consistent with a particular set of observations."
   }
 ]

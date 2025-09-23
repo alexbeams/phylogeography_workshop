@@ -64,7 +64,7 @@ Short description
 
 :::{.card .mb-3}
 :::{.card-body}
-[Basic BEAST2 runs](beast2/intro/beast_intro.qmd){.card-title .stretched-link}
+[Basic BEAST2 runs](beast2/intro/basic_beast2_runs.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Practical session in BEAST2
@@ -76,7 +76,7 @@ Practical session in BEAST2
 
 :::{.card .mb-3}
 :::{.card-body}
-[MTBD and/or Structured Coalescent BEAST2 runs](beast2/intro/beast_intro.qmd){.card-title .stretched-link}
+[MTBD and/or Structured Coalescent BEAST2 runs](beast2/intro/mtbd_and_structured_coalescents.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Practical session in BEAST2
@@ -88,7 +88,7 @@ Practical session in BEAST2
 
 :::{.card .mb-3}
 :::{.card-body}
-[Setting up server runs ](beast2/intro/beast_intro.qmd){.card-title .stretched-link}
+[Setting up server runs ](beast2/intro/server_runs.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Practical session in BEAST2/remote server

@@ -40,7 +40,8 @@ Navigate through the ace help pages to determine whether Qij
 
 ```{r}
 Q <- matrix(c(-1,1,1,-1),ncol=2) 
-Q <- Q/10
+# can scale rates up or down:
+Q <- Q/1
 
 getP <- function(t,Q){
 	P <- expm(Q*t)
@@ -169,14 +170,14 @@ Simulate some tip states on a tree using a Markov model
 	Are there particular combinations of branch lengths and rates
 	that make it difficult to estimate model parameters?
 
-## 2. (Hard) 
+## 2. (Hard, or maybe impossible) 
 Modify the code above to condition on a particular 
 	tip state configuration. This way, we can observe distributions
 	of evolutionary scenarios consistent with a particular set
 	of observations. 
 
 ## 3. 
-In a fitted ace object, there is an elemet called lik.anc which 
+In a fitted ace object, there is an element called lik.anc which 
 	records the probability of ancestral states at each node of the 
 	tree. Plot a dataset of your choice with pie charts displaying
 	the ancestral state probabilities associated with models that 
