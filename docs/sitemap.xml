@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>example.com/topics/sse_models/fit_bisse.html</loc>
+    <lastmod>2025-09-23T00:34:33.502Z</lastmod>
+  </url>
+  <url>
     <loc>example.com/topics/sse_models/sim_sse.html</loc>
     <lastmod>2025-09-22T23:51:05.638Z</lastmod>
   </url>
@@ -18,7 +22,7 @@
   </url>
   <url>
     <loc>example.com/index.html</loc>
-    <lastmod>2025-09-23T00:44:33.701Z</lastmod>
+    <lastmod>2025-09-23T00:47:23.590Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/character_mapping/stochastic_mapping.html</loc>
@@ -31,10 +35,6 @@
   <url>
     <loc>example.com/topics/sse_models/fit_bd.html</loc>
     <lastmod>2025-09-23T00:19:35.137Z</lastmod>
-  </url>
-  <url>
-    <loc>example.com/topics/sse_models/fit_bisse.html</loc>
-    <lastmod>2025-09-23T00:34:33.502Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/sse_models/asr_bisse.html</loc>
