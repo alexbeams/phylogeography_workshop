@@ -6,7 +6,7 @@
   </url>
   <url>
     <loc>example.com/topics/ancestral_character_estimation/ace_sims.html</loc>
-    <lastmod>2025-09-22T22:26:38.682Z</lastmod>
+    <lastmod>2025-09-23T00:15:21.109Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/character_mapping/fit_stochastic_mapping.html</loc>
@@ -18,7 +18,7 @@
   </url>
   <url>
     <loc>example.com/index.html</loc>
-    <lastmod>2025-09-22T23:50:11.163Z</lastmod>
+    <lastmod>2025-09-23T00:44:33.701Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/character_mapping/stochastic_mapping.html</loc>
@@ -30,6 +30,14 @@
   </url>
   <url>
     <loc>example.com/topics/sse_models/fit_bd.html</loc>
-    <lastmod>2025-09-22T23:51:52.090Z</lastmod>
+    <lastmod>2025-09-23T00:19:35.137Z</lastmod>
+  </url>
+  <url>
+    <loc>example.com/topics/sse_models/fit_bisse.html</loc>
+    <lastmod>2025-09-23T00:34:33.502Z</lastmod>
+  </url>
+  <url>
+    <loc>example.com/topics/sse_models/asr_bisse.html</loc>
+    <lastmod>2025-09-23T00:45:06.539Z</lastmod>
   </url>
 </urlset>

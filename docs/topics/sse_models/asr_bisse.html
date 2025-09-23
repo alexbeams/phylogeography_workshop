@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>ace_sims – Template Workshop</title>
+<title>asr_bisse – Template Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -177,170 +177,72 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="fitting-and-simulating-markov-models-on-trees-using-ancestral-character-estimation-ace" class="level1">
-<h1>Fitting and simulating Markov models on trees using ancestral character estimation (ace)</h1>
+<section id="ancestral-state-reconstructions-using-bisse" class="level1">
+<h1>Ancestral state reconstructions using BiSSE</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(expm) <span class="co"># matrix exponential</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: Matrix</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(diversitree)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phytools)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'expm'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:Matrix':
-
-    expm</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:ape':
-
-    balance</code></pre>
-</div>
-</div>
-<p>This code simulates output from the ace function. We will first try to grasp how the model behaves before we we try fitting it to data.</p>
-<p>Ancestral character estimation methods can be based on a variety of approaches, but we will consider Markov chains superimposed on phylogenies. In the accompanying code to this we will learn how to fit these models using Maximum Likelihood, but for now we focus on simulating Markov chains on trees to understand how the models work.</p>
-<p>First, let’s simulate a tree and some tip states:</p>
+<p>The previous problem sets have illustrated the behavior of trees simulated from these models, some of their statistical behaviors, and now all that remains is to use fitted models to accomplish the goals of phylogeography, i.e.&nbsp;ancestral character estimation.</p>
+<p>Note: for most BiSSE users, the primary goal seems not to be ancestral reconstruction per se, but inferring relationships between states and diversification/extinction rates. As such, the documentation and support for the reconstruction methods that use BiSSE is more sparse than for ace or simmap.</p>
+<p>Let’s start by simulating a tree and fit the model to it. We will then infer ancestral states and compare these with the known values from the simulation itself.</p>
+<p>Simulate a BiSSE tree here:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">rcoal</span>(<span class="dv">10</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">size=</span><span class="dv">10</span>, <span class="at">replace=</span>T)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tiplabels</span>(<span class="at">pch=</span><span class="dv">21</span>,<span class="at">bg=</span>x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="ace_sims_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">lambda0=</span><span class="dv">1</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">lambda1=</span><span class="dv">3</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">mu0=</span><span class="fl">0.1</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">mu1=</span><span class="fl">0.1</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">q01=</span><span class="fl">0.1</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">q10=</span><span class="fl">0.12</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">tree.bisse</span>(pars, <span class="at">max.taxa=</span><span class="dv">100</span>, <span class="at">x0=</span><span class="dv">0</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">history.from.sim.discrete</span>(tree, <span class="at">states=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)),</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    tree, <span class="at">col=</span><span class="fu">c</span>(<span class="st">'0'</span><span class="ot">=</span><span class="st">'black'</span>,<span class="st">'1'</span><span class="ot">=</span><span class="st">'red'</span>)) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ARD'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in sqrt(diag(solve(h))): NaNs produced</code></pre>
-</div>
-</div>
-</section>
-<section id="exercise-1" class="level1">
-<h1>Exercise 1</h1>
-<p>Navigate through the ace help pages to determine whether Qij corresponds to the transition rate from state i-&gt; j or from state j -&gt; i. Based on your answer, does the Master equation for the Markov process use column or row vectors? Then, define a generator matrix, Q, in terms of the rates estimated just above (replacing the following line):</p>
+<p>The make.bisse function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>),<span class="at">ncol=</span><span class="dv">2</span>) </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>Q <span class="ot">&lt;-</span> Q<span class="sc">/</span><span class="dv">10</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>getP <span class="ot">&lt;-</span> <span class="cf">function</span>(t,Q){</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    P <span class="ot">&lt;-</span> <span class="fu">expm</span>(Q<span class="sc">*</span>t)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(P)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Now, we will start at the root of the tree and simulate states at the internal nodes and at the tips of the tree. (The ape package does not have a function to easily do this for us, but it is good exercise to practice it ourselves).</p>
-<p>First, let’s create a vector to store all of the states we simulate:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>states_vec <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>,(tree<span class="sc">$</span>Nnode <span class="sc">+</span> <span class="fu">length</span>(tree<span class="sc">$</span>tip.label)))</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(states_vec) <span class="ot">&lt;-</span> <span class="fu">c</span>(tree<span class="sc">$</span>tip.label, <span class="fu">paste0</span>(<span class="st">"node"</span>, <span class="dv">1</span><span class="sc">:</span>tree<span class="sc">$</span>Nnode))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Let’s just work with binary states for now:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>state_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'blue'</span>,<span class="st">'red'</span>) <span class="co">#for plotting</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Let’s assign a condition at the root; could be probabilities generally, but let’s say it starts in the first state with certainty for now:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pi_root <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Let’s start with the root state:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>root <span class="ot">&lt;-</span> <span class="fu">length</span>(tree<span class="sc">$</span>tip.label) <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>states_vec[root] <span class="ot">&lt;-</span> <span class="fu">sample</span>(states, <span class="dv">1</span>, <span class="at">prob =</span> pi_root)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Let’s plot this as we go:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>tip_states <span class="ot">&lt;-</span> states_vec[tree<span class="sc">$</span>tip.label]</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tiplabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[tip_states], <span class="at">cex=</span><span class="dv">2</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>node_states <span class="ot">&lt;-</span> states_vec[<span class="fu">paste0</span>(<span class="st">"node"</span>, <span class="dv">1</span><span class="sc">:</span>tree<span class="sc">$</span>Nnode)] </span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">nodelabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[node_states], <span class="at">cex=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="ace_sims_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>We will do a preorder traversal, which starts at the root and descends down the tree to the tips:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>preorder <span class="ot">&lt;-</span> <span class="fu">rev</span>(<span class="fu">postorder</span>(tree))  <span class="co"># parent before children</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>The list of all of the edges of the tree is located in tree$edge:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> tree<span class="sc">$</span>edge</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Each row is an edge. The first column represents the parent, the second represents the descendant.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(edges) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'parent'</span>,<span class="st">'descendant'</span>)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(edges) <span class="co"># to use the handy $ command for columns</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>The entry in</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>tree<span class="sc">$</span>edge.length</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>is a vector of lengths for each of the edges; it corresponds to the same edges in tree$edge:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>edge.lengths <span class="ot">&lt;-</span> tree<span class="sc">$</span>edge.length</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>we start with the initial state at the root and use the Markov chain to sample subsequent states:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>edges<span class="sc">$</span>parentstate <span class="ot">&lt;-</span> states_vec[edges<span class="sc">$</span>parent]</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>edges<span class="sc">$</span>nextstate <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>edges<span class="sc">$</span>lengths <span class="ot">&lt;-</span> edge.lengths</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(edges)){</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    parent_state <span class="ot">&lt;-</span> <span class="cf">if</span>(edges[i,<span class="st">'parentstate'</span>]<span class="sc">==</span><span class="dv">1</span>){<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>)}<span class="cf">else</span>{<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)}</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    prob <span class="ot">=</span> <span class="fu">getP</span>(edges<span class="sc">$</span>lengths[i],Q) <span class="sc">%*%</span> parent_state</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    next_state <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">size=</span><span class="dv">1</span>, <span class="at">prob=</span><span class="fu">c</span>(prob))</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    new_parent <span class="ot">&lt;-</span> edges[i, <span class="st">'descendant'</span>]</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    edges[i,<span class="st">'nextstate'</span>] <span class="ot">&lt;-</span> next_state  </span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    edges[edges<span class="sc">$</span>parent<span class="sc">==</span>new_parent, <span class="st">'parentstate'</span>] <span class="ot">&lt;-</span> next_state</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Now fill in states_vec:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>states_vec[edges<span class="sc">$</span>parent] <span class="ot">&lt;-</span> edges<span class="sc">$</span>parentstate</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>states_vec[edges<span class="sc">$</span>descendant] <span class="ot">&lt;-</span> edges<span class="sc">$</span>nextstate</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Let’s plot this:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>tip_states <span class="ot">&lt;-</span> states_vec[tree<span class="sc">$</span>tip.label]</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tiplabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[tip_states], <span class="at">cex=</span><span class="dv">2</span>)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>node_states <span class="ot">&lt;-</span> states_vec[<span class="fu">paste0</span>(<span class="st">"node"</span>, <span class="dv">1</span><span class="sc">:</span>tree<span class="sc">$</span>Nnode)] </span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">nodelabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[node_states], <span class="at">cex=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="ace_sims_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>loglik <span class="ot">&lt;-</span> <span class="fu">make.bisse</span>(tree, tree<span class="sc">$</span>tip.state)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>loglikc <span class="ot">&lt;-</span> <span class="fu">constrain</span>(loglik, lambda0<span class="sc">~</span>lambda1)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># What are the MLEs?</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>mles <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglik, pars)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>mlesc <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglikc, pars[<span class="sc">-</span><span class="dv">2</span>])</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># these are the parmeter values that this infers: </span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>mlepars <span class="ot">&lt;-</span> mles<span class="sc">$</span>par</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># We use the "marginal" reconstruction, which should be similar</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># to the type of calculation used by ace:</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>asr_marginal <span class="ot">&lt;-</span> <span class="fu">asr.marginal</span>(loglik, mlepars)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree, <span class="at">show.tip.label=</span>F)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="fu">nodelabels</span>(<span class="at">pie=</span><span class="fu">t</span>(asr_marginal), <span class="at">piecol=</span><span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"red"</span>), <span class="at">cex=</span><span class="fl">0.7</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>tip_matrix <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span><span class="sc">-</span>tree<span class="sc">$</span>tip.state, tree<span class="sc">$</span>tip.state)  <span class="co"># Convert to probabilities </span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="fu">tiplabels</span>(<span class="at">pie=</span>tip_matrix, <span class="at">piecol=</span><span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"red"</span>), <span class="at">cex=</span><span class="fl">0.7</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="exercises" class="level1">
-<h1>Exercises</h1>
+<h1>Exercises:</h1>
 <section id="section" class="level2">
 <h2 class="anchored" data-anchor-id="section">1.</h2>
-<p>Simulate some tip states on a tree using a Markov model that you specify, and use ace to estimate it. Scale this up for a large number of tip state configurations to see how the distribution of Maximum Likelihood estimates for the Markov model rates compare with the true values you supplied. Are there particular combinations of branch lengths and rates that make it difficult to estimate model parameters?</p>
-</section>
-<section id="hard" class="level2">
-<h2 class="anchored" data-anchor-id="hard">2. (Hard)</h2>
-<p>Modify the code above to condition on a particular tip state configuration. This way, we can observe distributions of evolutionary scenarios consistent with a particular set of observations.</p>
+<p>Simulate a collection of BiSSE trees (n=30) and use asr_marginal to reconstruct ancestral states. For the same set of trees, use ace as well, and compare the reconstructions to each other. Is it obvious that marginal reconstruction with the BiSSE model out- performs the simpler Markov models in ace? Are there different combinations of parameters where that is the case? What if you use trees with more taxa (say, n=100 or n=500?)</p>
 </section>
 <section id="section-1" class="level2">
-<h2 class="anchored" data-anchor-id="section-1">3.</h2>
-<p>In a fitted ace object, there is an elemet called lik.anc which records the probability of ancestral states at each node of the tree. Plot a dataset of your choice with pie charts displaying the ancestral state probabilities associated with models that you fit using ace. Navigate through the help pages (?ace) to specify a few different versions of models that impose constraints on the Markov generator, Q. How sensitive are ancestral state probabilities to your modeling choices?</p>
+<h2 class="anchored" data-anchor-id="section-1">2.</h2>
+<p>In your simulations, do you notice particular situations where reconstructions tend to be inaccurate (when does BiSSE get “tricked”)? Are there particular configurations of tip data that present challenges for the BiSSE model?</p>
+</section>
+<section id="section-2" class="level2">
+<h2 class="anchored" data-anchor-id="section-2">3.</h2>
+<p>Set diversification rates in both states equal to each other when simulating yout trees, and likewise for the extinction rates. Compare models that impose constraints to reduce the number of parameters to estimate with models that impose no constraints, and explore the accuracy of reconstructions in each case. How sensitive are reconstructions to the parametric constraints you impose?</p>
+</section>
+<section id="section-3" class="level2">
+<h2 class="anchored" data-anchor-id="section-3">4.</h2>
+<p>Use one of the example datasets of your choice, and carry out ancestral state reconstructions using BiSSE, comparing to results from either ace or simmap.</p>
 
 
 </section>

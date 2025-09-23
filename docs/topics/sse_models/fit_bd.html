@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -144,257 +179,129 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="estimating-parameters-of-basic-birth-death-models" class="level1">
 <h1>Estimating parameters of basic birth-death models</h1>
-<p>rm(list=ls())</p>
-</section>
-<section id="now-that-we-have-some-familiarity-with-the-behavior-of-the-birth-death" class="level1">
-<h1>Now that we have some familiarity with the behavior of the birth-death</h1>
-</section>
-<section id="model-we-will-try-to-use-the-model-for-parameter-inference" class="level1">
-<h1>model, we will try to use the model for parameter inference,</h1>
-</section>
-<section id="i.e.-model-fitting." class="level1">
-<h1>i.e.&nbsp;model fitting.</h1>
-</section>
-<section id="model-fitting-just-consists-of-selecting-parameters-of-the-model-so" class="level1">
-<h1>Model fitting just consists of selecting parameters of the model so</h1>
-</section>
-<section id="that-the-simulated-outputs-match-our-data-as-closely-as-possible." class="level1">
-<h1>that the simulated outputs match our data as closely as possible.</h1>
-</section>
-<section id="the-dumbest-way-imaginable-is-to-use-the-eyeball-test.-the-most" class="level1">
-<h1>The dumbest way imaginable is to use the “eyeball test”. The most</h1>
-</section>
-<section id="sophisticated-approach-is-to-use-likelihoods.-methods-like-synthetic" class="level1">
-<h1>sophisticated approach is to use likelihoods. Methods like synthetic</h1>
-</section>
-<section id="likelihood-and-approximate-bayesian-computations-abc-fall-somewhere" class="level1">
-<h1>likelihood and approximate Bayesian computations (ABC) fall somewhere</h1>
-</section>
-<section id="in-between." class="level1">
-<h1>in between.</h1>
-</section>
-<section id="for-this-set-of-examples-and-exercises-we-will-just-adopt-a-frequentist" class="level1">
-<h1>For this set of examples and exercises, we will just adopt a frequentist</h1>
-</section>
-<section id="approach-to-statistical-inference." class="level1">
-<h1>approach to statistical inference.</h1>
-</section>
-<section id="the-diversitree-package-has-a-convenient-class-of-functions-that-can-be" class="level1">
-<h1>The diversitree package has a convenient class of functions that can be</h1>
-</section>
-<section id="used-to-define-likelihood-functions-for-different-models.-we-will" class="level1">
-<h1>used to define likelihood functions for different models. We will</h1>
-</section>
-<section id="start-with-the-simplest-case---the-birth-death-model." class="level1">
-<h1>start with the simplest case - the birth death model.</h1>
-</section>
-<section id="example-1-benchmarking-from-simulations" class="level1">
-<h1>Example 1: Benchmarking from simulations</h1>
-</section>
-<section id="simulate-a-list-of-bd-trees-here" class="level1">
-<h1>simulate a list of bd trees here</h1>
-<p>tree &lt;- tree.bd(c(lambda=5,mu=0), max.taxa = 20)</p>
-<p>loglik &lt;- make.bd(tree)</p>
-</section>
-<section id="the-make.bd-function-is-a-scalar-function-of-two-variables" class="level1">
-<h1>the make.bd function is a scalar function of two variables</h1>
-</section>
-<section id="of-the-form-loglik-loglikclambdamu" class="level1">
-<h1>of the form loglik = loglik(c(lambda,mu))</h1>
-</section>
-<section id="lets-visualize-the-likelihood-surface-one-parameter-at-a-time" class="level1">
-<h1>Let’s visualize the likelihood surface one parameter at a time</h1>
-</section>
-<section id="holding-the-other-parameter-at-the-true-value" class="level1">
-<h1>(holding the other parameter at the true value):</h1>
-<p>loglik_lambda &lt;- function(lambda) loglik(c(lambda,0)) loglik_mu &lt;- function(mu) loglik(c(1,mu))</p>
-<p>lambdavals &lt;- exp( seq(-3,3,length=30)) muvals &lt;- exp( seq(-6,2,length=30)) loglik_lambda_vals &lt;- sapply(lambdavals, loglik_lambda) loglik_mu_vals &lt;- sapply(muvals, loglik_mu)</p>
-<p>loglik_max &lt;- max(c(loglik_lambda_vals, loglik_mu_vals))</p>
-<p>par(mfrow=c(2,1)) plot(lambdavals, loglik_lambda_vals, ylim=c(loglik_max-10,loglik_max+2)) plot(muvals, loglik_mu_vals, ylim=c(loglik_max-10,loglik_max+2))</p>
-</section>
-<section id="the-maximum-of-the-log-likelihood-function-roughly-coincides-with-the" class="level1">
-<h1>The maximum of the log-likelihood function roughly coincides with the</h1>
-</section>
-<section id="parameters-we-used.-how-variable-is-this-lets-simulate-more" class="level1">
-<h1>parameters we used. How variable is this? Let’s simulate more</h1>
-</section>
-<section id="trees" class="level1">
-<h1>trees:</h1>
-<p>treelist &lt;- trees(c(lambda=5,mu=0), type=c(“bd”), n=100, max.taxa=20)</p>
-</section>
-<section id="make-a-log-likelihood-function-for-each-tree" class="level1">
-<h1>make a log-likelihood function for each tree:</h1>
-<p>logliklist &lt;- lapply(treelist, make.bd )</p>
-<p>loglik_lambda_list &lt;- lapply(logliklist, function(x){ function(lambda) x(c(lambda,0)) })</p>
-<p>loglik_mu_list &lt;- lapply(logliklist, function(x){ function(mu) x(c(mu,0)) })</p>
-<p>lambdavals &lt;- exp( seq(-2,2,length=30)) muvals &lt;- exp( seq(-6,2,length=30))</p>
-<p>loglik_lambda_list_vals &lt;- sapply(loglik_lambda_list, function(x){sapply(lambdavals, x)})</p>
-<p>loglik_mu_list_vals &lt;- sapply(loglik_mu_list, function(x){sapply(muvals, x)})</p>
-<p>loglik_max &lt;- max(c(loglik_lambda_list_vals,loglik_mu_list_vals)) loglik_min &lt;- min(c(loglik_lambda_list_vals,loglik_mu_list_vals))</p>
-<p>par(mfrow=c(2,1)) plot(lambdavals, loglik_lambda_list_vals[,1]/abs(max(loglik_lambda_list_vals[,1]))) for(i in 2:100){ lines(lambdavals, loglik_lambda_list_vals[,i]/abs(max(loglik_lambda_list_vals[,i]))) }</p>
-<p>plot(muvals, loglik_mu_list_vals[,1]/abs(max(loglik_mu_list_vals[,1]))) for(i in 2:100){ lines(muvals, loglik_mu_list_vals[,i]/abs(max(loglik_mu_list_vals[,i]))) }</p>
-</section>
-<section id="so-most-of-these-have-a-maximum-in-the-vicinity-of-the-true-parameter-values-that-we" class="level1">
-<h1>So, most of these have a maximum in the vicinity of the true parameter values that we</h1>
-</section>
-<section id="suppied-but-not-all." class="level1">
-<h1>suppied, but not all.</h1>
-</section>
-<section id="the-maximum-likelihood-estimates-are-the-values-of-lambdamu-where-the-likelihood-function-is" class="level1">
-<h1>The “Maximum Likelihood Estimates” are the values of (lambda,mu) where the likelihood function is</h1>
-</section>
-<section id="maximized.-what-does-the-distribution-of-mles-look-like-for-this-set-of-trees" class="level1">
-<h1>maximized. What does the distribution of MLEs look like for this set of trees?</h1>
-<p>mles &lt;- lapply(logliklist, function(x){find.mle(x, c(1,0), method=‘subplex’)})</p>
-<p>mles_pars &lt;- t(sapply(mles, function(x) x$par))</p>
-<p>par(mfrow=c(1,2)) hist(mles_pars[,1],main=’‘, xlab=bquote(hat(lambda))) hist(mles_pars[,2],main=’’, xlab=bquote(hat(mu)))</p>
-</section>
-<section id="remember-that-the-true-value-of-mu-we-used-was-mu0.-a-lot-of-the-models-suggest-values-of" class="level1">
-<h1>Remember that the true value of mu we used was mu=0. A lot of the models suggest values of</h1>
-</section>
-<section id="mu-0-which-is-interesting.-this-tells-us-that-in-practice-we-will-probably-not" class="level1">
-<h1>mu &gt; 0, which is interesting. This tells us that, in practice, we will probably not</h1>
-</section>
-<section id="be-able-to-reliably-estimate-mu-when-it-is-close-to-zero-but-positive." class="level1">
-<h1>be able to reliably estimate mu when it is close to zero but positive.</h1>
-</section>
-<section id="we-can-frame-a-hypothesis-test.-null-hypothesis-mu0.-alternative-hypothesis-mu-0." class="level1">
-<h1>We can frame a hypothesis test. Null hypothesis: mu=0. Alternative hypothesis: mu &gt; 0.</h1>
-</section>
-<section id="supposing-we-wish-to-keep-false-positives-at-5-or-less-we-could-propose-the-statistical" class="level1">
-<h1>Supposing we wish to keep false-positives at 5% or less, we could propose the statistical</h1>
-</section>
-<section id="test-that-we-reject-the-null-hypothesis-if-our-estimate-of-mu-is-at-the-95-th-percentile-or-greater" class="level1">
-<h1>test that we reject the null hypothesis if our estimate of mu is at the 95-th percentile or greater</h1>
-</section>
-<section id="of-this-null-distribution.-in-our-case-this-critical-value-of-mu-would-be-approximately" class="level1">
-<h1>of this “null” distribution. In our case, this critical value of mu would be approximately</h1>
-<p>mu_critical &lt;- quantile(mles_pars[,‘mu’], 0.95)</p>
-</section>
-<section id="so-in-the-future-if-we-estimate-a-value-of-mu-greater-than-mu_critical-and-we-say-this-appears" class="level1">
-<h1>So in the future, if we estimate a value of mu greater than mu_critical, and we say “this appears</h1>
-</section>
-<section id="significantly-different-from-zero-therefore-we-reject-the-null-hypothesis-we-will-be-making-a" class="level1">
-<h1>significantly different from zero, therefore we reject the null hypothesis”, we will be making a</h1>
-</section>
-<section id="type-1-error-false-positive-less-than-5-of-the-time.-a-120-chance-of-a-mistake-is-reasonable" class="level1">
-<h1>type 1 error (“false-positive”) less than 5% of the time. A 1/20 chance of a mistake is reasonable</h1>
-</section>
-<section id="in-some-circumstances-but-less-so-in-others." class="level1">
-<h1>in some circumstances, but less so in others.</h1>
-<section id="section" class="level14">
-<p class="heading"></p>
+<p>Now that we have some familiarity with the behavior of the birth-death model, we will try to use the model for parameter inference, i.e.&nbsp;model fitting.</p>
+<p>Model fitting just consists of selecting parameters of the model so that the simulated outputs match our data as closely as possible. The dumbest way imaginable is to use the “eyeball test”. A more sophisticated approach is to use likelihoods.</p>
+<p>The diversitree package has a convenient class of functions that can be used to define likelihood functions for different models. We will start with the simplest case - the birth death model.</p>
+<section id="example-1-benchmarking-from-simulations" class="level2">
+<h2 class="anchored" data-anchor-id="example-1-benchmarking-from-simulations">Example 1: Benchmarking from simulations</h2>
+<p>Simulate a list of bd trees here</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">5</span>,<span class="at">mu=</span><span class="dv">0</span>), <span class="at">max.taxa =</span> <span class="dv">20</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>loglik <span class="ot">&lt;-</span> <span class="fu">make.bd</span>(tree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The make.bd function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))</p>
+<p>Let’s visualize the likelihood surface one parameter at a time (holding the other parameter at the true value):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>loglik_lambda <span class="ot">&lt;-</span> <span class="cf">function</span>(lambda) <span class="fu">loglik</span>(<span class="fu">c</span>(lambda,<span class="dv">0</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>loglik_mu <span class="ot">&lt;-</span> <span class="cf">function</span>(mu) <span class="fu">loglik</span>(<span class="fu">c</span>(<span class="dv">1</span>,mu))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>lambdavals <span class="ot">&lt;-</span> <span class="fu">exp</span>( <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">3</span>,<span class="dv">3</span>,<span class="at">length=</span><span class="dv">30</span>))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>muvals <span class="ot">&lt;-</span> <span class="fu">exp</span>( <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">6</span>,<span class="dv">2</span>,<span class="at">length=</span><span class="dv">30</span>))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>loglik_lambda_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(lambdavals, loglik_lambda)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>loglik_mu_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(muvals, loglik_mu)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>loglik_max <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">c</span>(loglik_lambda_vals, loglik_mu_vals))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lambdavals, loglik_lambda_vals, <span class="at">ylim=</span><span class="fu">c</span>(loglik_max<span class="dv">-10</span>,loglik_max<span class="sc">+</span><span class="dv">2</span>))</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(muvals, loglik_mu_vals, <span class="at">ylim=</span><span class="fu">c</span>(loglik_max<span class="dv">-10</span>,loglik_max<span class="sc">+</span><span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The maximum of the log-likelihood function roughly coincides with the parameters we used. How variable is this? Let’s simulate more trees:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>treelist <span class="ot">&lt;-</span> <span class="fu">trees</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">5</span>,<span class="at">mu=</span><span class="dv">0</span>), </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">type=</span><span class="fu">c</span>(<span class="st">"bd"</span>), <span class="at">n=</span><span class="dv">100</span>, </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">max.taxa=</span><span class="dv">20</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># make a log-likelihood function for each tree:</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>logliklist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(treelist, make.bd )</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>loglik_lambda_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(logliklist, <span class="cf">function</span>(x){</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(lambda) <span class="fu">x</span>(<span class="fu">c</span>(lambda,<span class="dv">0</span>))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>loglik_mu_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(logliklist, <span class="cf">function</span>(x){</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(mu) <span class="fu">x</span>(<span class="fu">c</span>(mu,<span class="dv">0</span>))</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>lambdavals <span class="ot">&lt;-</span> <span class="fu">exp</span>( <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>,<span class="at">length=</span><span class="dv">30</span>))</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>muvals <span class="ot">&lt;-</span> <span class="fu">exp</span>( <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">6</span>,<span class="dv">2</span>,<span class="at">length=</span><span class="dv">30</span>))</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>loglik_lambda_list_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(loglik_lambda_list,</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">function</span>(x){<span class="fu">sapply</span>(lambdavals, x)})</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>loglik_mu_list_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(loglik_mu_list,</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">function</span>(x){<span class="fu">sapply</span>(muvals, x)})</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>loglik_max <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">c</span>(loglik_lambda_list_vals,loglik_mu_list_vals))</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>loglik_min <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">c</span>(loglik_lambda_list_vals,loglik_mu_list_vals))</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lambdavals, loglik_lambda_list_vals[,<span class="dv">1</span>]<span class="sc">/</span><span class="fu">abs</span>(<span class="fu">max</span>(loglik_lambda_list_vals[,<span class="dv">1</span>])))</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">100</span>){</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lines</span>(lambdavals, loglik_lambda_list_vals[,i]<span class="sc">/</span><span class="fu">abs</span>(<span class="fu">max</span>(loglik_lambda_list_vals[,i])))</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(muvals, loglik_mu_list_vals[,<span class="dv">1</span>]<span class="sc">/</span><span class="fu">abs</span>(<span class="fu">max</span>(loglik_mu_list_vals[,<span class="dv">1</span>])))</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">100</span>){</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lines</span>(muvals, loglik_mu_list_vals[,i]<span class="sc">/</span><span class="fu">abs</span>(<span class="fu">max</span>(loglik_mu_list_vals[,i])))</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>So, most of these have a maximum in the vicinity of the true parameter values that we suppied, but not all.</p>
+<p>The “Maximum Likelihood Estimates” are the values of (lambda,mu) where the likelihood function is maximized. What does the distribution of MLEs look like for this set of trees?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mles <span class="ot">&lt;-</span> <span class="fu">lapply</span>(logliklist, <span class="cf">function</span>(x){<span class="fu">find.mle</span>(x, <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), <span class="at">method=</span><span class="st">'subplex'</span>)})</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>mles_pars <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(mles, <span class="cf">function</span>(x) x<span class="sc">$</span>par))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mles_pars[,<span class="dv">1</span>],<span class="at">main=</span><span class="st">''</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(<span class="fu">hat</span>(lambda)))</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mles_pars[,<span class="dv">2</span>],<span class="at">main=</span><span class="st">''</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(<span class="fu">hat</span>(mu)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Remember that the true value of mu we used was mu=0. A lot of the models suggest values of mu &gt; 0, which is interesting. This tells us that, in practice, we will probably not be able to reliably estimate mu when it is close to zero but positive.</p>
+<p>We can frame a hypothesis test. Null hypothesis: mu=0. Alternative hypothesis: mu &gt; 0. Supposing we wish to keep false-positives at 5% or less, we could propose the statistical test that we reject the null hypothesis if our estimate of mu is at the 95-th percentile or greater of this “null” distribution. In our case, this critical value of mu would be approximately</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mu_critical <span class="ot">&lt;-</span> <span class="fu">quantile</span>(mles_pars[,<span class="st">'mu'</span>], <span class="fl">0.95</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>So in the future, if we estimate a value of mu greater than mu_critical, and we say “this appears significantly different from zero, therefore we reject the null hypothesis”, we will be making a type 1 error (“false-positive”) less than 5% of the time. A 1/20 chance of a mistake is reasonable in some circumstances, but less so in others.</p>
 </section>
 </section>
 <section id="exercises" class="level1">
 <h1>Exercises:</h1>
-<section id="section-1" class="level14">
-<p class="heading"></p>
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section">1.</h2>
+<p>Suppose we want a more stringent statistical test for the previous example. What is the critical value of mu corresponding to a 1% chance of comitting a Type 1 error?</p>
 </section>
+<section id="section-1" class="level2">
+<h2 class="anchored" data-anchor-id="section-1">2.</h2>
+<p>Modify the previous example to see how things change for a different value of lambda. Try lambda = 5. Does the critical value of mu change?</p>
 </section>
-<section id="suppose-we-want-a-more-stringent-statistical-test-for-the-previous-example.-what-is-the-critical" class="level1">
-<h1>1. Suppose we want a more stringent statistical test for the previous example. What is the critical</h1>
+<section id="section-2" class="level2">
+<h2 class="anchored" data-anchor-id="section-2">3.</h2>
+<p>The Generalized Likelihood Ratio Test: another way to assess whether mu is significantly different from zero is to fit two versions of the log-Likelihood function: the one we already did, and a constrained version of the model with the constraint mu=0 hard-coded in (so that we just estimate lambda). The model with more parameters will always fit the data better, but it may not fit the data “that much” better. The GLT looks a log(ratio of likelihoods) = difference(log-Likelihoods) to produce a test statistic (also, rather annoyingly in this case, called lambda). Use constrain(loglik, mu ~ 0) to create the constrained log-likelihood functions, and fit them to obtain new estimates for lambda. Use Wikipedia, Google, or your favorite (work-safe) AI companion to help you formulate GLT test statistics and assess significant departues from the null hypothesis mu=0. Do the results of this statistical test match with those from earlier? If not, why not?<br>
+(Hint: the GLR also makes an asymptotic approximation. What is that approximation, and under what situations would it apply here?)</p>
 </section>
-<section id="value-of-mu-corresponding-to-a-1-chance-of-comitting-a-type-1-error" class="level1">
-<h1>value of mu corresponding to a 1% chance of comitting a Type 1 error?</h1>
+<section id="section-3" class="level2">
+<h2 class="anchored" data-anchor-id="section-3">4.</h2>
+<p>Consider a different null hypothesis: lambda &gt; mu. Develop a test statistic for this hypothesis, and identify critical values of your test statistic for 95% and 99% confidence regions. (Simulate large numbers of trees to obtain MLEs; don’t worry about GLR tests unless you want to).</p>
 </section>
-<section id="modify-the-previous-example-to-see-how-things-change-for-a-different-value-of-lambda.-try-lambda-5." class="level1">
-<h1>2. Modify the previous example to see how things change for a different value of lambda. Try lambda = 5.</h1>
+<section id="section-4" class="level2">
+<h2 class="anchored" data-anchor-id="section-4">5.</h2>
+<p>If your simulation produced trees with estimated values of lambda &lt; mu, plot these trees and comment on any features they exhibit that stand out to you. If your simulation did not produce trees with MLEs having lambda &lt; mu, simulate as necessary until you find some.</p>
 </section>
-<section id="does-the-critical-value-of-mu-change" class="level1">
-<h1>Does the critical value of mu change?</h1>
+<section id="section-5" class="level2">
+<h2 class="anchored" data-anchor-id="section-5">6.</h2>
+<p>The find.mle function uses a variety of numerical optimization algorithms to find MLEs. There is also a function called “mcmc”. Use this function with nsteps=1000 and w=c(2,1). Plot loglikelihood (“p”) against parameters to visualize profile log-likelihoods, and also plot lambda against mu. Comment on what you see, and discuss implications of correlations between lambda and mu. (Note: there are other mcmc routines besides this one in diversitree. If you have a favorit method, feel free to use it.)</p>
 </section>
-<section id="the-generalized-likelihood-ratio-test-another-way-to-assess-whether-mu-is-significantly-different-from" class="level1">
-<h1>3. The Generalized Likelihood Ratio Test: another way to assess whether mu is significantly different from</h1>
-</section>
-<section id="zero-is-to-fit-two-versions-of-the-log-likelihood-function-the-one-we-already-did-and-a-constrained" class="level1">
-<h1>zero is to fit two versions of the log-Likelihood function: the one we already did, and a constrained</h1>
-</section>
-<section id="version-of-the-model-with-the-constraint-mu0-hard-coded-in-so-that-we-just-estimate-lambda.-the" class="level1">
-<h1>version of the model with the constraint mu=0 hard-coded in (so that we just estimate lambda). The</h1>
-</section>
-<section id="model-with-more-parameters-will-always-fit-the-data-better-but-it-may-not-fit-the-data-that-much" class="level1">
-<h1>model with more parameters will always fit the data better, but it may not fit the data “that much”</h1>
-</section>
-<section id="better.-the-glt-looks-a-logratio-of-likelihoods-differencelog-likelihoods-to-produce-a-test" class="level1">
-<h1>better. The GLT looks a log(ratio of likelihoods) = difference(log-Likelihoods) to produce a test</h1>
-</section>
-<section id="statistic-also-rather-annoyingly-in-this-case-called-lambda.-use-constrainloglik-mu-0-to" class="level1">
-<h1>statistic (also, rather annoyingly in this case, called lambda). Use constrain(loglik, mu ~ 0) to</h1>
-</section>
-<section id="create-the-constrained-log-likelihood-functions-and-fit-them-to-obtain-new-estimates-for-lambda." class="level1">
-<h1>create the constrained log-likelihood functions, and fit them to obtain new estimates for lambda.</h1>
-</section>
-<section id="use-wikipedia-google-or-your-favorite-work-safe-ai-companion-to-help-you-formulate-glt-test" class="level1">
-<h1>Use Wikipedia, Google, or your favorite (work-safe) AI companion to help you formulate GLT test</h1>
-</section>
-<section id="statistics-and-assess-significant-departues-from-the-null-hypothesis-mu0.-do-the-results-of-this" class="level1">
-<h1>statistics and assess significant departues from the null hypothesis mu=0. Do the results of this</h1>
-</section>
-<section id="statistical-test-match-with-those-from-earlier-if-not-why-not" class="level1">
-<h1>statistical test match with those from earlier? If not, why not?</h1>
-</section>
-<section id="hint-the-glr-also-makes-an-asymptotic-approximation.-what-is-that-approximation-and-under" class="level1">
-<h1>(Hint: the GLR also makes an asymptotic approximation. What is that approximation, and under</h1>
-</section>
-<section id="what-situations-would-it-apply-here" class="level1">
-<h1>what situations would it apply here?)</h1>
-</section>
-<section id="consider-a-different-null-hypothesis-lambda-mu.-develop-a-test-statistic-for-this-hypothesis-and" class="level1">
-<h1>4. Consider a different null hypothesis: lambda &gt; mu. Develop a test statistic for this hypothesis, and</h1>
-</section>
-<section id="identify-critical-values-of-your-test-statistic-for-95-and-99-confidence-regions.-simulate-large" class="level1">
-<h1>identify critical values of your test statistic for 95% and 99% confidence regions. (Simulate large</h1>
-</section>
-<section id="numbers-of-trees-to-obtain-mles-dont-worry-about-glr-tests-unless-you-want-to." class="level1">
-<h1>numbers of trees to obtain MLEs; don’t worry about GLR tests unless you want to).</h1>
-</section>
-<section id="if-your-simulation-produced-trees-with-estimated-values-of-lambda-mu-plot-these-trees-and-comment" class="level1">
-<h1>5. If your simulation produced trees with estimated values of lambda &lt; mu, plot these trees and comment</h1>
-</section>
-<section id="on-any-features-they-exhibit-that-stand-out-to-you.-if-your-simulation-did-not-produce-trees-with" class="level1">
-<h1>on any features they exhibit that stand out to you. If your simulation did not produce trees with</h1>
-</section>
-<section id="mles-having-lambda-mu-simulate-as-necessary-until-you-find-some." class="level1">
-<h1>MLEs having lambda &lt; mu, simulate as necessary until you find some.</h1>
-</section>
-<section id="the-find.mle-function-uses-a-variety-of-numerical-optimization-algorithms-to-find-mles.-there-is-also-a" class="level1">
-<h1>6. The find.mle function uses a variety of numerical optimization algorithms to find MLEs. There is also a</h1>
-</section>
-<section id="function-called-mcmc.-use-this-function-with-nsteps1000-and-wc21.-plot-loglikelihood-p" class="level1">
-<h1>function called “mcmc”. Use this function with nsteps=1000 and w=c(2,1). Plot loglikelihood (“p”)</h1>
-</section>
-<section id="against-parameters-to-visualize-profile-log-likelihoods-and-also-plot-lambda-against-mu.-comment" class="level1">
-<h1>against parameters to visualize profile log-likelihoods, and also plot lambda against mu. Comment</h1>
-</section>
-<section id="on-what-you-see-and-discuss-implications-of-correlations-between-lambda-and-mu.-note-there-are" class="level1">
-<h1>on what you see, and discuss implications of correlations between lambda and mu. (Note: there are</h1>
-</section>
-<section id="other-mcmc-routines-besides-this-one-in-diversitree.-if-you-have-a-favorit-method-feel-free-to" class="level1">
-<h1>other mcmc routines besides this one in diversitree. If you have a favorit method, feel free to</h1>
-</section>
-<section id="use-it." class="level1">
-<h1>use it.)</h1>
-</section>
-<section id="the-previous-exercises-and-examples-used-the-max.taxa-argument-to-condition-on-trees-of-a-particular" class="level1">
-<h1>7. The previous exercises and examples used the max.taxa argument to condition on trees of a particular</h1>
-</section>
-<section id="size.-flip-a-coin-rbinom110.5.-if-it-comes-up-heads-1-change-max.taxa-to-a-different-number" class="level1">
-<h1>size. Flip a coin ( rbinom(1,1,0.5)). If it comes up heads (=1), change max.taxa to a different number</h1>
-</section>
-<section id="and-repeat-exercises-1-6.-if-it-comes-up-tails-0-replace-max.taxa-with-max.t-to-simulate-trees" class="level1">
-<h1>and repeat Exercises 1-6. If it comes up tails (=0), replace max.taxa with max.t to simulate trees</h1>
-</section>
-<section id="for-a-fixed-amount-of-time-with-variable-numbers-of-taxa-and-then-repeat-exercises-1-6.-caution" class="level1">
-<h1>for a fixed amount of time (with variable numbers of taxa), and then repeat Exercises 1-6. (Caution:</h1>
-</section>
-<section id="injudicious-choices-of-lambda-and-max.t-can-make-your-computer-explode.-ctrl-c-is-useful-on-mac" class="level1">
-<h1>injudicious choices of lambda and max.t can make your computer explode. Ctrl + c is useful (on Mac,</h1>
-</section>
-<section id="anyway-for-cancelling-calculations-in-the-terminal." class="level1">
-<h1>anyway) for cancelling calculations in the Terminal.)</h1>
+<section id="section-6" class="level2">
+<h2 class="anchored" data-anchor-id="section-6">7.</h2>
+<p>The previous exercises and examples used the max.taxa argument to condition on trees of a particular size. Flip a coin ( rbinom(1,1,0.5)). If it comes up heads (=1), change max.taxa to a different number and repeat Exercises 1-6. If it comes up tails (=0), replace max.taxa with max.t to simulate trees for a fixed amount of time (with variable numbers of taxa), and then repeat Exercises 1-6. (Caution: injudicious choices of lambda and max.t can make your computer explode. Ctrl + c is useful (on Mac, anyway) for cancelling calculations in the Terminal.)</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
