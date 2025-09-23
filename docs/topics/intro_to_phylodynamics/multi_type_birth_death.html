@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content=" This in-person workshop is offered and hosted by MAGPIE in the Department of Mathematics at Simon Fraser University.Register">
 
-<title>MAGPIE PhylogeogRaphy Workshop (with BEAST 2) – Template Workshop</title>
+<title>multi_type_birth_death – Template Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,27 +20,63 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./img/favicon.ico" rel="icon">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../img/favicon.ico" rel="icon">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -70,20 +105,49 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<link rel="stylesheet" href="css/styles.css">
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../css/styles.css">
 </head>
 
 <body class="nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="./index.html" class="navbar-brand navbar-brand-logo">
-    <img src="./img/coffee_can.png" alt="" class="navbar-logo light-content">
-    <img src="./img/coffee_can.png" alt="" class="navbar-logo dark-content">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../img/coffee_can.png" alt="" class="navbar-logo light-content">
+    <img src="../../img/coffee_can.png" alt="" class="navbar-logo dark-content">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -93,32 +157,32 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html"> <i class="bi bi-house" role="img">
+    <a class="nav-link" href="../../index.html"> <i class="bi bi-house" role="img">
 </i> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./monday.html"> <i class="bi bi-pie-chart" role="img">
+    <a class="nav-link" href="../../monday.html"> <i class="bi bi-pie-chart" role="img">
 </i> 
 <span class="menu-text">Monday: Discrete trait analysis I in R</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./wednesday.html"> <i class="bi bi-map" role="img">
+    <a class="nav-link" href="../../wednesday.html"> <i class="bi bi-map" role="img">
 </i> 
 <span class="menu-text">Wednesday: Discrete trait analysis II in R</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./thursday.html" aria-current="page"> <i class="bi bi-activity" role="img">
+    <a class="nav-link" href="../../thursday.html"> <i class="bi bi-activity" role="img">
 </i> 
 <span class="menu-text">Thursday: Pylodynamics I in R and BEAST2</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./friday.html"> <i class="bi bi-tree" role="img">
+    <a class="nav-link" href="../../friday.html"> <i class="bi bi-tree" role="img">
 </i> 
 <span class="menu-text">Friday: Phylodynamics II in BEAST2</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> <i class="bi bi-space-shuttle" role="img">
+    <a class="nav-link" href="../../about.html"> <i class="bi bi-space-shuttle" role="img">
 </i> 
 <span class="menu-text">About</span></a>
   </li>  
@@ -131,179 +195,64 @@ ul.task-list li input[type="checkbox"] {
     </nav>
 </header>
 <!-- content -->
-<header id="title-block-header" class="quarto-title-block default page-columns page-full">
-  <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-body">
-      <h1 class="title">MAGPIE PhylogeogRaphy Workshop (with BEAST 2)</h1>
-                  <div>
-        <div class="description">
-          <p><br>This in-person workshop is offered and hosted by <a href="https://www.sfu.ca/magpie.html">MAGPIE</a> in the Department of Mathematics at Simon Fraser University.</p>
-          <center>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSeOv8vuo_HdsrBvmoONwcjoCHNAPPXnRvYSXVJmDQBSgpsrJw/viewform?usp=dialog" class="btn btn-outline-primary">Register</a>
-          </center>
-        </div>
-      </div>
-                </div>
-  </div>
-    
-  
-  <div class="quarto-title-meta">
-
-      
-    
-      
-    </div>
-    
-  
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     
 <!-- main -->
-<main class="content quarto-banner-title-block" id="quarto-document-content">
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
 
 
 
+<section id="simulating-multi-type-birth-death-models-in-r" class="level1">
+<h1>Simulating Multi-type birth-death models in R</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(TreeSim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We will examine the multi-type birth death model without migration. Individuals in location i can give birth to individuals in any state j, but lineages do not move between locations otherwise.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>n<span class="ot">&lt;-</span><span class="dv">200</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">c</span>(.<span class="dv">05</span>,<span class="dv">1</span>),<span class="fu">c</span>(<span class="dv">1</span>,.<span class="dv">2</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>sampprob <span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.1</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>numbsim<span class="ot">&lt;-</span><span class="dv">1</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>trees<span class="ot">&lt;-</span><span class="fu">lapply</span>(<span class="fu">rep</span>(n,numbsim),sim.bdtypes.stt.taxa,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambdavector=</span>lambda,<span class="at">deathvector=</span>mu,<span class="at">sampprobvector=</span>sampprob)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> trees[[<span class="dv">1</span>]]</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree, <span class="at">show.tip.label=</span>F)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">tiplabels</span>(<span class="at">pch=</span><span class="dv">21</span>,<span class="at">bg=</span><span class="fu">c</span>(<span class="st">'blue'</span>,<span class="st">'red'</span>)[tree<span class="sc">$</span>states])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="exercises" class="level1">
+<h1>Exercises</h1>
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section">1.</h2>
+<p>Suppose that we want to use this as a model for phylogeography. The sim.bdtypes.stt.taxa function does not model migrations per se, but rather births from state i to state j. If migration events are rare relative to replication, then maybe this is a reasonable framework. Use ace(tree$state,tree) with any constraints on the Markov process’s Q matrix that you like, and plot the reconstructed ancestral states on the tree (unfortuantely, sim.bdtypes.stt.taxa does not give information about states along edges, or at internal nodes).</p>
+</section>
+<section id="section-1" class="level2">
+<h2 class="anchored" data-anchor-id="section-1">2.</h2>
+<p>If the matrix <span class="math inline">\(\Lambda\)</span> has large off-diagonal terms, what do you see in your simulated trees? Could this be used to model anything biologically interesting?</p>
+</section>
+<section id="section-2" class="level2">
+<h2 class="anchored" data-anchor-id="section-2">3.</h2>
+<p>If the matrix <span class="math inline">\(\Lambda\)</span> is diagonal-dominant but one of the <span class="math inline">\(\lambda_{ii}\)</span> is much larger than the rest, what do you notice about the simulated trees? Comment on the ability to estimate parameters of models in this case.</p>
 
-<p>Welcome to Day 3! The state-dependent speciation and extinction (SSE) models we learned about yesterday will position us to understand the basic phylodynamics models (multi-type birth death, strucutred coalescent) used in BEAST2.</p>
-<p>Review the <a href="./topics/requirements.html">Requirements</a> page to make sure you have everything installed for BEAST2.</p>
-<p>If you want to get the most out of the afternoon sessions, make sure you have craeted an account with the Digital Research Alliance of Canada <a href="https://ccdb.alliancecan.ca/security/login">https://ccdb.alliancecan.ca/security/login</a></p>
-<!-- ================= Day 3 ================= -->
-<div data-layout="[[12]]">
-<div class="date">
-<p>Thursday<br>[October 2, 2025]</p>
-</div>
-<div class="quarto-layout-panel" data-layout="[[10]]">
-<div class="quarto-layout-row">
-<div class="card mb-3 quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div class="card-body">
-<p><a href="pages/embedR.qmd" class="card-title stretched-link">Intro to Phylodynamics</a></p>
-<div class="text-muted">
-<p>Slides</p>
-</div>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="card mb-3 quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div class="card-body">
-<p><a href="./topics/intro_to_phylodynamics/multi_type_birth_death.html" class="card-title stretched-link">Basic phylodynamics Models in R/BEAST2</a></p>
-<div class="text-muted">
-<p>Practical session in R (or BEAST2)</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div data-layout="[[10]]">
-<div class="card mb-3">
-<div class="card-body">
-<p><a href="./beast2/intro/beast_intro.html" class="card-title stretched-link">Intro to BEAST2</a></p>
-<div class="text-muted">
-<p>Short description</p>
-</div>
-</div>
-</div>
-<div data-layout="[[10]]">
-<div class="card mb-3">
-<div class="card-body">
-<p><a href="./beast2/intro/beast_intro.html" class="card-title stretched-link">Basic BEAST2 runs</a></p>
-<div class="text-muted">
-<p>Practical session in BEAST2</p>
-</div>
-</div>
-</div>
-<div data-layout="[[10]]">
-<div class="card mb-3">
-<div class="card-body">
-<p><a href="./beast2/intro/beast_intro.html" class="card-title stretched-link">MTBD and/or Structured Coalescent BEAST2 runs</a></p>
-<div class="text-muted">
-<p>Practical session in BEAST2</p>
-</div>
-</div>
-</div>
-<div class="quarto-layout-panel" data-layout="[[10]]">
-<div class="quarto-layout-row">
-<div class="card mb-3 quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div class="card-body">
-<p><a href="./beast2/intro/beast_intro.html" class="card-title stretched-link">Setting up server runs</a></p>
-<div class="text-muted">
-<p>Practical session in BEAST2/remote server</p>
-</div>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<!--
-Can repeat for more days and sessions...
--->
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<!--
-<br><br>
-![](img/duck_coffee.png){fig-alt="front logo"}
--->
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<br>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<center>
-</center></div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-Hosted by:
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
 
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<p><br></p>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<center>
-</center></div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<img src="img/magpieLogo/lightBackground/transparentcircle_darktext.png" class="img-fluid" style="width:35.0%" alt="host logo">
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-
-</div>
-</div>
-<div class="quarto-layout-row">
-
-</div>
-<div class="quarto-layout-row">
-
-</div>
-</div>
-</div>
-</div>
-</div>
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
     const isCodeAnnotation = (el) => {
       for (const clz of el.classList) {
         if (clz.startsWith('code-annotation-')) {                     

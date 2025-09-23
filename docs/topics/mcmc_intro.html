@@ -444,7 +444,7 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>tailsample <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fl">1e6</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(tailsample <span class="sc">&gt;</span> <span class="dv">5</span>)<span class="sc">/</span><span class="fu">length</span>(tailsample)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0</code></pre>
+<pre><code>[1] 1e-06</code></pre>
 </div>
 </div>
 <p>I’m seeing that I usually get 0 or 1 value larger than 5, so that our Monte Carlo approximation to the tail probability is either 0 or 1e-6.</p>

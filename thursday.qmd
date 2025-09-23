@@ -37,7 +37,7 @@ Slides
 
 :::{.card .mb-3}
 :::{.card-body}
-[Basic phylodynamics Models in R/BEAST2](pages/embedPython.qmd){.card-title .stretched-link}
+[Basic phylodynamics Models in R/BEAST2](topics/intro_to_phylodynamics/multi_type_birth_death.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Practical session in R (or BEAST2)
