@@ -1,0 +1,41 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Template Workshop"
+  favicon: img/favicon.ico
+  repo-url: https://github.com/alexbeams/phylogeography_workshop
+  site-url: example.com
+  navbar:
+    logo: img/coffee_can.png
+    title: false
+    left:
+      - text: "Home"
+        href: index.qmd
+        icon: house
+      - text: "Monday: Discrete trait analysis I in R"
+        href: monday.qmd
+        icon: pie-chart
+      - text: "Wednesday: Discrete trait analysis II in R"
+        href: wednesday.qmd
+        icon: map
+      - text: "Thursday: Phylodynamics I in R and BEAST2"
+        href: thursday.qmd
+        icon: activity
+      - text: "Friday: Phylodynamics II in BEAST2"
+        href: friday.qmd
+        icon: tree
+      - text: "About"
+        href: about.qmd
+        icon: space-shuttle
+    tools:
+      - icon: github
+        href: https://github.com/alexbeams/phylogeography_workshop
+        target: _blank
+        aria-label: GitHub organization
+
+format:
+  html:
+    theme: cosmo
+    css: css/styles.css
