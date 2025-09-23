@@ -600,5 +600,40 @@
     "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
     "section": "2. (Hard, or maybe impossible)",
     "text": "2. (Hard, or maybe impossible)\nModify the code above to condition on a particular tip state configuration. This way, we can observe distributions of evolutionary scenarios consistent with a particular set of observations."
+  },
+  {
+    "objectID": "wednesday_preview.html",
+    "href": "wednesday_preview.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Whoops, it isn’t Day Two yet! Check back next week.\n\n\nHosted by:"
+  },
+  {
+    "objectID": "friday_preview.html",
+    "href": "friday_preview.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "… the workshop hasn’t even started! Check back later. \n\nHosted by:"
+  },
+  {
+    "objectID": "thursday_preview.html",
+    "href": "thursday_preview.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Wow, you’re really getting ahead of yourself – it’s not Day 3 yet! Check back next week.\n\n\nHosted by:"
+  },
+  {
+    "objectID": "friday_old.html",
+    "href": "friday_old.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Welcome to Day 4! We will start by analyzing output from BEAST2 before learning about more advanced functionality (like Bayesian stochastic search variable selection). We will finish by carrying out comparative analyses from discrete trait methods to see what we gain from more computationally intensive analyses in BEAST2.\n\n\n\nFriday[October 3, 2025]\n\n\n\n\nAnalyze overnight BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nAdvanced BEAST2 topics: BSSVS\n\nSlides\n\n\n\n\n\n\n\nBSSVS\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nComparing discrete trait analysis and phylodynamics\n\nPractical session in BEAST2/R\n\n\n\n\n\n\n\nClosing\n\nSlides/Group discussion\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
+  },
+  {
+    "objectID": "thursday_old.html",
+    "href": "thursday_old.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Welcome to Day 3! The state-dependent speciation and extinction (SSE) models we learned about yesterday will position us to understand the basic phylodynamics models (multi-type birth death, strucutred coalescent) used in BEAST2.\nReview the Requirements page to make sure you have everything installed for BEAST2.\nIf you want to get the most out of the afternoon sessions, make sure you have craeted an account with the Digital Research Alliance of Canada https://ccdb.alliancecan.ca/security/login\n\n\n\nThursday[October 2, 2025]\n\n\n\n\n\nIntro to Phylodynamics\n\nSlides\n\n\n\n\n\n\n\nBasic phylodynamics Models in R/BEAST2\n\nPractical session in R (or BEAST2)\n\n\n\n\n\n\n\n\n\nIntro to BEAST2\n\nShort description\n\n\n\n\n\n\nBasic BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\nMTBD and/or Structured Coalescent BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nSetting up server runs\n\nPractical session in BEAST2/remote server\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
   }
 ]
