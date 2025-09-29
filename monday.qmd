@@ -81,7 +81,6 @@ Practical session in R
 :::
 :::
 :::
-:::
 
 :::{.card .mb-3}
 :::{.card-body}
@@ -89,7 +88,6 @@ Practical session in R
 
 :::{.text-muted}
 R demo
-:::
 :::
 :::
 :::

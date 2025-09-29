@@ -1,0 +1,79 @@
+.instructor-img {
+	width: 150px;
+	height: 150px;
+	object-fit: cover;
+	border-radius: 50%;
+}
+
+/*.. cards */
+
+.card-body {
+  line-height: 1.4rem;
+  padding: 0.9rem 1rem 0.2rem 1rem;
+}
+
+.card-body2 {
+  flex: 1 1 auto;
+  -webkit-flex: 1 1 auto;
+  padding: 0.9rem 1rem 0.2rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1rem;
+}
+
+.card {
+  width: 100% !important;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+}
+
+.card:hover {
+  background-color: #e1e6ea;
+  a {
+    color: #000000;
+  }
+}
+
+.card-special {
+  width: 100% !important;
+  background-color: #962b2d;
+  color: #ffffff !important;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.175);
+  a {
+    color: #ffffff;
+  }
+}
+
+.card-special:hover {
+  background-color: #b5111b;
+}
+
+.card-title {
+  color: #404040;
+  font-size: 1.5rem;
+  line-height: 1.8rem;
+}
+
+.card-title2 {
+  color: #404040;
+  font-size: 1.2rem;
+  line-height: 1.7rem;
+  text-decoration: none !important;
+}
+
+.card-title-ws {
+  color: #404040;
+  font-size: 1rem;
+  line-height: 1.4rem;
+}
+
+.date {
+  color: #962b2d;
+  font-weight: 600;
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+
