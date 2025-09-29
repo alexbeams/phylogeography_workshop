@@ -38,7 +38,7 @@ Slides
 
 :::{.card .mb-3}
 :::{.card-body}
-[1030--1130: Working with phylogenetic trees in R](topics/ancestral_character_estimation/phylogenetics_intro.qmd){.card-title .stretched-link}
+[1030--1130: Intro to trees in R](topics/intro_to_workshop/intro_to_trees.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Practical session in R
@@ -85,10 +85,10 @@ Practical session in R
 
 :::{.card .mb-3}
 :::{.card-body}
-[1430--1530: Introduction to Stochastic character mapping](topics/character_mapping/stochastic_character_mapping.pdf){.card-title .stretched-link}
+[1430--1530: Introduction to Stochastic character mapping -- Simulating event times](topics/character_mapping/waiting_times_simulation.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
-Slides
+R demo
 :::
 :::
 :::
@@ -113,7 +113,7 @@ Practical session in R
 [1530--1630: Fitting models with Stochastic character mapping](topics/character_mapping/fit_stochastic_mapping.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
-Short description
+Practical session in R
 :::
 :::
 :::

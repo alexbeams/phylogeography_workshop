@@ -18,9 +18,6 @@ quadrature techniques like the trapezoid rule and Simpson's
 rule that approximate areas under curves with shapes that have
 nice are formulas.
 
-# It looks like this:
-# code up example trapezoid/simpsons' rule w/ picture
-
 Monte Carlo integration works a little bit differently. Let's start
 by approximating the area of a circle to approximate $\pi$.
 

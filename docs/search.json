@@ -1,87 +1,514 @@
 [
   {
-    "objectID": "topics/sse_models/fit_bisse.html",
-    "href": "topics/sse_models/fit_bisse.html",
-    "title": "Fitting BiSSE models:",
+    "objectID": "topics/intro_to_workshop/intro_to_trees.html",
+    "href": "topics/intro_to_workshop/intro_to_trees.html",
+    "title": "Intro to trees in R",
     "section": "",
-    "text": "library(diversitree)\nlibrary(mcmcensemble)\n\nNow that we have some familiarity with the behavior of the BISSE model, we will try to use the model for parameter estimation, i.e. inference via model fitting.\nOur goals are:\n\nLearn how to specify a BiSSE model log-likelihood\nLearn how to fit a BiSSE model\nLearn how to constrain models to simplify models/estimate fewer parameters\nDevelop an intuition for how well we can estimate parameters in practice\n\n\n\nSimulate a BiSSE tree:\n\npars &lt;- c(\n        lambda0=1,\n        lambda1=5,\n        mu0=0.8,\n        mu1=0.8,\n        q01=0.1,\n        q10=0.12)\n\ntree &lt;- tree.bisse(pars, max.taxa=50, x0=0)\n\nThe make.bisse function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))\n\nloglik &lt;- make.bisse(tree, tree$tip.state)\n\nWhat are the MLEs?\n\nmles &lt;- find.mle(loglik, pars)\n\n# these are the parmeter values that this infers: \nmlepars &lt;- mles$par\n\nLet’s visualize the likelihood surface one parameter at a time (holding the other parameter at the MLE; not exactly profile likelihoods, but pretty close):\n\nloglik_lambda0 &lt;- function(lambda0) loglik(c(lambda0,mlepars[-1]))\nloglik_lambda1 &lt;- function(lambda1) loglik(c(mlepars[1],lambda1,mlepars[3:6]))\n\nloglik_mu0 &lt;- function(mu0) loglik(c(mlepars[1:2],mu0,mlepars[4:6]))\nloglik_mu1 &lt;- function(mu1) loglik(c(mlepars[1:3],mu1,mlepars[5:6]))\n\nloglik_q01 &lt;- function(q01) loglik(c(mlepars[1:4],q01,mlepars[6]))\nloglik_q10 &lt;- function(q10) loglik(c(mlepars[1:5],q10))\n\nlambdavals &lt;- exp( seq(-5,2,length=50))\nmuvals &lt;- exp( seq(-9,2,length=50))\nqvals &lt;- exp( seq(-9,2, length=50) )\n\nloglik_lambda0_vals &lt;- sapply(lambdavals, loglik_lambda0)\nloglik_lambda1_vals &lt;- sapply(lambdavals, loglik_lambda1)\n\nloglik_mu0_vals &lt;- sapply(muvals, loglik_mu0)\nloglik_mu1_vals &lt;- sapply(muvals, loglik_mu1)\n\nloglik_q01_vals &lt;- sapply(qvals, loglik_q01)\nloglik_q10_vals &lt;- sapply(qvals, loglik_q10)\n\npar(mfrow=c(3,2))\n\nplot(lambdavals,loglik_lambda0_vals)\nabline(v=pars['lambda0'],col='red')\n\nplot(lambdavals,loglik_lambda1_vals)\nabline(v=pars['lambda1'],col='red')\n\nplot(muvals,loglik_mu0_vals)\nabline(v=pars['mu0'],col='red')\n\nplot(muvals,loglik_mu1_vals)\nabline(v=pars['mu1'],col='red')\n\nplot(qvals,loglik_q01_vals)\nabline(v=pars['q01'],col='red')\nplot(qvals,loglik_q10_vals)\nabline(v=pars['q10'],col='red')\n\nSo, varying each parameter while holding the others at the values used to produce the simulated BiSSE tree indicate MLEs may be a good approach to estimating parameters.\nThe MLE differs from the “true” values used to produce the simulation, but that is expected.\nOf course, these approximations of profile likelihoods don’t show how correlated some of these parameters are with each other. We might as well use MCMC to do this:\nThis will take quite a lot longer than our birth-death model with just 2 parameters:\n\nmcmc_fit &lt;- mcmc(loglik, pars, nsteps = 1000, w=1) \n\nLet’s use an ensemble MCMC sampler.\nThe make.bisse function will throw errors if we try to plug in negative parameters:\n\nloglik(-pars)\n\nFor an MCMC routine that isn’t included in diversitree, we need to ensure that we can do an unrestricted search in parameter space.\n\nloglik_transformed &lt;- function(pars){\n    pars &lt;- exp(pars)\n    loglik &lt;- loglik(pars)\n    return(loglik)\n}\n\nloglik_transformed(log(pars))\n# This looks ok.\n\nloglik_transformed(-log(pars))\n# Calculates a value without error. Good to go.\n\nnwalkers &lt;- 100 #ensemble size\nnsteps &lt;- 50 #number of times to update entire nsemble\n\n# initialize the ensemble:\nmcmc_inits &lt;- matrix(nrow=nwalkers, ncol=6)\nfor(i in 1:nwalkers) mcmc_inits[i,] &lt;- jitter(log(mlepars))\n\n# run the ensemble MCMC:\nmcmc_fit &lt;- MCMCEnsemble(loglik_transformed, \n    inits=mcmc_inits, \n    max.iter=nwalkers*nsteps, \n    n.walkers = nwalkers)\n\n# Now, let's try to visualize the profile log-likelihoods (including\n#   the curves we generated earlier):\n\npar(mfrow=c(3,2))\n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,1],xlab=bquote(lambda[0]))\n#lines(log(lambdavals), loglik_lambda0_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,2],xlab=bquote(lambda[1]))\n#lines(log(lambdavals), loglik_lambda1_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,3],xlab=bquote(mu[0]))\n#lines(log(muvals), loglik_mu0_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,4],xlab=bquote(mu[1]))\n#lines(log(muvals), loglik_mu1_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,5],xlab=bquote(q[0~1]))\n#lines(log(qvals), loglik_q01_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,6],xlab=bquote(q[1~0]))\n#lines(log(qvals), loglik_q10_vals, col='red') \n\nIn the vicinity of the MLE, the MCMC results should closely match the profile likelihood curves (but far away from the MLE there is no reason why they should be similar). (Why?)\nLooking at the different plots, are you able to say which parameters that are more difficult to estimate than others?\nWhat if we look at parameter correlations?\n\nplot(mcmc_fit$samples[,,1] ~ mcmc_fit$samples[,,2],\n    xlab=bquote(lambda[1]),\n    ylab=bquote(lambda[0]))"
+    "text": "This is basically following the vignette Ancestral.html for phangorn The original vignette is written by Klaus Schliep (klaus.schliep@gmail.com)\nI’m annotating it a bit more for our purposes.\n\nlibrary(phangorn)\n\nLoading required package: ape\n\nlibrary(phytools)\n\nLoading required package: maps\n\nlibrary(ape)\n\n#Let's load in some primate data:\nfdir &lt;- system.file(\"extdata/trees\", package = \"phangorn\")\nprimates &lt;- read.phyDat(file.path(fdir, \"primates.dna\"),\n                        format = \"interleaved\")\n\nLet’s examine this.\n\nnames(primates)\n\n [1] \"Mouse\"      \"Bovine\"     \"Lemur\"      \"Tarsier\"    \"Squir Monk\"\n [6] \"Jpn Macaq\"  \"Rhesus Mac\" \"Crab-E.Mac\" \"BarbMacaq\"  \"Gibbon\"    \n[11] \"Orang\"      \"Gorilla\"    \"Chimp\"      \"Human\"     \n\n\nThis shows us there are 14 sequences. Let’s look at Mouse:\n\nprimates$Mouse\n\n  [1] 1 2 2 1 1 1 1 1 1 1 2 1 4 2 2 1 1 1 2 1 2 1 1 2 2 2 2 1 3 2 2 2 4 4 2 3 2\n [38] 1 1 4 3 2 2 1 4 2 1 3 1 1 4 1 4 4 1 4 1 2 4 1 2 4 1 1 1 1 1 2 4 2 1 1 1 4\n [75] 4 1 1 2 4 2 4 4 4 1 1 4 2 4 4 4 1 4 1 2 1 1 2 1 4 4 2 2 1 2 2 1 1 2 2 4 1\n[112] 4 2 2 1 2 1 2 1 1 1 1 1 2 4 2 1 4 1 4 4 4 1 4 2 4 1 1 1 4 1 2 3 1 1 2 4 4\n[149] 2 1 2 1 2 1 1 2 2 4 4 1 2 1 2 1 4 1 1 1 2 1 4 2 2 2 2 1 3 2 2 1 1 2 1 2 2\n[186] 2 4 4 2 2 1 2 1 1 1 4 2 4 4 4 1 4 1 2 3 2 2 2 1 4 1 1 1 4 1 1 2\n\n\nIt’s a sequence of the numbers 1–4. Typing primates into the console indicates that the states are a,c,g,t:\n\nprimates\n\n14 sequences with 232 character and 217 different site patterns.\nThe states are a c g t \n\n\nSo the Mouse sequence is really\n\nc('a','c','t','g')[primates$Mouse]\n\n  [1] \"a\" \"c\" \"c\" \"a\" \"a\" \"a\" \"a\" \"a\" \"a\" \"a\" \"c\" \"a\" \"g\" \"c\" \"c\" \"a\" \"a\" \"a\"\n [19] \"c\" \"a\" \"c\" \"a\" \"a\" \"c\" \"c\" \"c\" \"c\" \"a\" \"t\" \"c\" \"c\" \"c\" \"g\" \"g\" \"c\" \"t\"\n [37] \"c\" \"a\" \"a\" \"g\" \"t\" \"c\" \"c\" \"a\" \"g\" \"c\" \"a\" \"t\" \"a\" \"a\" \"g\" \"a\" \"g\" \"g\"\n [55] \"a\" \"g\" \"a\" \"c\" \"g\" \"a\" \"c\" \"g\" \"a\" \"a\" \"a\" \"a\" \"a\" \"c\" \"g\" \"c\" \"a\" \"a\"\n [73] \"a\" \"g\" \"g\" \"a\" \"a\" \"c\" \"g\" \"c\" \"g\" \"g\" \"g\" \"a\" \"a\" \"g\" \"c\" \"g\" \"g\" \"g\"\n [91] \"a\" \"g\" \"a\" \"c\" \"a\" \"a\" \"c\" \"a\" \"g\" \"g\" \"c\" \"c\" \"a\" \"c\" \"c\" \"a\" \"a\" \"c\"\n[109] \"c\" \"g\" \"a\" \"g\" \"c\" \"c\" \"a\" \"c\" \"a\" \"c\" \"a\" \"a\" \"a\" \"a\" \"a\" \"c\" \"g\" \"c\"\n[127] \"a\" \"g\" \"a\" \"g\" \"g\" \"g\" \"a\" \"g\" \"c\" \"g\" \"a\" \"a\" \"a\" \"g\" \"a\" \"c\" \"t\" \"a\"\n[145] \"a\" \"c\" \"g\" \"g\" \"c\" \"a\" \"c\" \"a\" \"c\" \"a\" \"a\" \"c\" \"c\" \"g\" \"g\" \"a\" \"c\" \"a\"\n[163] \"c\" \"a\" \"g\" \"a\" \"a\" \"a\" \"c\" \"a\" \"g\" \"c\" \"c\" \"c\" \"c\" \"a\" \"t\" \"c\" \"c\" \"a\"\n[181] \"a\" \"c\" \"a\" \"c\" \"c\" \"c\" \"g\" \"g\" \"c\" \"c\" \"a\" \"c\" \"a\" \"a\" \"a\" \"g\" \"c\" \"g\"\n[199] \"g\" \"g\" \"a\" \"g\" \"a\" \"c\" \"t\" \"c\" \"c\" \"c\" \"a\" \"g\" \"a\" \"a\" \"a\" \"g\" \"a\" \"a\"\n[217] \"c\"\n\n\nLet’s turn this into an R data frame to visualize the sequence alignment:\n\nprimdat &lt;- as.data.frame(primates)\n\nLet’s look at the the beginning of the multiple sequence alignment:\n\nhead(primdat)\n\n  Mouse Bovine Lemur Tarsier Squir Monk Jpn Macaq Rhesus Mac Crab-E.Mac\n1     a      a     a       a          a         a          a          a\n2     c      c     c       t          c         c          c          c\n3     c      c     c       c          c         t          t          c\n4     a      a     a       t          c         c          t          c\n5     a      a     a       a          c         c          c          c\n6     a      a     a       c          a         a          a          a\n  BarbMacaq Gibbon Orang Gorilla Chimp Human\n1         a      a     a       a     a     a\n2         c      c     c       c     c     c\n3         c      t     c       c     c     c\n4         c      a     c       c     c     c\n5         t      t     c       c     c     c\n6         a      a     a       a     a     a\n\n\nThe sequences appear to be mostly similar. Let’s look at each pair in the data and find the number of differences in the sequences.\nFor example, if we wanted to see how many sites differ between Mouse and Human, we could do this:\n\nsum(primdat$Mouse != primdat$Human)\n\n[1] 128\n\n\n128 sites differ; there are\n\ndim(primdat)[1]\n\n[1] 232\n\n\ntotal sites.\nI will load these into a matrix, where the i,j entry tells me how many sites differ between species i and species j. #This matrix will obviously be symmetric, and the diagonal will be zero.\nSo, I can just fill in the upper diagonal:\n\nseq_diff_matrix &lt;- matrix(nrow=14,ncol=14)\ncolnames(seq_diff_matrix) &lt;- names(primates)\nrownames(seq_diff_matrix) &lt;- names(primates)\n\ndiag(seq_diff_matrix) &lt;- 0\n\n#I will swallow my pride and write a nested for loop:\nfor(i in 1:14){\n    for(j in i:14){\n        seq_diff_matrix[i,j] &lt;- sum( primdat[,i] != primdat[,j] )\n    }\n}\n\nseq_diff_matrix\n\n           Mouse Bovine Lemur Tarsier Squir Monk Jpn Macaq Rhesus Mac\nMouse          0    121   130     132        125       131        137\nBovine        NA      0   113     119        116       118        119\nLemur         NA     NA     0     113        118       119        124\nTarsier       NA     NA    NA       0        133       121        122\nSquir Monk    NA     NA    NA      NA          0       118        121\nJpn Macaq     NA     NA    NA      NA         NA         0         22\nRhesus Mac    NA     NA    NA      NA         NA        NA          0\nCrab-E.Mac    NA     NA    NA      NA         NA        NA         NA\nBarbMacaq     NA     NA    NA      NA         NA        NA         NA\nGibbon        NA     NA    NA      NA         NA        NA         NA\nOrang         NA     NA    NA      NA         NA        NA         NA\nGorilla       NA     NA    NA      NA         NA        NA         NA\nChimp         NA     NA    NA      NA         NA        NA         NA\nHuman         NA     NA    NA      NA         NA        NA         NA\n           Crab-E.Mac BarbMacaq Gibbon Orang Gorilla Chimp Human\nMouse             136       122    136   133     123   129   128\nBovine            122       115    113   109     119   128   124\nLemur             128       122    130   125     117   139   130\nTarsier           125       125    131   124     124   135   137\nSquir Monk        116       115    106   110     102   116   115\nJpn Macaq          42        68    103    95      94   103    94\nRhesus Mac         52        68     94    94      94   109    94\nCrab-E.Mac          0        66    105   103     111   115   103\nBarbMacaq          NA         0     99    91      99   106   109\nGibbon             NA        NA      0    93      85    90    84\nOrang              NA        NA     NA     0      70    78    73\nGorilla            NA        NA     NA    NA       0    62    56\nChimp              NA        NA     NA    NA      NA     0    52\nHuman              NA        NA     NA    NA      NA    NA     0\n\n\nSo already, it is abundantly clear that Humans, Chimps, and Gorillas are are pretty similar.\nThen if we invoke\n\nheatmap(seq_diff_matrix)\n\n\n\n\n\n\n\n\nThis looks a little funny. I’m going to fill in the rest of the matrix to see if this plots a little better\n\nseq_diff_matrix[lower.tri(seq_diff_matrix)] &lt;- t(seq_diff_matrix)[lower.tri(t(seq_diff_matrix))]\n\n#check to make sure I did this right\nseq_diff_matrix == t(seq_diff_matrix)\n\n           Mouse Bovine Lemur Tarsier Squir Monk Jpn Macaq Rhesus Mac\nMouse       TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE\nBovine      TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE\nLemur       TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE\nTarsier     TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE\nSquir Monk  TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE\nJpn Macaq   TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE\nRhesus Mac  TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE\nCrab-E.Mac  TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE\nBarbMacaq   TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE\nGibbon      TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE\nOrang       TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE\nGorilla     TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE\nChimp       TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE\nHuman       TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE\n           Crab-E.Mac BarbMacaq Gibbon Orang Gorilla Chimp Human\nMouse            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE\nBovine           TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE\nLemur            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE\nTarsier          TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE\nSquir Monk       TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE\nJpn Macaq        TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE\nRhesus Mac       TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE\nCrab-E.Mac       TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE\nBarbMacaq        TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE\nGibbon           TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE\nOrang            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE\nGorilla          TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE\nChimp            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE\nHuman            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE\n\n#Yes -- now plot again\nheatmap(seq_diff_matrix, symm=T)\n\n\n\n\n\n\n\n\nNow it’s a little more apparent that some groups are more closely related to each other than others.\nIt even makes a nice little dendogram tree!\nWe have made a tree, but there are some potential drawbacks with this. Many evolutionary biologists originally held the view that if the tree reflects evolutionary history of these organisms, that the ancestors implied by the internal nodes of the tree should have their own sequences. In constructing a phylogeny, we should really be taking account of the fact that the location of nucleotide differences is important, not just the raw number of differences. Nothing we have done so far made use of the idea that ancestors should have similar sequences to their descendants.\nThis is why the method of Parsimony was originally developed. Instead of looking at pairwise differences between sequences, we try to determine what the evolutionary history would have been, under the assumption that evolution is “parsimonious” – the number of nucleotide changes from the root of the tree to the leaves should be minimized.\nLet’s calculate a tree using this criterion:\n\ntree &lt;- pratchet(primates, trace=0) |&gt; acctran(primates) |&gt; makeNodeLabel()\n parsimony(tree, primates)\n\n[1] 746\n\nanc.pars &lt;- anc_pars(tree, primates)\n\n#Let's look at the evolution of site 17 in the sequences:\nplotAnc(anc.pars, 17)\ntitle(\"MPR\")\n\n\n\n\n\n\n\n\nWe can calculate pairwise distances between the species once again, but this time using the branch lengths in the tree. The distance between two species corresponds to the sum of the branch lengths along the unique path connecting te two species through their most recent common ancestor. Because we are dealing with trees (a special type of graph), there is always a unique path connecting two leaves.\n\nparsmny_dist_mat &lt;- cophenetic(tree)\n\nYou can verify that this matrix is symmetric. Let’s visualize this:\n\npar(mfrow=c(1,2))\nheatmap(parsmny_dist_mat,symm=T)\n\n\n\n\n\n\n\n\nThis is slightly different from the pairwise sequence differene matrix. Let’s compare the pairwise distances in both:\n\nm1 &lt;- seq_diff_matrix\nm2 &lt;- parsmny_dist_mat\n\nm1 &lt;- m1[rownames(m2),colnames(m2)]\n\nm1 &lt;- m1[upper.tri(m1)]\nm2 &lt;- m2[upper.tri(m2)]\n\nplot(m1,m2,xlab='Nucleotide differences',ylab='Patristic distances (parsimony)')\n\n\n\n\n\n\n\n\nClearly these things are correlated - but they are not identical.\nThere are some drawbacks for parsimony as well. The first major drawback is that the criterion to minimize the number of nucleotide changes tends to produce trees with branch lengths that …\nThis is the motivation for the final tree construction method we will consider here – the so-called Likelihood methods. The likelihood methods all use Markov chains to describe rates of change in nucleotides over time. These models depend on parameters, and can be subsumed into Likelihood-based methods.\nBecause our focus for this workshop is discrete phylogeography, we will not consider methods making use of continuous data at the tips of trees. It is possible to formulate diffusion models and stochastic processes such as the Ornstein-Uhlenbeck process to model evoultion of continuous traits from root to leaves. These are usually not employed to estimate phylogenetic trees from the outset, but rather to carry out ancestral character estimation for a continuous trait once a phylogeny has been obtained.\nDiscrete-state Markov models, as well as the Brownian motion models for trait evolution all fall under the category of Likelihood methods for ancestral character estimation, because it is possible to fit these models to data using techniques from statistics that employ likelihood functions.\nWe will estiamte parameters of a discrete-state Markov chain defined on the state space (A,C,G,T) and changing in continuous time. We will not estimate the tree topology, but this will adjust the branch lengths in thre tree:\n\nfit &lt;- pml(tree, primates)\nfit &lt;- optim.pml(fit, model=\"F81\", control = pml.control(trace=0))\n\n\n#This will give us also the most likely ancestral states:\nanc.ml &lt;- anc_pml(fit)\n\n#Let's look at site 17 in the sequences:\nplotAnc(anc.ml, 17)\ntitle(\"ML\")\n\n\n\n\n\n\n\n\nLet’s compare the parsimony and ML trees:\n\nplot(tree)\n\n\n\n\n\n\n\n\n\nplot(anc.ml$tree)\n\n\n\n\n\n\n\n\nLet’s calculate pairwise distances in this tree:\n\nmldists &lt;- cophenetic(anc.ml$tree)\n\nc1 &lt;- mldists[upper.tri(mldists)]\nc2 &lt;- parsmny_dist_mat[upper.tri(parsmny_dist_mat)]\n\nplot(c1,c2,xlab='Markov model distances', ylab='Parsimony tree distances')\n\n\n\n\n\n\n\n\nSo the distances between species in the parsimony and Maximum Likelihood tree using the Markov model for nucleotide changes are pretty tightly correlated, but not identical."
   },
   {
-    "objectID": "topics/sse_models/fit_bisse.html#example-benchmarking-from-simulations",
-    "href": "topics/sse_models/fit_bisse.html#example-benchmarking-from-simulations",
-    "title": "Fitting BiSSE models:",
-    "section": "",
-    "text": "Simulate a BiSSE tree:\n\npars &lt;- c(\n        lambda0=1,\n        lambda1=5,\n        mu0=0.8,\n        mu1=0.8,\n        q01=0.1,\n        q10=0.12)\n\ntree &lt;- tree.bisse(pars, max.taxa=50, x0=0)\n\nThe make.bisse function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))\n\nloglik &lt;- make.bisse(tree, tree$tip.state)\n\nWhat are the MLEs?\n\nmles &lt;- find.mle(loglik, pars)\n\n# these are the parmeter values that this infers: \nmlepars &lt;- mles$par\n\nLet’s visualize the likelihood surface one parameter at a time (holding the other parameter at the MLE; not exactly profile likelihoods, but pretty close):\n\nloglik_lambda0 &lt;- function(lambda0) loglik(c(lambda0,mlepars[-1]))\nloglik_lambda1 &lt;- function(lambda1) loglik(c(mlepars[1],lambda1,mlepars[3:6]))\n\nloglik_mu0 &lt;- function(mu0) loglik(c(mlepars[1:2],mu0,mlepars[4:6]))\nloglik_mu1 &lt;- function(mu1) loglik(c(mlepars[1:3],mu1,mlepars[5:6]))\n\nloglik_q01 &lt;- function(q01) loglik(c(mlepars[1:4],q01,mlepars[6]))\nloglik_q10 &lt;- function(q10) loglik(c(mlepars[1:5],q10))\n\nlambdavals &lt;- exp( seq(-5,2,length=50))\nmuvals &lt;- exp( seq(-9,2,length=50))\nqvals &lt;- exp( seq(-9,2, length=50) )\n\nloglik_lambda0_vals &lt;- sapply(lambdavals, loglik_lambda0)\nloglik_lambda1_vals &lt;- sapply(lambdavals, loglik_lambda1)\n\nloglik_mu0_vals &lt;- sapply(muvals, loglik_mu0)\nloglik_mu1_vals &lt;- sapply(muvals, loglik_mu1)\n\nloglik_q01_vals &lt;- sapply(qvals, loglik_q01)\nloglik_q10_vals &lt;- sapply(qvals, loglik_q10)\n\npar(mfrow=c(3,2))\n\nplot(lambdavals,loglik_lambda0_vals)\nabline(v=pars['lambda0'],col='red')\n\nplot(lambdavals,loglik_lambda1_vals)\nabline(v=pars['lambda1'],col='red')\n\nplot(muvals,loglik_mu0_vals)\nabline(v=pars['mu0'],col='red')\n\nplot(muvals,loglik_mu1_vals)\nabline(v=pars['mu1'],col='red')\n\nplot(qvals,loglik_q01_vals)\nabline(v=pars['q01'],col='red')\nplot(qvals,loglik_q10_vals)\nabline(v=pars['q10'],col='red')\n\nSo, varying each parameter while holding the others at the values used to produce the simulated BiSSE tree indicate MLEs may be a good approach to estimating parameters.\nThe MLE differs from the “true” values used to produce the simulation, but that is expected.\nOf course, these approximations of profile likelihoods don’t show how correlated some of these parameters are with each other. We might as well use MCMC to do this:\nThis will take quite a lot longer than our birth-death model with just 2 parameters:\n\nmcmc_fit &lt;- mcmc(loglik, pars, nsteps = 1000, w=1) \n\nLet’s use an ensemble MCMC sampler.\nThe make.bisse function will throw errors if we try to plug in negative parameters:\n\nloglik(-pars)\n\nFor an MCMC routine that isn’t included in diversitree, we need to ensure that we can do an unrestricted search in parameter space.\n\nloglik_transformed &lt;- function(pars){\n    pars &lt;- exp(pars)\n    loglik &lt;- loglik(pars)\n    return(loglik)\n}\n\nloglik_transformed(log(pars))\n# This looks ok.\n\nloglik_transformed(-log(pars))\n# Calculates a value without error. Good to go.\n\nnwalkers &lt;- 100 #ensemble size\nnsteps &lt;- 50 #number of times to update entire nsemble\n\n# initialize the ensemble:\nmcmc_inits &lt;- matrix(nrow=nwalkers, ncol=6)\nfor(i in 1:nwalkers) mcmc_inits[i,] &lt;- jitter(log(mlepars))\n\n# run the ensemble MCMC:\nmcmc_fit &lt;- MCMCEnsemble(loglik_transformed, \n    inits=mcmc_inits, \n    max.iter=nwalkers*nsteps, \n    n.walkers = nwalkers)\n\n# Now, let's try to visualize the profile log-likelihoods (including\n#   the curves we generated earlier):\n\npar(mfrow=c(3,2))\n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,1],xlab=bquote(lambda[0]))\n#lines(log(lambdavals), loglik_lambda0_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,2],xlab=bquote(lambda[1]))\n#lines(log(lambdavals), loglik_lambda1_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,3],xlab=bquote(mu[0]))\n#lines(log(muvals), loglik_mu0_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,4],xlab=bquote(mu[1]))\n#lines(log(muvals), loglik_mu1_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,5],xlab=bquote(q[0~1]))\n#lines(log(qvals), loglik_q01_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,6],xlab=bquote(q[1~0]))\n#lines(log(qvals), loglik_q10_vals, col='red') \n\nIn the vicinity of the MLE, the MCMC results should closely match the profile likelihood curves (but far away from the MLE there is no reason why they should be similar). (Why?)\nLooking at the different plots, are you able to say which parameters that are more difficult to estimate than others?\nWhat if we look at parameter correlations?\n\nplot(mcmc_fit$samples[,,1] ~ mcmc_fit$samples[,,2],\n    xlab=bquote(lambda[1]),\n    ylab=bquote(lambda[0]))"
-  },
-  {
-    "objectID": "topics/sse_models/fit_bisse.html#section",
-    "href": "topics/sse_models/fit_bisse.html#section",
-    "title": "Fitting BiSSE models:",
+    "objectID": "topics/intro_to_workshop/intro_to_trees.html#section",
+    "href": "topics/intro_to_workshop/intro_to_trees.html#section",
+    "title": "Intro to trees in R",
     "section": "1.",
-    "text": "1.\nWhat parameters seem to exhibit the highest correlations? The lowest? (You will need to plot all the pairwise combinations.) How do parameter estimates compare to the values used in the simulation? Is it easier to estimate one diversification rate or the other? Ditto for the mu’s and q’s. Why do you think that is?"
+    "text": "1.\nUse the nni function on the original parsimony tree to obtain all of the trees that are one nearest-neighbor interchange away from the parsimony tree. Fit Markov models to each tree and calculate the likelihood for each tree under the optimized parameters of the Markov model. Based off of this, do you think it might be possible to estimate the most likely tree, given the Markov model structure and the primate data?"
   },
   {
-    "objectID": "topics/sse_models/fit_bisse.html#section-1",
-    "href": "topics/sse_models/fit_bisse.html#section-1",
-    "title": "Fitting BiSSE models:",
+    "objectID": "topics/intro_to_workshop/intro_to_trees.html#section-1",
+    "href": "topics/intro_to_workshop/intro_to_trees.html#section-1",
+    "title": "Intro to trees in R",
     "section": "2.",
-    "text": "2.\nIncrease the number of taxa in your tree. How does your ability to estimate parameters change? Does it become easier to estimate migration rates, or death rates? Using 200 taxa should be doable, but see how high you can go before computations get bogged down. Be sure to describe bias as well as precision of estimates."
+    "text": "2.\nLoad in a different set of sequences from the workshop and try to construct a parsimony tree. Use a nucleotide substitution model of your choice (HKY, F81, etc.) to fit a Markov model describing sequence evolution on the parsimony tree. How much do branch lengths change after fitting the Markov model?"
   },
   {
-    "objectID": "topics/sse_models/fit_bisse.html#section-2",
-    "href": "topics/sse_models/fit_bisse.html#section-2",
-    "title": "Fitting BiSSE models:",
+    "objectID": "topics/intro_to_workshop/intro_to_trees.html#section-2",
+    "href": "topics/intro_to_workshop/intro_to_trees.html#section-2",
+    "title": "Intro to trees in R",
     "section": "3.",
-    "text": "3.\nYou may notice that the “data” (putting it in quotes b/c we simulated it) contain more information about one of the migration rates than the other. Which migration rate is it, and why do you think it might be easier to estimate it with greater precision than the other one? It might be helpful to plot the tree.\n\nplot(history.from.sim.discrete(tree, states=c(0,1)),\n                tree, col=c('0'='black','1'='red'))"
+    "text": "3.\nUse the read.tree function to load in a tree that you download from someplace. Try plotting it, and if you can find associated metadata (from Nextstrain, for example) try plotting that on the tree as well. It can be handy to combine the plotTree and tiplabels functions from phytools for this purpose.\nIt is optional, but the ggtree package in R also comes in handy for plotting trees and you might consider installing it."
   },
   {
-    "objectID": "topics/sse_models/fit_bisse.html#section-3",
-    "href": "topics/sse_models/fit_bisse.html#section-3",
-    "title": "Fitting BiSSE models:",
+    "objectID": "topics/sse_models/asr_bisse.html",
+    "href": "topics/sse_models/asr_bisse.html",
+    "title": "Ancestral state reconstructions using BiSSE",
+    "section": "",
+    "text": "library(diversitree)\nlibrary(ape)\nlibrary(phytools)\n\nThe previous problem sets have illustrated the behavior of trees simulated from these models, some of their statistical behaviors, and now all that remains is to use fitted models to accomplish the goals of phylogeography, i.e. ancestral character estimation.\nNote: for most BiSSE users, the primary goal seems not to be ancestral reconstruction per se, but inferring relationships between states and diversification/extinction rates. As such, the documentation and support for the reconstruction methods that use BiSSE is more sparse than for ace or simmap.\nLet’s start by simulating a tree and fit the model to it. We will then infer ancestral states and compare these with the known values from the simulation itself.\nSimulate a BiSSE tree here:\n\npars &lt;- c(\n        lambda0=1,\n        lambda1=3,\n        mu0=0.1,\n        mu1=0.1,\n        q01=0.1,\n        q10=0.12)\n\ntree &lt;- tree.bisse(pars, max.taxa=100, x0=0)\n\npar(mfrow=c(1,2))\nplot(history.from.sim.discrete(tree, states=c(0,1)),\n    tree, col=c('0'='black','1'='red')) \n\nThe make.bisse function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))\n\nloglik &lt;- make.bisse(tree, tree$tip.state)\nloglikc &lt;- constrain(loglik, lambda0~lambda1)\n\n# What are the MLEs?\nmles &lt;- find.mle(loglik, pars)\nmlesc &lt;- find.mle(loglikc, pars[-2])\n\n\n# these are the parmeter values that this infers: \nmlepars &lt;- mles$par\n\n# We use the \"marginal\" reconstruction, which should be similar\n# to the type of calculation used by ace:\nasr_marginal &lt;- asr.marginal(loglik, mlepars)\n\nplot(tree, show.tip.label=F)\nnodelabels(pie=t(asr_marginal), piecol=c(\"black\", \"red\"), cex=0.7)\ntip_matrix &lt;- cbind(1-tree$tip.state, tree$tip.state)  # Convert to probabilities \ntiplabels(pie=tip_matrix, piecol=c(\"black\", \"red\"), cex=0.7)"
+  },
+  {
+    "objectID": "topics/sse_models/asr_bisse.html#section",
+    "href": "topics/sse_models/asr_bisse.html#section",
+    "title": "Ancestral state reconstructions using BiSSE",
+    "section": "1.",
+    "text": "1.\nSimulate a collection of BiSSE trees (n=30) and use asr_marginal to reconstruct ancestral states. For the same set of trees, use ace as well, and compare the reconstructions to each other. Is it obvious that marginal reconstruction with the BiSSE model out- performs the simpler Markov models in ace? Are there different combinations of parameters where that is the case? What if you use trees with more taxa (say, n=100 or n=500?)"
+  },
+  {
+    "objectID": "topics/sse_models/asr_bisse.html#section-1",
+    "href": "topics/sse_models/asr_bisse.html#section-1",
+    "title": "Ancestral state reconstructions using BiSSE",
+    "section": "2.",
+    "text": "2.\nIn your simulations, do you notice particular situations where reconstructions tend to be inaccurate (when does BiSSE get “tricked”)? Are there particular configurations of tip data that present challenges for the BiSSE model?"
+  },
+  {
+    "objectID": "topics/sse_models/asr_bisse.html#section-2",
+    "href": "topics/sse_models/asr_bisse.html#section-2",
+    "title": "Ancestral state reconstructions using BiSSE",
+    "section": "3.",
+    "text": "3.\nSet diversification rates in both states equal to each other when simulating yout trees, and likewise for the extinction rates. Compare models that impose constraints to reduce the number of parameters to estimate with models that impose no constraints, and explore the accuracy of reconstructions in each case. How sensitive are reconstructions to the parametric constraints you impose?"
+  },
+  {
+    "objectID": "topics/sse_models/asr_bisse.html#section-3",
+    "href": "topics/sse_models/asr_bisse.html#section-3",
+    "title": "Ancestral state reconstructions using BiSSE",
     "section": "4.",
-    "text": "4.\nSet migrations to be the same order of magnitude as the the diversification rates and repat the analysis. Does it always become easier to estimate q_ij?"
+    "text": "4.\nUse one of the example datasets of your choice, and carry out ancestral state reconstructions using BiSSE, comparing to results from either ace or simmap."
   },
   {
-    "objectID": "topics/sse_models/fit_bisse.html#section-4",
-    "href": "topics/sse_models/fit_bisse.html#section-4",
-    "title": "Fitting BiSSE models:",
+    "objectID": "topics/sse_models/fit_bd.html",
+    "href": "topics/sse_models/fit_bd.html",
+    "title": "Estimating parameters of basic birth-death models",
+    "section": "",
+    "text": "Now that we have some familiarity with the behavior of the birth-death model, we will try to use the model for parameter inference, i.e. model fitting.\nModel fitting just consists of selecting parameters of the model so that the simulated outputs match our data as closely as possible. The dumbest way imaginable is to use the “eyeball test”. A more sophisticated approach is to use likelihoods.\nThe diversitree package has a convenient class of functions that can be used to define likelihood functions for different models. We will start with the simplest case - the birth death model.\n\n\nSimulate a list of bd trees here\n\ntree &lt;- tree.bd(c(lambda=5,mu=0), max.taxa = 20)\nloglik &lt;- make.bd(tree)\n\nThe make.bd function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))\nLet’s visualize the likelihood surface one parameter at a time (holding the other parameter at the true value):\n\nloglik_lambda &lt;- function(lambda) loglik(c(lambda,0))\nloglik_mu &lt;- function(mu) loglik(c(1,mu))\n\nlambdavals &lt;- exp( seq(-3,3,length=30))\nmuvals &lt;- exp( seq(-6,2,length=30))\nloglik_lambda_vals &lt;- sapply(lambdavals, loglik_lambda)\nloglik_mu_vals &lt;- sapply(muvals, loglik_mu)\n\nloglik_max &lt;- max(c(loglik_lambda_vals, loglik_mu_vals))\n\npar(mfrow=c(2,1))\nplot(lambdavals, loglik_lambda_vals, ylim=c(loglik_max-10,loglik_max+2))\nplot(muvals, loglik_mu_vals, ylim=c(loglik_max-10,loglik_max+2))\n\nThe maximum of the log-likelihood function roughly coincides with the parameters we used. How variable is this? Let’s simulate more trees:\n\ntreelist &lt;- trees(c(lambda=5,mu=0), \n        type=c(\"bd\"), n=100, \n        max.taxa=20)\n\n# make a log-likelihood function for each tree:\nlogliklist &lt;- lapply(treelist, make.bd )\n\nloglik_lambda_list &lt;- lapply(logliklist, function(x){\n            function(lambda) x(c(lambda,0))\n    })\n\nloglik_mu_list &lt;- lapply(logliklist, function(x){\n            function(mu) x(c(mu,0))\n    })\n\n\nlambdavals &lt;- exp( seq(-2,2,length=30))\nmuvals &lt;- exp( seq(-6,2,length=30))\n\nloglik_lambda_list_vals &lt;- sapply(loglik_lambda_list,\n    function(x){sapply(lambdavals, x)})\n\nloglik_mu_list_vals &lt;- sapply(loglik_mu_list,\n    function(x){sapply(muvals, x)})\n\nloglik_max &lt;- max(c(loglik_lambda_list_vals,loglik_mu_list_vals))\nloglik_min &lt;- min(c(loglik_lambda_list_vals,loglik_mu_list_vals))\n\n\npar(mfrow=c(2,1))\nplot(lambdavals, loglik_lambda_list_vals[,1]/abs(max(loglik_lambda_list_vals[,1])))\nfor(i in 2:100){\n    lines(lambdavals, loglik_lambda_list_vals[,i]/abs(max(loglik_lambda_list_vals[,i])))\n}\n\nplot(muvals, loglik_mu_list_vals[,1]/abs(max(loglik_mu_list_vals[,1])))\nfor(i in 2:100){\n    lines(muvals, loglik_mu_list_vals[,i]/abs(max(loglik_mu_list_vals[,i])))\n}\n\nSo, most of these have a maximum in the vicinity of the true parameter values that we suppied, but not all.\nThe “Maximum Likelihood Estimates” are the values of (lambda,mu) where the likelihood function is maximized. What does the distribution of MLEs look like for this set of trees?\n\nmles &lt;- lapply(logliklist, function(x){find.mle(x, c(1,0), method='subplex')})\n\nmles_pars &lt;- t(sapply(mles, function(x) x$par))\n\npar(mfrow=c(1,2))\nhist(mles_pars[,1],main='',\n    xlab=bquote(hat(lambda)))\nhist(mles_pars[,2],main='',\n    xlab=bquote(hat(mu)))\n\nRemember that the true value of mu we used was mu=0. A lot of the models suggest values of mu &gt; 0, which is interesting. This tells us that, in practice, we will probably not be able to reliably estimate mu when it is close to zero but positive.\nWe can frame a hypothesis test. Null hypothesis: mu=0. Alternative hypothesis: mu &gt; 0. Supposing we wish to keep false-positives at 5% or less, we could propose the statistical test that we reject the null hypothesis if our estimate of mu is at the 95-th percentile or greater of this “null” distribution. In our case, this critical value of mu would be approximately\n\nmu_critical &lt;- quantile(mles_pars[,'mu'], 0.95) \n\nSo in the future, if we estimate a value of mu greater than mu_critical, and we say “this appears significantly different from zero, therefore we reject the null hypothesis”, we will be making a type 1 error (“false-positive”) less than 5% of the time. A 1/20 chance of a mistake is reasonable in some circumstances, but less so in others."
+  },
+  {
+    "objectID": "topics/sse_models/fit_bd.html#example-1-benchmarking-from-simulations",
+    "href": "topics/sse_models/fit_bd.html#example-1-benchmarking-from-simulations",
+    "title": "Estimating parameters of basic birth-death models",
+    "section": "",
+    "text": "Simulate a list of bd trees here\n\ntree &lt;- tree.bd(c(lambda=5,mu=0), max.taxa = 20)\nloglik &lt;- make.bd(tree)\n\nThe make.bd function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))\nLet’s visualize the likelihood surface one parameter at a time (holding the other parameter at the true value):\n\nloglik_lambda &lt;- function(lambda) loglik(c(lambda,0))\nloglik_mu &lt;- function(mu) loglik(c(1,mu))\n\nlambdavals &lt;- exp( seq(-3,3,length=30))\nmuvals &lt;- exp( seq(-6,2,length=30))\nloglik_lambda_vals &lt;- sapply(lambdavals, loglik_lambda)\nloglik_mu_vals &lt;- sapply(muvals, loglik_mu)\n\nloglik_max &lt;- max(c(loglik_lambda_vals, loglik_mu_vals))\n\npar(mfrow=c(2,1))\nplot(lambdavals, loglik_lambda_vals, ylim=c(loglik_max-10,loglik_max+2))\nplot(muvals, loglik_mu_vals, ylim=c(loglik_max-10,loglik_max+2))\n\nThe maximum of the log-likelihood function roughly coincides with the parameters we used. How variable is this? Let’s simulate more trees:\n\ntreelist &lt;- trees(c(lambda=5,mu=0), \n        type=c(\"bd\"), n=100, \n        max.taxa=20)\n\n# make a log-likelihood function for each tree:\nlogliklist &lt;- lapply(treelist, make.bd )\n\nloglik_lambda_list &lt;- lapply(logliklist, function(x){\n            function(lambda) x(c(lambda,0))\n    })\n\nloglik_mu_list &lt;- lapply(logliklist, function(x){\n            function(mu) x(c(mu,0))\n    })\n\n\nlambdavals &lt;- exp( seq(-2,2,length=30))\nmuvals &lt;- exp( seq(-6,2,length=30))\n\nloglik_lambda_list_vals &lt;- sapply(loglik_lambda_list,\n    function(x){sapply(lambdavals, x)})\n\nloglik_mu_list_vals &lt;- sapply(loglik_mu_list,\n    function(x){sapply(muvals, x)})\n\nloglik_max &lt;- max(c(loglik_lambda_list_vals,loglik_mu_list_vals))\nloglik_min &lt;- min(c(loglik_lambda_list_vals,loglik_mu_list_vals))\n\n\npar(mfrow=c(2,1))\nplot(lambdavals, loglik_lambda_list_vals[,1]/abs(max(loglik_lambda_list_vals[,1])))\nfor(i in 2:100){\n    lines(lambdavals, loglik_lambda_list_vals[,i]/abs(max(loglik_lambda_list_vals[,i])))\n}\n\nplot(muvals, loglik_mu_list_vals[,1]/abs(max(loglik_mu_list_vals[,1])))\nfor(i in 2:100){\n    lines(muvals, loglik_mu_list_vals[,i]/abs(max(loglik_mu_list_vals[,i])))\n}\n\nSo, most of these have a maximum in the vicinity of the true parameter values that we suppied, but not all.\nThe “Maximum Likelihood Estimates” are the values of (lambda,mu) where the likelihood function is maximized. What does the distribution of MLEs look like for this set of trees?\n\nmles &lt;- lapply(logliklist, function(x){find.mle(x, c(1,0), method='subplex')})\n\nmles_pars &lt;- t(sapply(mles, function(x) x$par))\n\npar(mfrow=c(1,2))\nhist(mles_pars[,1],main='',\n    xlab=bquote(hat(lambda)))\nhist(mles_pars[,2],main='',\n    xlab=bquote(hat(mu)))\n\nRemember that the true value of mu we used was mu=0. A lot of the models suggest values of mu &gt; 0, which is interesting. This tells us that, in practice, we will probably not be able to reliably estimate mu when it is close to zero but positive.\nWe can frame a hypothesis test. Null hypothesis: mu=0. Alternative hypothesis: mu &gt; 0. Supposing we wish to keep false-positives at 5% or less, we could propose the statistical test that we reject the null hypothesis if our estimate of mu is at the 95-th percentile or greater of this “null” distribution. In our case, this critical value of mu would be approximately\n\nmu_critical &lt;- quantile(mles_pars[,'mu'], 0.95) \n\nSo in the future, if we estimate a value of mu greater than mu_critical, and we say “this appears significantly different from zero, therefore we reject the null hypothesis”, we will be making a type 1 error (“false-positive”) less than 5% of the time. A 1/20 chance of a mistake is reasonable in some circumstances, but less so in others."
+  },
+  {
+    "objectID": "topics/sse_models/fit_bd.html#section",
+    "href": "topics/sse_models/fit_bd.html#section",
+    "title": "Estimating parameters of basic birth-death models",
+    "section": "1.",
+    "text": "1.\nSuppose we want a more stringent statistical test for the previous example. What is the critical value of mu corresponding to a 1% chance of comitting a Type 1 error?"
+  },
+  {
+    "objectID": "topics/sse_models/fit_bd.html#section-1",
+    "href": "topics/sse_models/fit_bd.html#section-1",
+    "title": "Estimating parameters of basic birth-death models",
+    "section": "2.",
+    "text": "2.\nModify the previous example to see how things change for a different value of lambda. Try lambda = 5. Does the critical value of mu change?"
+  },
+  {
+    "objectID": "topics/sse_models/fit_bd.html#section-2",
+    "href": "topics/sse_models/fit_bd.html#section-2",
+    "title": "Estimating parameters of basic birth-death models",
+    "section": "3.",
+    "text": "3.\nThe Generalized Likelihood Ratio Test: another way to assess whether mu is significantly different from zero is to fit two versions of the log-Likelihood function: the one we already did, and a constrained version of the model with the constraint mu=0 hard-coded in (so that we just estimate lambda). The model with more parameters will always fit the data better, but it may not fit the data “that much” better. The GLT looks a log(ratio of likelihoods) = difference(log-Likelihoods) to produce a test statistic (also, rather annoyingly in this case, called lambda). Use constrain(loglik, mu ~ 0) to create the constrained log-likelihood functions, and fit them to obtain new estimates for lambda. Use Wikipedia, Google, or your favorite (work-safe) AI companion to help you formulate GLT test statistics and assess significant departues from the null hypothesis mu=0. Do the results of this statistical test match with those from earlier? If not, why not?\n(Hint: the GLR also makes an asymptotic approximation. What is that approximation, and under what situations would it apply here?)"
+  },
+  {
+    "objectID": "topics/sse_models/fit_bd.html#section-3",
+    "href": "topics/sse_models/fit_bd.html#section-3",
+    "title": "Estimating parameters of basic birth-death models",
+    "section": "4.",
+    "text": "4.\nConsider a different null hypothesis: lambda &gt; mu. Develop a test statistic for this hypothesis, and identify critical values of your test statistic for 95% and 99% confidence regions. (Simulate large numbers of trees to obtain MLEs; don’t worry about GLR tests unless you want to)."
+  },
+  {
+    "objectID": "topics/sse_models/fit_bd.html#section-4",
+    "href": "topics/sse_models/fit_bd.html#section-4",
+    "title": "Estimating parameters of basic birth-death models",
     "section": "5.",
-    "text": "5.\nSet migration to be asymmetric. How easy is this to detect? You can start by assuming diversification and extinction rates are the same in each location."
+    "text": "5.\nIf your simulation produced trees with estimated values of lambda &lt; mu, plot these trees and comment on any features they exhibit that stand out to you. If your simulation did not produce trees with MLEs having lambda &lt; mu, simulate as necessary until you find some."
   },
   {
-    "objectID": "topics/sse_models/fit_bisse.html#section-5",
-    "href": "topics/sse_models/fit_bisse.html#section-5",
-    "title": "Fitting BiSSE models:",
+    "objectID": "topics/sse_models/fit_bd.html#section-5",
+    "href": "topics/sse_models/fit_bd.html#section-5",
+    "title": "Estimating parameters of basic birth-death models",
     "section": "6.",
-    "text": "6.\nUnder what circumstances do you think it is possible to reliably estimate extinction rates? Carry out an analysis to confirm or refute your hypothesis."
+    "text": "6.\nThe find.mle function uses a variety of numerical optimization algorithms to find MLEs. There is also a function called “mcmc”. Use this function with nsteps=1000 and w=c(2,1). Plot loglikelihood (“p”) against parameters to visualize profile log-likelihoods, and also plot lambda against mu. Comment on what you see, and discuss implications of correlations between lambda and mu. (Note: there are other mcmc routines besides this one in diversitree. If you have a favorit method, feel free to use it.)"
   },
   {
-    "objectID": "topics/sse_models/fit_bisse.html#section-6",
-    "href": "topics/sse_models/fit_bisse.html#section-6",
-    "title": "Fitting BiSSE models:",
+    "objectID": "topics/sse_models/fit_bd.html#section-6",
+    "href": "topics/sse_models/fit_bd.html#section-6",
+    "title": "Estimating parameters of basic birth-death models",
     "section": "7.",
-    "text": "7.\nAre there are any situations where it is difficult to estimate diversification rates? Comment on bias and variance."
+    "text": "7.\nThe previous exercises and examples used the max.taxa argument to condition on trees of a particular size. Flip a coin ( rbinom(1,1,0.5)). If it comes up heads (=1), change max.taxa to a different number and repeat Exercises 1-6. If it comes up tails (=0), replace max.taxa with max.t to simulate trees for a fixed amount of time (with variable numbers of taxa), and then repeat Exercises 1-6. (Caution: injudicious choices of lambda and max.t can make your computer explode. Ctrl + c is useful (on Mac, anyway) for cancelling calculations in the Terminal.)"
   },
   {
-    "objectID": "topics/sse_models/fit_bisse.html#section-7",
-    "href": "topics/sse_models/fit_bisse.html#section-7",
-    "title": "Fitting BiSSE models:",
-    "section": "8.",
-    "text": "8.\nNaively, one might think that having larger differences between parameters (lambda0 vs lambda1, for example) would make estimation easier. Why is that not necessarily the case with BiSSE models? Think back to aeons ago when we simulated these models under different parameter combinations…"
+    "objectID": "topics/mcmc_intro.html",
+    "href": "topics/mcmc_intro.html",
+    "title": "MCMC Primer",
+    "section": "",
+    "text": "By the end of this set of exercises and examples, we will code up a Metropolis-Hastings algorithm to carry out our own MCMC.\nWe will start by introducing some basic Monte Carlo techniques.\n\nMonte Carlo sampling to approximate \\(\\pi\\)\nMonte Carlo Integration\nImportance sampling\nMetropolis-Hastings and MCMC"
   },
   {
-    "objectID": "topics/sse_models/fit_bisse.html#section-8",
-    "href": "topics/sse_models/fit_bisse.html#section-8",
-    "title": "Fitting BiSSE models:",
-    "section": "9.",
-    "text": "9.\nTry setting a constraint in the log-likelihood function that mu0=mu1. Does this help estimate the other parameters? Does it make it easier to estimate the overall exctinction rate (mu)?\nHint: it works like this: loglik_constrained &lt;- constrain(loglik, mu0 ~ mu1)"
+    "objectID": "topics/mcmc_intro.html#question",
+    "href": "topics/mcmc_intro.html#question",
+    "title": "MCMC Primer",
+    "section": "Question:",
+    "text": "Question:\nHow many darts do you need to throw to approximate \\(\\pi\\) to three significant figures?\nIt seems like this approximation is doing.. ok. Against quadrature methods, this will not be nearly as computationally efficient. However, it is easy and straightforward to use, and generalizes well to more complicated tasks when quadrature methods are not tractable."
   },
   {
-    "objectID": "topics/sse_models/fit_bisse.html#probably-hard",
-    "href": "topics/sse_models/fit_bisse.html#probably-hard",
-    "title": "Fitting BiSSE models:",
-    "section": "10. (Probably hard)",
-    "text": "10. (Probably hard)\nLoad the phangorn package, and use the nni function to get all of the trees that are one nni move away from your simulated tree. Evaluate the likelihood of all of the trees (but just use the MLE for the other parameters). Does the true tree carry the highest likelihood? Do you think the tree itself is identifiable? (Hint: use the chronos function to produce ultrametric trees from the nni output)."
+    "objectID": "topics/mcmc_intro.html#example-3-importance-sampling",
+    "href": "topics/mcmc_intro.html#example-3-importance-sampling",
+    "title": "MCMC Primer",
+    "section": "Example 3: Importance sampling",
+    "text": "Example 3: Importance sampling\nThe mathematician in you might be annoyed at the crudeness of these approximations. After all, standard numerical quadrature approaches that we learn about in calculus are far more accurate. However, I hope you can appreciate the simplicity of this approach. Quadrature methods often need to be tailored for particular situations to work optimally. The code above can be used with very minor modification to evaluate any integral whatsoever.\nThis does have one rather extreme drawback, however. Let’s return to the Gaussian example in the previous section. Suppose instead I had asked you to calculate the definite integral with \\(a=5\\), \\(b=\\infty\\).\nLet’s plot this just to see what the trouble might be:\n\nplot(xvals, sapply(xvals, h), xlab='x', ylab='Gaussian',\n    type='l')\npoints(x=5, y=0,col='red')\n\n\n\n\n\n\n\n\nThere are some challenges here. I probably can’t use runif anymore because it requires a maximum value that is finite.\nNow, you might be saying to yourself, “Well, R has the ability to simulate variables from a standard normal distribuion, and our h(x) is just the PDF of a standard normal distribution. So, I could just simulate a large number of standard normal variates, and evaluate the fraction that are larger than 5.\n“Okay,” I reply. “Let’s do that.”\n\ntailsample &lt;- rnorm(1e4)\n\nWhile we’re at it, let’ just go ahead and use pnorm to figure out what the true answer really is:\n\ntailprob = 1-pnorm(5)\n\nprint(tailprob)\n\n[1] 2.866516e-07\n\n\nWhat proportion of tailsample was greater than 5?\n\nsum(tailsample &gt; 5)/length(tailsample)\n\n[1] 0\n\n\nI got zero. Let’s just use a larger sample:\n\ntailsample &lt;- rnorm(1e6)\nsum(tailsample &gt; 5)/length(tailsample)\n\n[1] 0\n\n\nI’m seeing that I usually get 0 or 1 value larger than 5, so that our Monte Carlo approximation to the tail probability is either 0 or 1e-6.\nThe problem is that we are simulating rare events. We need a workaround.\nThis is what Importance Sampling is designed to accommodate. The key is to multiply by 1:\n\\[\\begin{align*}\nPr(Z&gt;5) &= \\int_5^\\infty h(x) dx ,\\\\\n    &= \\int_5^\\infty (h(x)/w(x)) w(x) dx,\\\\\n    &= \\int \\frac{h}{w} dw.\n\\end{align*}\\]\nThe interpretation of these two integrals is different:\nIn the first line, \\(\\int f(x) dx\\) means to sample x uniformly, and then average the \\(f(x_i)\\)\nIn the second line, \\(\\int f(x)/w(x) dw\\) means to sample x from a PDF \\(w(x)\\), instead of uniformly, and then average the ratios \\(f(x)/w(x)\\) to obtain the integral\n(If you’re familiar with Measure theory, this is using the Radon Nikodym derivative.)\nThe only restriction is here is that \\(w(x)\\) needs to be supported on the original domain of integration for \\(x\\), in this case, \\([5, \\infty)\\).\nHere’s an example:\n\nh &lt;- function(x) dnorm(x)\nw &lt;- function(x) dexp(x-5, rate=1/10)\n\n\ngetimportanceest &lt;- function(ndarts){\n    importance_sample &lt;- 5 + rexp(ndarts, rate=1/10)\n\n    ratios &lt;- sapply(importance_sample[importance_sample&gt;5], \n            function(x){h(x)/w(x)} ) \n\n    return(mean(ratios))\n}"
+  },
+  {
+    "objectID": "topics/mcmc_intro.html#example-metropolis-hastings-algorithm-for-a-normal-distribution",
+    "href": "topics/mcmc_intro.html#example-metropolis-hastings-algorithm-for-a-normal-distribution",
+    "title": "MCMC Primer",
+    "section": "Example: Metropolis Hastings algorithm for a Normal distribution",
+    "text": "Example: Metropolis Hastings algorithm for a Normal distribution\nObviously we could just sample using rnorm, but this is to show that the algorithm we are about to use works.\nTarget distribution (we want to obtain samples from this distribution, and are pretending that we are unable to do so directly at the moment): We DO need to be able to evaluate \\(f(x)\\) for this to work:\n\nf &lt;- function(x) dnorm(x,mean=0)\n\nThe Metropolis-Hastings algorithm works as follows:\nAt iteration k:\n    propose an update, y, which may become x_{k+1}\n    Evaluate f(y), and compare to f(x_k)\n        if f(y) &gt; f(x_k), accept y as x_{k+1} = y;\n    otherwise, accept y as x_{k+1} = y with probability less than one;\nRepeat ad infinitum\nWe have most of the ingredients we need; what remains is how to propose and accept updates. The MH algorithm is very flexible, in the sense that we can update parameters however we like: we can sample \\(y \\sim w(x)\\), where \\(w(x)\\) is any distribution whatsoever (or almost so). The catch is: some choices of \\(w(x)\\) result in a Markov chain that converges to the stationary distribution more rapidly than others.\nFor this first example, we will set \\(w(x)\\) to a uniform distribution centered at the current state, \\(x_k\\), and adds a small increment in the interval \\([x_k-\\delta, x_k+\\delta]\\):\n\nw &lt;- function(x, delta) runif(1, min=x-delta, max=x+delta)\n\nLet’s write the algorithm:\n\n# initialize state (and allocate into a vector):\nninits &lt;- 100000 # how long to run\nxk &lt;- rep(0, length=ninits) \n\nTo illustrate the method, let’s make the initial value different from zero (in practice, it’s good for the initial value to not be in the tails of \\(f(x)\\)):\nBut I will chose a “bad” guess in the tails to illustrate the algorithm’s behavior:\n\nxk[1] &lt;- 20\n\nfor(i in 1:ninits){\n    y &lt;- w(xk[i],1)\n    \n    # Calculate the \"acceptance ratio\":\n    alpha &lt;- f(y)/f(xk[i])\n    \n    # alpha &gt; 1 means we always accept y; alpha &lt; 1 means we only sometimes do:\n    u &lt;- runif(1)\n    if(alpha &gt; u){xk[i+1] &lt;- y}else{xk[i+1]=xk[i]}  \n}\n\npar(mfrow=c(2,1))\nplot(xk, type='l', xlab='Iteration of MH algorithm', ylab=bquote(x[k]))\nhist(xk, xlab=bquote(x[k]), freq=F, ylim=c(0,0.5), breaks=100, xlim=c(-20,20))\nlines(seq(-20,20,length=1000), sapply(seq(-20,20,length=1000), f), col='red')\nlegend('topright',legend=c('f(x) (true)'),col='red',lty=1)\n\n\n\n\n\n\n\n\nFrom looking at the “traceplot” (time series, top row), you will notice that there is a clear transient period toward the start of the simulation. MCMC practitioners usually discard the early portion of their MCMC runs as a “burn-in” period. The histogram in the second row obviously has a tail that is much larger than it should be, by virtue of the bad initial guess.\nHowever, it is a nice feature of MCMC that in teh long run it will wander to the current distribution.\nThe steps of the Metropolis-Hastings algorithm are very similar to importance sampling. We have near-total freedom to choose the proposal distribution, in much the same way that we have near-total freedom to choose the sampling distribution in importance sampling.\nIn Metropolis-Hastings, it is typical but not required to center the proposal distribution on the current value, \\(x_k\\), which can change each iteration. Above, we did this by proposing values uniformly form \\([x_k - \\delta, x_k + \\delta]\\)."
+  },
+  {
+    "objectID": "topics/mcmc_intro.html#section",
+    "href": "topics/mcmc_intro.html#section",
+    "title": "MCMC Primer",
+    "section": "0.",
+    "text": "0.\nModify the example above to use different values of \\(\\delta\\) in the Uniform proposal distribution. What happens if you make \\(\\delta\\) very small or very large? In either case, you should observe “poor mixing” of the Markov chain, but for different reasons."
+  },
+  {
+    "objectID": "topics/mcmc_intro.html#section-1",
+    "href": "topics/mcmc_intro.html#section-1",
+    "title": "MCMC Primer",
+    "section": "1.",
+    "text": "1.\nModify the MH algorithm above to approximate samples from a Poisson distributionwith mean 10. Is there a convenient alternative to runif for your proposals, y?"
+  },
+  {
+    "objectID": "topics/mcmc_intro.html#section-2",
+    "href": "topics/mcmc_intro.html#section-2",
+    "title": "MCMC Primer",
+    "section": "2.",
+    "text": "2.\nUse the acf function to determine the autocorellation in your MCMC runs. Compare this to what you should see from an equal number of samples drawn using rnorm or rpois. In light of this, are your MCMC samples “independent and identically distributed (iid)”?"
+  },
+  {
+    "objectID": "topics/mcmc_intro.html#section-3",
+    "href": "topics/mcmc_intro.html#section-3",
+    "title": "MCMC Primer",
+    "section": "3.",
+    "text": "3.\nModify the MH algorithm for \\(f(x) = p*f_1(x) + (1-p)*f_2(x)\\), where \\(f_1\\) and \\(f_2\\) are both normal distributions but with means of \\(\\mu_1=-10\\) and \\(\\mu_2=10\\), respectively (you can assume they both have unit variance). This is called a “mixture” distribution. See how the MH algorithm performs for \\(p=1/2\\), and modify your proposal distribution to see if you can ever approximate the full distribution (rather than just one of the mixture components)."
+  },
+  {
+    "objectID": "topics/ancestral_character_estimation/nucleotide_models.html",
+    "href": "topics/ancestral_character_estimation/nucleotide_models.html",
+    "title": "Simulating nucleotide substitution models",
+    "section": "",
+    "text": "rm(list=ls())\nlibrary(ape)\nlibrary(expm) # matrix exponential\n\nLoading required package: Matrix\n\n\n\nAttaching package: 'expm'\n\n\nThe following object is masked from 'package:Matrix':\n\n    expm\n\n\nThe following object is masked from 'package:ape':\n\n    balance"
+  },
+  {
+    "objectID": "topics/ancestral_character_estimation/nucleotide_models.html#a-refresher-on-continuous-time-discrete-state-markov-chains",
+    "href": "topics/ancestral_character_estimation/nucleotide_models.html#a-refresher-on-continuous-time-discrete-state-markov-chains",
+    "title": "Simulating nucleotide substitution models",
+    "section": "",
+    "text": "rm(list=ls())\nlibrary(ape)\nlibrary(expm) # matrix exponential\n\nLoading required package: Matrix\n\n\n\nAttaching package: 'expm'\n\n\nThe following object is masked from 'package:Matrix':\n\n    expm\n\n\nThe following object is masked from 'package:ape':\n\n    balance"
+  },
+  {
+    "objectID": "topics/ancestral_character_estimation/nucleotide_models.html#section",
+    "href": "topics/ancestral_character_estimation/nucleotide_models.html#section",
+    "title": "Simulating nucleotide substitution models",
+    "section": "1.",
+    "text": "1.\nWrite down a 4-state Markov model corresponding to A, C, T, and G in DNA. Evaluate the transition probabilities as above (hint: the matrix exponential can be calculated in R using the expm function from the package of the same name. Feel free to assume whatever constraints on parameters you like (or none at all)."
+  },
+  {
+    "objectID": "topics/ancestral_character_estimation/nucleotide_models.html#section-1",
+    "href": "topics/ancestral_character_estimation/nucleotide_models.html#section-1",
+    "title": "Simulating nucleotide substitution models",
+    "section": "2.",
+    "text": "2.\nThe Jukes-Cantor model is the simplest nucleotide substitution model. By assumption, the equilibrium probabilities of each nucleotide are equal, and the transition rates between states are likewise all equal. What is the generator for this process? Write a function to describe transition probabilities as a function of time. (Hint: how many parameters will your generator have if all transitions between states occur at equal rates?)"
+  },
+  {
+    "objectID": "topics/ancestral_character_estimation/nucleotide_models.html#section-2",
+    "href": "topics/ancestral_character_estimation/nucleotide_models.html#section-2",
+    "title": "Simulating nucleotide substitution models",
+    "section": "3.",
+    "text": "3.\nThe K80 (Kimura, 1980) model elaborates on the Jukes-Cantor model by allowing substitutions within pyrimidines (C,T) and within purines (A, G) to occur at a different rate than “transversions” between pyrimidines and purines. In biology, substitutions between two purines or between two pyrimidines are called “transitions” (but in Markov chains, mathematicians refer to all state changes as transitions – confusing). Assuming that transitions (in the biological sense of the word) occur at the same rate regardless of whether the nucleotides are purines or pyrimidines, and assuming that transversions in either direction occur at the same rate, write the generator for the Markov process and write a function that calculates transition probabilities as a function of time."
+  },
+  {
+    "objectID": "topics/character_mapping/fit_stochastic_mapping.html",
+    "href": "topics/character_mapping/fit_stochastic_mapping.html",
+    "title": "Exercise set 1:",
+    "section": "",
+    "text": "rm(list=ls())\nlibrary(coda) # for handling output from MCMC\nlibrary(phytools) # simmap functions, Mk models\n\nThis code is complementary to the other one in this subdirectory, and walks through how to fit models using a character mapping approach.\nMost of the phytools stuff is based on the Mk model, which is a particular type of Markov model. M stands for “Markov”, and “k” indicates the number of states. (Lewis has an interesting discussion relating to the use of conditional likelihoods as a means of overcoming acquisition bias – the tendency to only record changes of state, and not maintenance of a character).\nfitMk fits the model to the data using nlminb, and optimization routine similar to quasi- Newton methods like BFGS. Compare this to ace.\nmcmcMk fits Mk models to trees using MCMC.\n\ndata(sunfish.tree)\ndata(sunfish.data)\n\n# extract discrete character (fish diet):\nsunfish_tipdata &lt;-setNames(sunfish.data$feeding.mode,\n    rownames(sunfish.data))\n\n# fit \"ER\" model\nfit.ER&lt;-fitMk(sunfish.tree,sunfish_tipdata,model=\"ER\")\nprint(fit.ER)\n\nThis will run for a while, and you should see traceplots updating in real time until it finishes:\n\n    fit.mcmc &lt;- mcmcMk(sunfish.tree, sunfish_tipdata, \n    model=\"ER\", ngen=10000)\n\nThe dimensions of fit.mcmc will be ngen * (number of parameters in the Mk model + 2), which for this run will be 10000 x 3 because we are only estimating a single parameter\nThe first column of fit.mcmc is timesteps of the MCMC routine. The last column of fit.mcmc is the logLikelihood, and the columns between first and last are the parameters at each timestep.\nWe can look at the traceplots:\n\nplot(fit.mcmc)\n\nWe can also plot the posterior distribution for our parameters. By default, this should toss out the first 20% of the MCMC updates as part of a burn-in (we discard transients because we only care about the stationary distribution of the MCMC run)\n\nplot(density(fit.mcmc))\n\nOf note, we can also use base R plotting to accomplish these things as well. Here is a histogram of the parameter values of the entire MCMC run:\n\nhist(fit.mcmc[,'[pisc,non]'],breaks=100) \n\n# and the last 80% of the run:\nhist(fit.mcmc[c(2001:10000),'[pisc,non]'],breaks=100) \n\nI also like to plot profile log- likelihood (logLik~parameters):\n\nplot(fit.mcmc[,'logLik']~fit.mcmc[,'[pisc,non]'])\n\nThis helps us visualize the peak of the likelihood surface. Can be useful for diagnosing convergence problems."
+  },
+  {
+    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#fitting-markov-models-with-stochastic-character-mapping",
+    "href": "topics/character_mapping/fit_stochastic_mapping.html#fitting-markov-models-with-stochastic-character-mapping",
+    "title": "Exercise set 1:",
+    "section": "",
+    "text": "rm(list=ls())\nlibrary(coda) # for handling output from MCMC\nlibrary(phytools) # simmap functions, Mk models\n\nThis code is complementary to the other one in this subdirectory, and walks through how to fit models using a character mapping approach.\nMost of the phytools stuff is based on the Mk model, which is a particular type of Markov model. M stands for “Markov”, and “k” indicates the number of states. (Lewis has an interesting discussion relating to the use of conditional likelihoods as a means of overcoming acquisition bias – the tendency to only record changes of state, and not maintenance of a character).\nfitMk fits the model to the data using nlminb, and optimization routine similar to quasi- Newton methods like BFGS. Compare this to ace.\nmcmcMk fits Mk models to trees using MCMC.\n\ndata(sunfish.tree)\ndata(sunfish.data)\n\n# extract discrete character (fish diet):\nsunfish_tipdata &lt;-setNames(sunfish.data$feeding.mode,\n    rownames(sunfish.data))\n\n# fit \"ER\" model\nfit.ER&lt;-fitMk(sunfish.tree,sunfish_tipdata,model=\"ER\")\nprint(fit.ER)\n\nThis will run for a while, and you should see traceplots updating in real time until it finishes:\n\n    fit.mcmc &lt;- mcmcMk(sunfish.tree, sunfish_tipdata, \n    model=\"ER\", ngen=10000)\n\nThe dimensions of fit.mcmc will be ngen * (number of parameters in the Mk model + 2), which for this run will be 10000 x 3 because we are only estimating a single parameter\nThe first column of fit.mcmc is timesteps of the MCMC routine. The last column of fit.mcmc is the logLikelihood, and the columns between first and last are the parameters at each timestep.\nWe can look at the traceplots:\n\nplot(fit.mcmc)\n\nWe can also plot the posterior distribution for our parameters. By default, this should toss out the first 20% of the MCMC updates as part of a burn-in (we discard transients because we only care about the stationary distribution of the MCMC run)\n\nplot(density(fit.mcmc))\n\nOf note, we can also use base R plotting to accomplish these things as well. Here is a histogram of the parameter values of the entire MCMC run:\n\nhist(fit.mcmc[,'[pisc,non]'],breaks=100) \n\n# and the last 80% of the run:\nhist(fit.mcmc[c(2001:10000),'[pisc,non]'],breaks=100) \n\nI also like to plot profile log- likelihood (logLik~parameters):\n\nplot(fit.mcmc[,'logLik']~fit.mcmc[,'[pisc,non]'])\n\nThis helps us visualize the peak of the likelihood surface. Can be useful for diagnosing convergence problems."
+  },
+  {
+    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section",
+    "href": "topics/character_mapping/fit_stochastic_mapping.html#section",
+    "title": "Exercise set 1:",
+    "section": "1.",
+    "text": "1.\nDid the fitMk routine produce the same estimates as mcmcMk? How would you determine this?"
+  },
+  {
+    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section-6",
+    "href": "topics/character_mapping/fit_stochastic_mapping.html#section-6",
+    "title": "Exercise set 1:",
+    "section": "1.",
+    "text": "1.\nWhy do you think the mcmcMk routine does not propose character mappings alongside parameters? Would anything be gained by treating character mappings as latent variables in MCMC and updating those alongside parameters?\nCheck this paper out if you are interested in MCMC and character mapping:\nMutations as Missing Data: Inferences on the Ages and Distributions of Nonsynonymous and Synonymous Mutations, by Rasmus Nielsen Genetics 159: 401-411 (September 2001)"
+  },
+  {
+    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section-7",
+    "href": "topics/character_mapping/fit_stochastic_mapping.html#section-7",
+    "title": "Exercise set 1:",
+    "section": "2.",
+    "text": "2.\nComment on any interesting things you see in profile loglikelihoods for models with multiple parameters. Can you deduce anything interesting about the geometry of the likelihood surface?"
+  },
+  {
+    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section-8",
+    "href": "topics/character_mapping/fit_stochastic_mapping.html#section-8",
+    "title": "Exercise set 1:",
+    "section": "3.",
+    "text": "3.\nIn the previous runs, how did we estimate Pi, the probability of the root states? Examine the fitMk and mcmcMk help page to determine what the default is. Try fitting the model under a different setting to see how results change."
+  },
+  {
+    "objectID": "topics/requirements.html",
+    "href": "topics/requirements.html",
+    "title": "Workshop Requirements",
+    "section": "",
+    "text": "Phylogeography, broadly speaking, is concerned with reconstructing evolutionary histories to explain spatial distributions of present-day organisms (be they pathogens, species of mammals, or anything else that evolves). Many of the methods used in phylogeography are common to other areas of evolutionary biology, and some are useful for answering questions like “Does a particular trait influence speciation?” We will attempt to cover as many of these different areas as time allows, but our emphasis will be to work towards an understanding of the mathematical models underpinning these methods, with a particular focus on the key assumptions they make that render them appropriate for certain types of analyses and not others.\nPrior experience in phylogenetics or evolution is not required or assumed, but enthusiasm is. Familiarity with statistics, Markov chains, R, and working in the terminal is great, but not strictly required. The target audience for this workshop includes all of the graduate students in MAGPIE, as well as anyone else who is interested to learn about mathematical models used in phylogeography and evolution of traits more generally.\nInstall all of the following things before Monday, September 29, so that we can hit the ground running.\n\n\n\nYou need to have R on your machine. It is usually good to have the latest version. Download it at https://www.r-project.org/\nYou will need the following R packages:\nape\nexpm\nphytools\ncoda\nmcmcensemble\ndiversitree\nThese will have their own dependencies – be sure to install those as necessary in order to get these packages to work.\nYou can use Rstudio if you wish, but it is not required. If you are OK with copying-and-pasting things into a terminal, you will be able to accomplish all of the tasks in this workshop.\nYou will probably like to have a text editor to modify the coding exercises to work through problems efficiently. If you want to do this workshop on Expert mode, consider learning how to use Vim at https://vim-adventures.com\n\n\n\nBEAST2 carries out Markov Chain Monte Carlo to reconstruct phylogenetic trees (and can do so jointly with geographic histories). There are a number of things you need to install to get this to work:\nBEAST2 (running MCMC): download at https://www.beast2.org/\nTracer (analyzing MCMC): download at https://tree.bio.ed.ac.uk/software/tracer/\nFigTree (examining trees produced by BEAST2): https://tree.bio.ed.ac.uk/software/figtree/\nAliView (useful for looking at multiple sequence alignments): https://ormbunkar.se/aliview/\n\n\n\nOn Thursday, we will try to get BEAST2 to run on the Fir server. You will need an account with the Digital Research Alliance of Canada. Create one here if you don’t have one aready:\nhttps://ccdb.alliancecan.ca/security/login"
+  },
+  {
+    "objectID": "topics/requirements.html#background",
+    "href": "topics/requirements.html#background",
+    "title": "Workshop Requirements",
+    "section": "",
+    "text": "Phylogeography, broadly speaking, is concerned with reconstructing evolutionary histories to explain spatial distributions of present-day organisms (be they pathogens, species of mammals, or anything else that evolves). Many of the methods used in phylogeography are common to other areas of evolutionary biology, and some are useful for answering questions like “Does a particular trait influence speciation?” We will attempt to cover as many of these different areas as time allows, but our emphasis will be to work towards an understanding of the mathematical models underpinning these methods, with a particular focus on the key assumptions they make that render them appropriate for certain types of analyses and not others.\nPrior experience in phylogenetics or evolution is not required or assumed, but enthusiasm is. Familiarity with statistics, Markov chains, R, and working in the terminal is great, but not strictly required. The target audience for this workshop includes all of the graduate students in MAGPIE, as well as anyone else who is interested to learn about mathematical models used in phylogeography and evolution of traits more generally.\nInstall all of the following things before Monday, September 29, so that we can hit the ground running."
+  },
+  {
+    "objectID": "topics/requirements.html#requirements-for-r",
+    "href": "topics/requirements.html#requirements-for-r",
+    "title": "Workshop Requirements",
+    "section": "",
+    "text": "You need to have R on your machine. It is usually good to have the latest version. Download it at https://www.r-project.org/\nYou will need the following R packages:\nape\nexpm\nphytools\ncoda\nmcmcensemble\ndiversitree\nThese will have their own dependencies – be sure to install those as necessary in order to get these packages to work.\nYou can use Rstudio if you wish, but it is not required. If you are OK with copying-and-pasting things into a terminal, you will be able to accomplish all of the tasks in this workshop.\nYou will probably like to have a text editor to modify the coding exercises to work through problems efficiently. If you want to do this workshop on Expert mode, consider learning how to use Vim at https://vim-adventures.com"
+  },
+  {
+    "objectID": "topics/requirements.html#requirements-for-beast2",
+    "href": "topics/requirements.html#requirements-for-beast2",
+    "title": "Workshop Requirements",
+    "section": "",
+    "text": "BEAST2 carries out Markov Chain Monte Carlo to reconstruct phylogenetic trees (and can do so jointly with geographic histories). There are a number of things you need to install to get this to work:\nBEAST2 (running MCMC): download at https://www.beast2.org/\nTracer (analyzing MCMC): download at https://tree.bio.ed.ac.uk/software/tracer/\nFigTree (examining trees produced by BEAST2): https://tree.bio.ed.ac.uk/software/figtree/\nAliView (useful for looking at multiple sequence alignments): https://ormbunkar.se/aliview/"
+  },
+  {
+    "objectID": "topics/requirements.html#requirements-for-compute-canada",
+    "href": "topics/requirements.html#requirements-for-compute-canada",
+    "title": "Workshop Requirements",
+    "section": "",
+    "text": "On Thursday, we will try to get BEAST2 to run on the Fir server. You will need an account with the Digital Research Alliance of Canada. Create one here if you don’t have one aready:\nhttps://ccdb.alliancecan.ca/security/login"
+  },
+  {
+    "objectID": "thursday.html",
+    "href": "thursday.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Welcome to Day 3! The state-dependent speciation and extinction (SSE) models we learned about yesterday will position us to understand the basic phylodynamics models (multi-type birth death, strucutred coalescent) used in BEAST2.\nReview the Requirements page to make sure you have everything installed for BEAST2.\nIf you want to get the most out of the afternoon sessions, make sure you have craeted an account with the Digital Research Alliance of Canada https://ccdb.alliancecan.ca/security/login\n\n\n\nThursday[October 2, 2025]\n\n\n\n\n\nIntro to Phylodynamics\n\nSlides\n\n\n\n\n\n\n\nBasic phylodynamics Models in R/BEAST2\n\nPractical session in R (or BEAST2)\n\n\n\n\n\n\n\n\n\nIntro to BEAST2\n\nShort description\n\n\n\n\n\n\nBasic BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\nMTBD and/or Structured Coalescent BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nSetting up server runs\n\nPractical session in BEAST2/remote server\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
+  },
+  {
+    "objectID": "monday.html",
+    "href": "monday.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Welcome to Day one!\nAfter an introduction to this week’s workshop, we will gain some experience working with phylogenetic trees in R before moving on to learn about ancestral character estimation and stochastic character mapping.\n\n\n\nMonday[September 29, 2025]\n\n\n\n\n\n0930–1030: Introduction to PhylogeogRaphy workshop\n\nSlides\n\n\n\n\n\n\n\n\n\n1030–1130: Intro to trees in R\n\nPractical session in R\n\n\n\n\n\n\n\n\n\n1030–1130: Simulating nucleotide substitution models\n\nPractical session in R\n\n\n\n\n\n\n\n1130–1230: Ancestral character estimation models\n\nSlides\n\n\n\n\n\n\n1330–1430: Simulating and fitting Markov models with ace\n\nPractical session in R\n\n\n\n:::\n\n\n1430–1530: Introduction to Stochastic character mapping – Simulating event times\n\nR demo\n\n\n\n:::\n\n\n\n\n1530–1630: Simulating Stochastic character mapping\n\nPractical session in R\n\n\n\n\n\n\n\n1530–1630: Fitting models with Stochastic character mapping\n\nPractical session in R\n\n\n\n\n\n\n\nOptional: MCMC Primer\n\nPractical session in R\n\n\n\n\n\n\n\n\n\nHosted by:"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Welcome to the PhylogeogRaphy workshop (with BEAST2)!\nSessions are split into roughly two-hour chunks that align with typical start/end times of classes, and are meant to be as self-contained as possible – so, feel free to come and go as necessary! All materials will posted here for you to catch up on content if desired.\nParticipants should bring their own laptops for hands-on exercises.\nFor specific requirements, see the Requirements for workshop page.\n\n\n\n\nRequirements for workshop\n\nPre-workshop instructions\n\n\n\n\n\n\n\n\nMonday[September 29, 2025]\n\n\n\n\n\nMonday: Discrete trait analysis I in R\n\nIntroduction, ancestral character estimation, and stochastic character mapping\n\n\n\n\n\n\n\n\n\nWednesday[October 1, 2025]\n\n\n\n\n\nWednesday: Discrete trait analysis II in R\n\nBirth-death models, state-dependent speciation and extinction (SSE) models\n\n\n\n\n\n\n\n\n\nThursday[October 2, 2025]\n\n\n\n\n\nThursday: Phylodynamics I in R and BEAST2\n\nPhylodynamics models (multi-type birth-death models, structured coalescents), and analysis in BEAST2\n\n\n\n\n\n\n\n\n\nFriday[October 3, 2025]\n\n\n\n\n\nFriday: Phylodynamics II in BEAST2\n\nAnalysis in BEAST2 and advanced topics (Bayesian stochastic search variable selection)\n\n\n\n\n\n\n\n\n\nHosted by:"
+  },
+  {
+    "objectID": "friday.html",
+    "href": "friday.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Welcome to Day 4! We will start by analyzing output from BEAST2 before learning about more advanced functionality (like Bayesian stochastic search variable selection). We will finish by carrying out comparative analyses from discrete trait methods to see what we gain from more computationally intensive analyses in BEAST2.\n\n\n\nFriday[October 3, 2025]\n\n\n\n\nAnalyze overnight BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nAdvanced BEAST2 topics: BSSVS\n\nSlides\n\n\n\n\n\n\n\nBSSVS\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nComparing discrete trait analysis and phylodynamics\n\nPractical session in BEAST2/R\n\n\n\n\n\n\n\nClosing\n\nSlides/Group discussion\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
+  },
+  {
+    "objectID": "wednesday.html",
+    "href": "wednesday.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Welcome to Day Two! We will briefly recap things we learned on Monday before moving on to birth-death models and state-dependent speciation and extinction (SSE) models in R.\n\n\n\nWednesday[October 1, 2025]\n\n\n\n\n0930-1030: Intro to birth-death models\n\nSlides\n\n\n\n\n\n1030-1130: Estimating parameters of basic birth-death models\n\nPractical session in R\n\n\n\n\n\n\n1130-1230: Intro to State-dependent Speciation and Extinction (SSE) models\n\nSlides\n\n\n\n\n\n\n\n1330-1430: Simulating State-dependent Speciation and Extinction (SSE) models\n\nPractical session in R\n\n\n\n\n\n\n\n1430-1530: Fitting BiSSE models\n\nPractical session in R\n\n\n\n\n\n\n\n1530-1630: Ancestral state reconstruction with BiSSE\n\nPractical session in R\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
+  },
+  {
+    "objectID": "thursday_preview.html",
+    "href": "thursday_preview.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Wow, you’re really getting ahead of yourself – it’s not Day 3 yet! Check back next week.\n\n\nHosted by:"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About This Workshop",
+    "section": "",
+    "text": "This workshop is organized and hosted by MAGPIE.\nIt is focused toward our graduate students, but anybody with interests in mathematical biology, evolutionary biology, infectious diseases, and statistics is welcome to join!\nThese pages are written by Alex Beams\nThank you Lars Berling for this website template!"
+  },
+  {
+    "objectID": "friday_preview.html",
+    "href": "friday_preview.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "… the workshop hasn’t even started! Check back later. \n\nHosted by:"
+  },
+  {
+    "objectID": "wednesday_preview.html",
+    "href": "wednesday_preview.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Whoops, it isn’t Day Two yet! Check back next week.\n\n\nHosted by:"
+  },
+  {
+    "objectID": "topics/character_mapping/stochastic_mapping.html",
+    "href": "topics/character_mapping/stochastic_mapping.html",
+    "title": "Simulating stochasting character mappings",
+    "section": "",
+    "text": "This code simulates stochastic character mappings on a fixed phylogenetic tree. In the real world, we would be given a phylogeny with tip data (diets of finches, geographic location of influenza, etc.). The goal would be to estimate quantities like the number of changes, the timing of changes, whether one trait is ancestral to the rest, and so on. This would involve fitting models to estimate the stochastic rate matrix describing discrete state changes, as well as the root states.\nIn this code, we are going to start by exploring how we would interpret estimates. This involves simulating character mappings on the phylogeny using the true values of the Markov chain model, and our goal is to see if we can count the number of state changes, describe timing of changes, etc.\nOnce we have a feel for how the model works, we will then try to do the harder task of fitting it to data.\nClear out the console:\n\nrm(list=ls())\n\n# load in the package for stochastic character mapping:\nlibrary(phytools)\n\nLoading required package: ape\n\n\nLoading required package: maps\n\n# Set the number of stochastic character mappings to simulate:\nnsim = 1000\n\n# Create a tree: (could modify this to load in a tree as well)\ntree &lt;- pbtree(n=50, scale=1)\n\nSpecify a transition rate matrix for two states (A and B). In practice, we would want to estimate this from data. Let’s pretend we’ve done that step, and this can be taken as known without error:\n\nQ &lt;- matrix(c(-1,1,\n              1,-1),2,2)\nrownames(Q) &lt;- colnames(Q) &lt;- c(\"A\",\"B\")\n\nWe can scale down Q to have fewer transitions (for illustrative purposes)\n\nQ &lt;- Q/10\n\nSimulate tip states on the tree using our stochastic rate matrix Q. In practice, this would be observed in data, and in many instances we could assume it is observed without error. For our purposes here, we simulate tip states from the model:\n\ntip_states &lt;- sim.Mk(tree, Q)\n\nHow many of each state do we oberve?\n\ntable(tip_states)\n\ntip_states\n A  B \n48  2 \n\n\nSimulate stochastic character maps nsim times using the tree, tip states, and our Q matrix: Note: don’t set model=Q, otherwise that just re-estimates Q. Need to specify Q=Q in the make.simmap call.\nWe simulate from the root to the tips. We have to specify an initial condition at the root:\n\nPi &lt;- c(.5,.5)\n\n# Run the sims!\nsims &lt;- make.simmap(tree, tip_states, Q=Q, pi=Pi, nsim=nsim)\n\nmake.simmap is sampling character histories conditioned on\nthe transition matrix\n\nQ =\n     A    B\nA -0.1  0.1\nB  0.1 -0.1\n(specified by the user);\nand (mean) root node prior probabilities\npi =\n  A   B \n0.5 0.5 \n\n\nDone.\n\n# Uncomment this to visualize the different character mappings:\n#par(mfrow=c(1,1))\n#for(i in 1:nsim){\n#   plot(sims[[i]])\n#   Sys.sleep(.0002)\n#}\n\n# Let's start by summarizing the number of mutations that happen across the whole tree:\n\ncounts &lt;- lapply(sims, countSimmap)\nnumMutations &lt;- sapply(counts, function(x) x$N)\ntransitions &lt;- lapply(counts, function(x)x$Tr)\ntransitions_AB &lt;- sapply(transitions, function(x) x[1,2])\ntransitions_BA &lt;- sapply(transitions, function(x) x[2,1])\n\nLet’s plot an example character mapped tree, and histograms of number of mutations:\n\nsim = sims[[1]]\n#  overall, and by type\npar(mfrow=c(2,2))\n## plot the character mapped tree\nsim$tip.label &lt;- paste(sim$tip.label, \"(\", tip_states, \")\", sep=\"\")\nplotSimmap(sim, fsize = 0.8)\n\nno colors provided. using the following legend:\n        A         B \n  \"black\" \"#DF536B\" \n\n## plottig make.simmap objects messes up margins, let's reset these:\npar(mar=c(5,4,4,1))\n## histogram of total mutations:\nhist(numMutations)\n## histogram of mutations A -&gt; B\nhist(transitions_AB)\n## histogram of mutations B -&gt; A\nhist(transitions_BA)"
+  },
+  {
+    "objectID": "topics/character_mapping/stochastic_mapping.html#section",
+    "href": "topics/character_mapping/stochastic_mapping.html#section",
+    "title": "Simulating stochasting character mappings",
+    "section": "1.",
+    "text": "1.\nTry changing the initial condition at the root (Pi, also called the “root prior”) to see how results change"
+  },
+  {
+    "objectID": "topics/character_mapping/stochastic_mapping.html#section-1",
+    "href": "topics/character_mapping/stochastic_mapping.html#section-1",
+    "title": "Simulating stochasting character mappings",
+    "section": "2.",
+    "text": "2.\nLook at the logL values in the sims. What do you think that describes? In particular, do you think the reported logL is P(tip data | Q), or P(tip data, character mapping | Q)?"
+  },
+  {
+    "objectID": "topics/character_mapping/stochastic_mapping.html#a.",
+    "href": "topics/character_mapping/stochastic_mapping.html#a.",
+    "title": "Simulating stochasting character mappings",
+    "section": "2.a.",
+    "text": "2.a.\nCreate a new sims list, replacing Q with jitter(Q). What do you notice about the logL values?"
+  },
+  {
+    "objectID": "topics/character_mapping/stochastic_mapping.html#section-2",
+    "href": "topics/character_mapping/stochastic_mapping.html#section-2",
+    "title": "Simulating stochasting character mappings",
+    "section": "3.",
+    "text": "3.\nIn light of the previous questions, can you figure out what the form of the log-likelihood is for make.simmap? (is it actually a likelihood, or is it a conditional likelihood?) That is, do you think the form of the log-likelihood is P(tip data | Q) or P(tip data | Q, Pi) ?"
+  },
+  {
+    "objectID": "topics/character_mapping/stochastic_mapping.html#section-3",
+    "href": "topics/character_mapping/stochastic_mapping.html#section-3",
+    "title": "Simulating stochasting character mappings",
+    "section": "4.",
+    "text": "4.\nCalculate the log-likelihood of the tip data on the tree under the assumed Q matrix. Compare the log-likelihood reported from ace with the log-likelihood returned by make.simmap. What do you notice?"
+  },
+  {
+    "objectID": "topics/character_mapping/stochastic_mapping.html#section-4",
+    "href": "topics/character_mapping/stochastic_mapping.html#section-4",
+    "title": "Simulating stochasting character mappings",
+    "section": "5.",
+    "text": "5.\nDo ace and make.simmap use the same log-likelihood? If not, what is the key difference? Use ?ace and ?make.simmap in your investigation."
+  },
+  {
+    "objectID": "topics/character_mapping/waiting_times_simulation.html",
+    "href": "topics/character_mapping/waiting_times_simulation.html",
+    "title": "Simulating event times",
+    "section": "",
+    "text": "An essential aspect of stochastic character mapping is simulating events in Markov chains. We have seen that we can calculate transition probabilities along branches of a phylogeny, and that these can be used to determine the the probability of particular configurations of states at the internal nodes and tips of a tree. Armed with a Markov model and the transition probabilities that can be calculated from its generator, we can simulate configurations of states at internal nodes.\n\n\n\n\n\nUsing a tree of your choice (simulated or otherwise), as well as data describing states of the tips, fit a Markov model of trait change using ace. Use the values in lik.anc to randomly sample configurations of internal node states. Is this equivalent to simulating evolution in the demo “Fitting and simulating Markov models on tees ucing ancestral character estimation (ace)?” Why or why not?\nThe strategy for stochastic character mapping relies on a different method of simulation than either strategy outlined in the previous exercise. Rather than determining states using transition probabilities for a fixed branch length, stochastic character mapping simulates a Markov model in continuous time.\nTo illustrate this idea, let’s begin with a simple 2-state Markov chain.\n\nQ &lt;- matrix(c(-1,10,1,-10), nrow=2, byrow=T)\n\nThe output of this simulation is going to be a list/vector/whatever of event times. We start at time zero. I’m going to decide at the outset that I want to simulate 100 changes of state, so we will have 100 event times.\n\nevents &lt;- rep(0, 100)\nstates &lt;- rep(1,100)\n\nWe have to decide whether to start in state 1 or state 2. I have declared that we start in state 1 above.\nBecause the rates of our stochastic rate matrix Q are constant in time, the time until each event is described by an exponential distribution. The process we are about to simulate is known as a . In our case, the rate could be different depending on the current state the sytem is in.\nIf we are currently in state 1, the time until the next event, i.e. the time until a transition to state 2, follows \\(T \\sim q_{21} e^{-q_{21}t}\\), and if we are currently in state 2, the time until a transition to state 1 follows $T q_{12} e^{-q_12t}\n\n\n\n\n\n\nVerify that the \\(q_{ij}\\) convention used in the previous sentence matches your intuition (and that I have not made a mistake).\n\nfor(i in 2:100){\n    state=states[i-1]       \n    events[i] &lt;- events[i-1] + rexp(1, rate= -Q[state, state])\n\n    states[i] &lt;- if(state==1){2}else{1}\n}\n\ndat &lt;- cbind(events, states)\nplot(states~events,dat)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPlot the simulation contained in dat from the previous exercise in a way that captures left continuity (i.e. that the times in events coincide with the state changes into the state in the same row)\nThis is the essence of stochastic character mapping – but with one crucial piece missing so far.\nThe general strategy for simulating character mappings is to use a two step approach. Step one: simulate a configuration of internal node states using a method similar to the ones alluded to at the start of this demo. Step two: simulate character mappings by simulating state transitions in continuous time in the manner just above, but while also ensuring that the start and end states of the process match with the nodal states at either end of a particular branch.\n\n\n\n\n\n\nModify the event time simulation to run for a pre-specified amount of time (or branch length) and an undetermined number of events. Simulate realizations of the stochastic process that accomodate predefined initial and final states. (Hint: the strategy originally described just tosses out any trajectories that don’t satisfy boundary conditions for a particular branch.) (Using the term ``boundary conditions’’ to mean the node states at either end of a branch.)\n\n\n\nIf the configuration of node states associated with a particular branch imlpy at least one state change, is there a convenient way to modify the event time simulator to always simulate at least one state change?\n\n\n\nIn simulating a stochastic character mapping, does it matter which direction we simulate from? Mathematically, there is no reason why we couldn’t use tip states as initial conditions, but that doesn’t really seem consistent with evolution occurring in forward time. Are there situations where the two approaches are equivalent? Why or why not?"
+  },
+  {
+    "objectID": "topics/character_mapping/waiting_times_simulation.html#section",
+    "href": "topics/character_mapping/waiting_times_simulation.html#section",
+    "title": "Simulating event times",
+    "section": "",
+    "text": "Using a tree of your choice (simulated or otherwise), as well as data describing states of the tips, fit a Markov model of trait change using ace. Use the values in lik.anc to randomly sample configurations of internal node states. Is this equivalent to simulating evolution in the demo “Fitting and simulating Markov models on tees ucing ancestral character estimation (ace)?” Why or why not?\nThe strategy for stochastic character mapping relies on a different method of simulation than either strategy outlined in the previous exercise. Rather than determining states using transition probabilities for a fixed branch length, stochastic character mapping simulates a Markov model in continuous time.\nTo illustrate this idea, let’s begin with a simple 2-state Markov chain.\n\nQ &lt;- matrix(c(-1,10,1,-10), nrow=2, byrow=T)\n\nThe output of this simulation is going to be a list/vector/whatever of event times. We start at time zero. I’m going to decide at the outset that I want to simulate 100 changes of state, so we will have 100 event times.\n\nevents &lt;- rep(0, 100)\nstates &lt;- rep(1,100)\n\nWe have to decide whether to start in state 1 or state 2. I have declared that we start in state 1 above.\nBecause the rates of our stochastic rate matrix Q are constant in time, the time until each event is described by an exponential distribution. The process we are about to simulate is known as a . In our case, the rate could be different depending on the current state the sytem is in.\nIf we are currently in state 1, the time until the next event, i.e. the time until a transition to state 2, follows \\(T \\sim q_{21} e^{-q_{21}t}\\), and if we are currently in state 2, the time until a transition to state 1 follows $T q_{12} e^{-q_12t}"
+  },
+  {
+    "objectID": "topics/character_mapping/waiting_times_simulation.html#section-1",
+    "href": "topics/character_mapping/waiting_times_simulation.html#section-1",
+    "title": "Simulating event times",
+    "section": "",
+    "text": "Verify that the \\(q_{ij}\\) convention used in the previous sentence matches your intuition (and that I have not made a mistake).\n\nfor(i in 2:100){\n    state=states[i-1]       \n    events[i] &lt;- events[i-1] + rexp(1, rate= -Q[state, state])\n\n    states[i] &lt;- if(state==1){2}else{1}\n}\n\ndat &lt;- cbind(events, states)\nplot(states~events,dat)"
+  },
+  {
+    "objectID": "topics/character_mapping/waiting_times_simulation.html#section-2",
+    "href": "topics/character_mapping/waiting_times_simulation.html#section-2",
+    "title": "Simulating event times",
+    "section": "",
+    "text": "Plot the simulation contained in dat from the previous exercise in a way that captures left continuity (i.e. that the times in events coincide with the state changes into the state in the same row)\nThis is the essence of stochastic character mapping – but with one crucial piece missing so far.\nThe general strategy for simulating character mappings is to use a two step approach. Step one: simulate a configuration of internal node states using a method similar to the ones alluded to at the start of this demo. Step two: simulate character mappings by simulating state transitions in continuous time in the manner just above, but while also ensuring that the start and end states of the process match with the nodal states at either end of a particular branch."
+  },
+  {
+    "objectID": "topics/character_mapping/waiting_times_simulation.html#section-3",
+    "href": "topics/character_mapping/waiting_times_simulation.html#section-3",
+    "title": "Simulating event times",
+    "section": "",
+    "text": "Modify the event time simulation to run for a pre-specified amount of time (or branch length) and an undetermined number of events. Simulate realizations of the stochastic process that accomodate predefined initial and final states. (Hint: the strategy originally described just tosses out any trajectories that don’t satisfy boundary conditions for a particular branch.) (Using the term ``boundary conditions’’ to mean the node states at either end of a branch.)"
+  },
+  {
+    "objectID": "topics/character_mapping/waiting_times_simulation.html#b",
+    "href": "topics/character_mapping/waiting_times_simulation.html#b",
+    "title": "Simulating event times",
+    "section": "",
+    "text": "If the configuration of node states associated with a particular branch imlpy at least one state change, is there a convenient way to modify the event time simulator to always simulate at least one state change?"
+  },
+  {
+    "objectID": "topics/character_mapping/waiting_times_simulation.html#section-4",
+    "href": "topics/character_mapping/waiting_times_simulation.html#section-4",
+    "title": "Simulating event times",
+    "section": "",
+    "text": "In simulating a stochastic character mapping, does it matter which direction we simulate from? Mathematically, there is no reason why we couldn’t use tip states as initial conditions, but that doesn’t really seem consistent with evolution occurring in forward time. Are there situations where the two approaches are equivalent? Why or why not?"
+  },
+  {
+    "objectID": "topics/ancestral_character_estimation/ace_sims.html",
+    "href": "topics/ancestral_character_estimation/ace_sims.html",
+    "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
+    "section": "",
+    "text": "rm(list=ls())\n\nlibrary(ape)\nlibrary(expm) # matrix exponential\n\nLoading required package: Matrix\n\n\n\nAttaching package: 'expm'\n\n\nThe following object is masked from 'package:Matrix':\n\n    expm\n\n\nThe following object is masked from 'package:ape':\n\n    balance\n\n\nThis code simulates output from the ace function. We will first try to grasp how the model behaves before we we try fitting it to data.\nAncestral character estimation methods can be based on a variety of approaches, but we will consider Markov chains superimposed on phylogenies. In the accompanying code to this we will learn how to fit these models using Maximum Likelihood, but for now we focus on simulating Markov chains on trees to understand how the models work.\nFirst, let’s simulate a tree and some tip states:\n\ntree &lt;- rcoal(10)\nx &lt;- sample(c(0,1), size=10, replace=T)\n\nplot(tree)\ntiplabels(pch=21,bg=x)\n\n\n\n\n\n\n\nfit &lt;- ace(x, tree, type='discrete', model='ARD')\n\nWarning in sqrt(diag(solve(h))): NaNs produced"
+  },
+  {
+    "objectID": "topics/ancestral_character_estimation/ace_sims.html#section",
+    "href": "topics/ancestral_character_estimation/ace_sims.html#section",
+    "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
+    "section": "1.",
+    "text": "1.\nSimulate some tip states on a tree using a Markov model that you specify, and use ace to estimate it. Scale this up for a large number of tip state configurations to see how the distribution of Maximum Likelihood estimates for the Markov model rates compare with the true values you supplied. Are there particular combinations of branch lengths and rates that make it difficult to estimate model parameters?"
+  },
+  {
+    "objectID": "topics/ancestral_character_estimation/ace_sims.html#hard-or-maybe-impossible",
+    "href": "topics/ancestral_character_estimation/ace_sims.html#hard-or-maybe-impossible",
+    "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
+    "section": "2. (Hard, or maybe impossible)",
+    "text": "2. (Hard, or maybe impossible)\nModify the code above to condition on a particular tip state configuration. This way, we can observe distributions of evolutionary scenarios consistent with a particular set of observations."
+  },
+  {
+    "objectID": "topics/ancestral_character_estimation/ace_sims.html#section-1",
+    "href": "topics/ancestral_character_estimation/ace_sims.html#section-1",
+    "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
+    "section": "3.",
+    "text": "3.\nIn a fitted ace object, there is an element called lik.anc which records the probability of ancestral states at each node of the tree. Plot a dataset of your choice with pie charts displaying the ancestral state probabilities associated with models that you fit using ace. Navigate through the help pages (?ace) to specify a few different versions of models that impose constraints on the Markov generator, Q. How sensitive are ancestral state probabilities to your modeling choices?"
+  },
+  {
+    "objectID": "topics/intro_to_phylodynamics/multi_type_birth_death.html",
+    "href": "topics/intro_to_phylodynamics/multi_type_birth_death.html",
+    "title": "Simulating Multi-type birth-death models in R",
+    "section": "",
+    "text": "library(TreeSim)\n\nWe will examine the multi-type birth death model without migration. Individuals in location i can give birth to individuals in any state j, but lineages do not move between locations otherwise.\n\nn&lt;-200\nlambda &lt;- rbind(c(.05,1),c(1,.2))\nmu &lt;- c(1,1)\nsampprob &lt;-c(0.1,0.1)\nnumbsim&lt;-1\ntrees&lt;-lapply(rep(n,numbsim),sim.bdtypes.stt.taxa,\n    lambdavector=lambda,deathvector=mu,sampprobvector=sampprob)\n\ntree &lt;- trees[[1]]\nplot(tree, show.tip.label=F)\ntiplabels(pch=21,bg=c('blue','red')[tree$states])"
+  },
+  {
+    "objectID": "topics/intro_to_phylodynamics/multi_type_birth_death.html#section",
+    "href": "topics/intro_to_phylodynamics/multi_type_birth_death.html#section",
+    "title": "Simulating Multi-type birth-death models in R",
+    "section": "1.",
+    "text": "1.\nSuppose that we want to use this as a model for phylogeography. The sim.bdtypes.stt.taxa function does not model migrations per se, but rather births from state i to state j. If migration events are rare relative to replication, then maybe this is a reasonable framework. Use ace(tree$state,tree) with any constraints on the Markov process’s Q matrix that you like, and plot the reconstructed ancestral states on the tree (unfortuantely, sim.bdtypes.stt.taxa does not give information about states along edges, or at internal nodes)."
+  },
+  {
+    "objectID": "topics/intro_to_phylodynamics/multi_type_birth_death.html#section-1",
+    "href": "topics/intro_to_phylodynamics/multi_type_birth_death.html#section-1",
+    "title": "Simulating Multi-type birth-death models in R",
+    "section": "2.",
+    "text": "2.\nIf the matrix \\(\\Lambda\\) has large off-diagonal terms, what do you see in your simulated trees? Could this be used to model anything biologically interesting?"
+  },
+  {
+    "objectID": "topics/intro_to_phylodynamics/multi_type_birth_death.html#section-2",
+    "href": "topics/intro_to_phylodynamics/multi_type_birth_death.html#section-2",
+    "title": "Simulating Multi-type birth-death models in R",
+    "section": "3.",
+    "text": "3.\nIf the matrix \\(\\Lambda\\) is diagonal-dominant but one of the \\(\\lambda_{ii}\\) is much larger than the rest, what do you notice about the simulated trees? Comment on the ability to estimate parameters of models in this case."
   },
   {
     "objectID": "topics/sse_models/sim_sse.html",
@@ -168,451 +595,87 @@
     "text": "4.\nSupose the organisms are intelligent, and preferentially move to the location where there is less predation, and/or better resources. Do the phylogenies contain information about the crummy habitat?"
   },
   {
-    "objectID": "topics/intro_to_phylodynamics/multi_type_birth_death.html",
-    "href": "topics/intro_to_phylodynamics/multi_type_birth_death.html",
-    "title": "Simulating Multi-type birth-death models in R",
+    "objectID": "topics/sse_models/fit_bisse.html",
+    "href": "topics/sse_models/fit_bisse.html",
+    "title": "Fitting BiSSE models:",
     "section": "",
-    "text": "library(TreeSim)\n\nWe will examine the multi-type birth death model without migration. Individuals in location i can give birth to individuals in any state j, but lineages do not move between locations otherwise.\n\nn&lt;-200\nlambda &lt;- rbind(c(.05,1),c(1,.2))\nmu &lt;- c(1,1)\nsampprob &lt;-c(0.1,0.1)\nnumbsim&lt;-1\ntrees&lt;-lapply(rep(n,numbsim),sim.bdtypes.stt.taxa,\n    lambdavector=lambda,deathvector=mu,sampprobvector=sampprob)\n\ntree &lt;- trees[[1]]\nplot(tree, show.tip.label=F)\ntiplabels(pch=21,bg=c('blue','red')[tree$states])"
+    "text": "library(diversitree)\nlibrary(mcmcensemble)\n\nNow that we have some familiarity with the behavior of the BISSE model, we will try to use the model for parameter estimation, i.e. inference via model fitting.\nOur goals are:\n\nLearn how to specify a BiSSE model log-likelihood\nLearn how to fit a BiSSE model\nLearn how to constrain models to simplify models/estimate fewer parameters\nDevelop an intuition for how well we can estimate parameters in practice\n\n\n\nSimulate a BiSSE tree:\n\npars &lt;- c(\n        lambda0=1,\n        lambda1=5,\n        mu0=0.8,\n        mu1=0.8,\n        q01=0.1,\n        q10=0.12)\n\ntree &lt;- tree.bisse(pars, max.taxa=50, x0=0)\n\nThe make.bisse function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))\n\nloglik &lt;- make.bisse(tree, tree$tip.state)\n\nWhat are the MLEs?\n\nmles &lt;- find.mle(loglik, pars)\n\n# these are the parmeter values that this infers: \nmlepars &lt;- mles$par\n\nLet’s visualize the likelihood surface one parameter at a time (holding the other parameter at the MLE; not exactly profile likelihoods, but pretty close):\n\nloglik_lambda0 &lt;- function(lambda0) loglik(c(lambda0,mlepars[-1]))\nloglik_lambda1 &lt;- function(lambda1) loglik(c(mlepars[1],lambda1,mlepars[3:6]))\n\nloglik_mu0 &lt;- function(mu0) loglik(c(mlepars[1:2],mu0,mlepars[4:6]))\nloglik_mu1 &lt;- function(mu1) loglik(c(mlepars[1:3],mu1,mlepars[5:6]))\n\nloglik_q01 &lt;- function(q01) loglik(c(mlepars[1:4],q01,mlepars[6]))\nloglik_q10 &lt;- function(q10) loglik(c(mlepars[1:5],q10))\n\nlambdavals &lt;- exp( seq(-5,2,length=50))\nmuvals &lt;- exp( seq(-9,2,length=50))\nqvals &lt;- exp( seq(-9,2, length=50) )\n\nloglik_lambda0_vals &lt;- sapply(lambdavals, loglik_lambda0)\nloglik_lambda1_vals &lt;- sapply(lambdavals, loglik_lambda1)\n\nloglik_mu0_vals &lt;- sapply(muvals, loglik_mu0)\nloglik_mu1_vals &lt;- sapply(muvals, loglik_mu1)\n\nloglik_q01_vals &lt;- sapply(qvals, loglik_q01)\nloglik_q10_vals &lt;- sapply(qvals, loglik_q10)\n\npar(mfrow=c(3,2))\n\nplot(lambdavals,loglik_lambda0_vals)\nabline(v=pars['lambda0'],col='red')\n\nplot(lambdavals,loglik_lambda1_vals)\nabline(v=pars['lambda1'],col='red')\n\nplot(muvals,loglik_mu0_vals)\nabline(v=pars['mu0'],col='red')\n\nplot(muvals,loglik_mu1_vals)\nabline(v=pars['mu1'],col='red')\n\nplot(qvals,loglik_q01_vals)\nabline(v=pars['q01'],col='red')\nplot(qvals,loglik_q10_vals)\nabline(v=pars['q10'],col='red')\n\nSo, varying each parameter while holding the others at the values used to produce the simulated BiSSE tree indicate MLEs may be a good approach to estimating parameters.\nThe MLE differs from the “true” values used to produce the simulation, but that is expected.\nOf course, these approximations of profile likelihoods don’t show how correlated some of these parameters are with each other. We might as well use MCMC to do this:\nThis will take quite a lot longer than our birth-death model with just 2 parameters:\n\nmcmc_fit &lt;- mcmc(loglik, pars, nsteps = 1000, w=1) \n\nLet’s use an ensemble MCMC sampler.\nThe make.bisse function will throw errors if we try to plug in negative parameters:\n\nloglik(-pars)\n\nFor an MCMC routine that isn’t included in diversitree, we need to ensure that we can do an unrestricted search in parameter space.\n\nloglik_transformed &lt;- function(pars){\n    pars &lt;- exp(pars)\n    loglik &lt;- loglik(pars)\n    return(loglik)\n}\n\nloglik_transformed(log(pars))\n# This looks ok.\n\nloglik_transformed(-log(pars))\n# Calculates a value without error. Good to go.\n\nnwalkers &lt;- 100 #ensemble size\nnsteps &lt;- 50 #number of times to update entire nsemble\n\n# initialize the ensemble:\nmcmc_inits &lt;- matrix(nrow=nwalkers, ncol=6)\nfor(i in 1:nwalkers) mcmc_inits[i,] &lt;- jitter(log(mlepars))\n\n# run the ensemble MCMC:\nmcmc_fit &lt;- MCMCEnsemble(loglik_transformed, \n    inits=mcmc_inits, \n    max.iter=nwalkers*nsteps, \n    n.walkers = nwalkers)\n\n# Now, let's try to visualize the profile log-likelihoods (including\n#   the curves we generated earlier):\n\npar(mfrow=c(3,2))\n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,1],xlab=bquote(lambda[0]))\n#lines(log(lambdavals), loglik_lambda0_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,2],xlab=bquote(lambda[1]))\n#lines(log(lambdavals), loglik_lambda1_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,3],xlab=bquote(mu[0]))\n#lines(log(muvals), loglik_mu0_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,4],xlab=bquote(mu[1]))\n#lines(log(muvals), loglik_mu1_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,5],xlab=bquote(q[0~1]))\n#lines(log(qvals), loglik_q01_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,6],xlab=bquote(q[1~0]))\n#lines(log(qvals), loglik_q10_vals, col='red') \n\nIn the vicinity of the MLE, the MCMC results should closely match the profile likelihood curves (but far away from the MLE there is no reason why they should be similar). (Why?)\nLooking at the different plots, are you able to say which parameters that are more difficult to estimate than others?\nWhat if we look at parameter correlations?\n\nplot(mcmc_fit$samples[,,1] ~ mcmc_fit$samples[,,2],\n    xlab=bquote(lambda[1]),\n    ylab=bquote(lambda[0]))"
   },
   {
-    "objectID": "topics/intro_to_phylodynamics/multi_type_birth_death.html#section",
-    "href": "topics/intro_to_phylodynamics/multi_type_birth_death.html#section",
-    "title": "Simulating Multi-type birth-death models in R",
+    "objectID": "topics/sse_models/fit_bisse.html#example-benchmarking-from-simulations",
+    "href": "topics/sse_models/fit_bisse.html#example-benchmarking-from-simulations",
+    "title": "Fitting BiSSE models:",
+    "section": "",
+    "text": "Simulate a BiSSE tree:\n\npars &lt;- c(\n        lambda0=1,\n        lambda1=5,\n        mu0=0.8,\n        mu1=0.8,\n        q01=0.1,\n        q10=0.12)\n\ntree &lt;- tree.bisse(pars, max.taxa=50, x0=0)\n\nThe make.bisse function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))\n\nloglik &lt;- make.bisse(tree, tree$tip.state)\n\nWhat are the MLEs?\n\nmles &lt;- find.mle(loglik, pars)\n\n# these are the parmeter values that this infers: \nmlepars &lt;- mles$par\n\nLet’s visualize the likelihood surface one parameter at a time (holding the other parameter at the MLE; not exactly profile likelihoods, but pretty close):\n\nloglik_lambda0 &lt;- function(lambda0) loglik(c(lambda0,mlepars[-1]))\nloglik_lambda1 &lt;- function(lambda1) loglik(c(mlepars[1],lambda1,mlepars[3:6]))\n\nloglik_mu0 &lt;- function(mu0) loglik(c(mlepars[1:2],mu0,mlepars[4:6]))\nloglik_mu1 &lt;- function(mu1) loglik(c(mlepars[1:3],mu1,mlepars[5:6]))\n\nloglik_q01 &lt;- function(q01) loglik(c(mlepars[1:4],q01,mlepars[6]))\nloglik_q10 &lt;- function(q10) loglik(c(mlepars[1:5],q10))\n\nlambdavals &lt;- exp( seq(-5,2,length=50))\nmuvals &lt;- exp( seq(-9,2,length=50))\nqvals &lt;- exp( seq(-9,2, length=50) )\n\nloglik_lambda0_vals &lt;- sapply(lambdavals, loglik_lambda0)\nloglik_lambda1_vals &lt;- sapply(lambdavals, loglik_lambda1)\n\nloglik_mu0_vals &lt;- sapply(muvals, loglik_mu0)\nloglik_mu1_vals &lt;- sapply(muvals, loglik_mu1)\n\nloglik_q01_vals &lt;- sapply(qvals, loglik_q01)\nloglik_q10_vals &lt;- sapply(qvals, loglik_q10)\n\npar(mfrow=c(3,2))\n\nplot(lambdavals,loglik_lambda0_vals)\nabline(v=pars['lambda0'],col='red')\n\nplot(lambdavals,loglik_lambda1_vals)\nabline(v=pars['lambda1'],col='red')\n\nplot(muvals,loglik_mu0_vals)\nabline(v=pars['mu0'],col='red')\n\nplot(muvals,loglik_mu1_vals)\nabline(v=pars['mu1'],col='red')\n\nplot(qvals,loglik_q01_vals)\nabline(v=pars['q01'],col='red')\nplot(qvals,loglik_q10_vals)\nabline(v=pars['q10'],col='red')\n\nSo, varying each parameter while holding the others at the values used to produce the simulated BiSSE tree indicate MLEs may be a good approach to estimating parameters.\nThe MLE differs from the “true” values used to produce the simulation, but that is expected.\nOf course, these approximations of profile likelihoods don’t show how correlated some of these parameters are with each other. We might as well use MCMC to do this:\nThis will take quite a lot longer than our birth-death model with just 2 parameters:\n\nmcmc_fit &lt;- mcmc(loglik, pars, nsteps = 1000, w=1) \n\nLet’s use an ensemble MCMC sampler.\nThe make.bisse function will throw errors if we try to plug in negative parameters:\n\nloglik(-pars)\n\nFor an MCMC routine that isn’t included in diversitree, we need to ensure that we can do an unrestricted search in parameter space.\n\nloglik_transformed &lt;- function(pars){\n    pars &lt;- exp(pars)\n    loglik &lt;- loglik(pars)\n    return(loglik)\n}\n\nloglik_transformed(log(pars))\n# This looks ok.\n\nloglik_transformed(-log(pars))\n# Calculates a value without error. Good to go.\n\nnwalkers &lt;- 100 #ensemble size\nnsteps &lt;- 50 #number of times to update entire nsemble\n\n# initialize the ensemble:\nmcmc_inits &lt;- matrix(nrow=nwalkers, ncol=6)\nfor(i in 1:nwalkers) mcmc_inits[i,] &lt;- jitter(log(mlepars))\n\n# run the ensemble MCMC:\nmcmc_fit &lt;- MCMCEnsemble(loglik_transformed, \n    inits=mcmc_inits, \n    max.iter=nwalkers*nsteps, \n    n.walkers = nwalkers)\n\n# Now, let's try to visualize the profile log-likelihoods (including\n#   the curves we generated earlier):\n\npar(mfrow=c(3,2))\n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,1],xlab=bquote(lambda[0]))\n#lines(log(lambdavals), loglik_lambda0_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,2],xlab=bquote(lambda[1]))\n#lines(log(lambdavals), loglik_lambda1_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,3],xlab=bquote(mu[0]))\n#lines(log(muvals), loglik_mu0_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,4],xlab=bquote(mu[1]))\n#lines(log(muvals), loglik_mu1_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,5],xlab=bquote(q[0~1]))\n#lines(log(qvals), loglik_q01_vals, col='red') \n\nplot(mcmc_fit$log.p ~ mcmc_fit$samples[,,6],xlab=bquote(q[1~0]))\n#lines(log(qvals), loglik_q10_vals, col='red') \n\nIn the vicinity of the MLE, the MCMC results should closely match the profile likelihood curves (but far away from the MLE there is no reason why they should be similar). (Why?)\nLooking at the different plots, are you able to say which parameters that are more difficult to estimate than others?\nWhat if we look at parameter correlations?\n\nplot(mcmc_fit$samples[,,1] ~ mcmc_fit$samples[,,2],\n    xlab=bquote(lambda[1]),\n    ylab=bquote(lambda[0]))"
+  },
+  {
+    "objectID": "topics/sse_models/fit_bisse.html#section",
+    "href": "topics/sse_models/fit_bisse.html#section",
+    "title": "Fitting BiSSE models:",
     "section": "1.",
-    "text": "1.\nSuppose that we want to use this as a model for phylogeography. The sim.bdtypes.stt.taxa function does not model migrations per se, but rather births from state i to state j. If migration events are rare relative to replication, then maybe this is a reasonable framework. Use ace(tree$state,tree) with any constraints on the Markov process’s Q matrix that you like, and plot the reconstructed ancestral states on the tree (unfortuantely, sim.bdtypes.stt.taxa does not give information about states along edges, or at internal nodes)."
+    "text": "1.\nWhat parameters seem to exhibit the highest correlations? The lowest? (You will need to plot all the pairwise combinations.) How do parameter estimates compare to the values used in the simulation? Is it easier to estimate one diversification rate or the other? Ditto for the mu’s and q’s. Why do you think that is?"
   },
   {
-    "objectID": "topics/intro_to_phylodynamics/multi_type_birth_death.html#section-1",
-    "href": "topics/intro_to_phylodynamics/multi_type_birth_death.html#section-1",
-    "title": "Simulating Multi-type birth-death models in R",
+    "objectID": "topics/sse_models/fit_bisse.html#section-1",
+    "href": "topics/sse_models/fit_bisse.html#section-1",
+    "title": "Fitting BiSSE models:",
     "section": "2.",
-    "text": "2.\nIf the matrix \\(\\Lambda\\) has large off-diagonal terms, what do you see in your simulated trees? Could this be used to model anything biologically interesting?"
+    "text": "2.\nIncrease the number of taxa in your tree. How does your ability to estimate parameters change? Does it become easier to estimate migration rates, or death rates? Using 200 taxa should be doable, but see how high you can go before computations get bogged down. Be sure to describe bias as well as precision of estimates."
   },
   {
-    "objectID": "topics/intro_to_phylodynamics/multi_type_birth_death.html#section-2",
-    "href": "topics/intro_to_phylodynamics/multi_type_birth_death.html#section-2",
-    "title": "Simulating Multi-type birth-death models in R",
+    "objectID": "topics/sse_models/fit_bisse.html#section-2",
+    "href": "topics/sse_models/fit_bisse.html#section-2",
+    "title": "Fitting BiSSE models:",
     "section": "3.",
-    "text": "3.\nIf the matrix \\(\\Lambda\\) is diagonal-dominant but one of the \\(\\lambda_{ii}\\) is much larger than the rest, what do you notice about the simulated trees? Comment on the ability to estimate parameters of models in this case."
+    "text": "3.\nYou may notice that the “data” (putting it in quotes b/c we simulated it) contain more information about one of the migration rates than the other. Which migration rate is it, and why do you think it might be easier to estimate it with greater precision than the other one? It might be helpful to plot the tree.\n\nplot(history.from.sim.discrete(tree, states=c(0,1)),\n                tree, col=c('0'='black','1'='red'))"
   },
   {
-    "objectID": "topics/ancestral_character_estimation/ace_sims.html",
-    "href": "topics/ancestral_character_estimation/ace_sims.html",
-    "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
-    "section": "",
-    "text": "rm(list=ls())\n\nlibrary(ape)\nlibrary(expm) # matrix exponential\n\nLoading required package: Matrix\n\n\n\nAttaching package: 'expm'\n\n\nThe following object is masked from 'package:Matrix':\n\n    expm\n\n\nThe following object is masked from 'package:ape':\n\n    balance\n\n\nThis code simulates output from the ace function. We will first try to grasp how the model behaves before we we try fitting it to data.\nAncestral character estimation methods can be based on a variety of approaches, but we will consider Markov chains superimposed on phylogenies. In the accompanying code to this we will learn how to fit these models using Maximum Likelihood, but for now we focus on simulating Markov chains on trees to understand how the models work.\nFirst, let’s simulate a tree and some tip states:\n\ntree &lt;- rcoal(10)\nx &lt;- sample(c(0,1), size=10, replace=T)\n\nplot(tree)\ntiplabels(pch=21,bg=x)\n\n\n\n\n\n\n\nfit &lt;- ace(x, tree, type='discrete', model='ARD')"
-  },
-  {
-    "objectID": "topics/ancestral_character_estimation/ace_sims.html#section",
-    "href": "topics/ancestral_character_estimation/ace_sims.html#section",
-    "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
-    "section": "1.",
-    "text": "1.\nSimulate some tip states on a tree using a Markov model that you specify, and use ace to estimate it. Scale this up for a large number of tip state configurations to see how the distribution of Maximum Likelihood estimates for the Markov model rates compare with the true values you supplied. Are there particular combinations of branch lengths and rates that make it difficult to estimate model parameters?"
-  },
-  {
-    "objectID": "topics/ancestral_character_estimation/ace_sims.html#hard-or-maybe-impossible",
-    "href": "topics/ancestral_character_estimation/ace_sims.html#hard-or-maybe-impossible",
-    "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
-    "section": "2. (Hard, or maybe impossible)",
-    "text": "2. (Hard, or maybe impossible)\nModify the code above to condition on a particular tip state configuration. This way, we can observe distributions of evolutionary scenarios consistent with a particular set of observations."
-  },
-  {
-    "objectID": "topics/ancestral_character_estimation/ace_sims.html#section-1",
-    "href": "topics/ancestral_character_estimation/ace_sims.html#section-1",
-    "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
-    "section": "3.",
-    "text": "3.\nIn a fitted ace object, there is an element called lik.anc which records the probability of ancestral states at each node of the tree. Plot a dataset of your choice with pie charts displaying the ancestral state probabilities associated with models that you fit using ace. Navigate through the help pages (?ace) to specify a few different versions of models that impose constraints on the Markov generator, Q. How sensitive are ancestral state probabilities to your modeling choices?"
-  },
-  {
-    "objectID": "topics/character_mapping/fit_stochastic_mapping.html",
-    "href": "topics/character_mapping/fit_stochastic_mapping.html",
-    "title": "Exercise set 1:",
-    "section": "",
-    "text": "rm(list=ls())\nlibrary(coda) # for handling output from MCMC\nlibrary(phytools) # simmap functions, Mk models\n\nThis code is complementary to the other one in this subdirectory, and walks through how to fit models using a character mapping approach.\nMost of the phytools stuff is based on the Mk model, which is a particular type of Markov model. M stands for “Markov”, and “k” indicates the number of states. (Lewis has an interesting discussion relating to the use of conditional likelihoods as a means of overcoming acquisition bias – the tendency to only record changes of state, and not maintenance of a character).\nfitMk fits the model to the data using nlminb, and optimization routine similar to quasi- Newton methods like BFGS. Compare this to ace.\nmcmcMk fits Mk models to trees using MCMC.\n\ndata(sunfish.tree)\ndata(sunfish.data)\n\n# extract discrete character (fish diet):\nsunfish_tipdata &lt;-setNames(sunfish.data$feeding.mode,\n    rownames(sunfish.data))\n\n# fit \"ER\" model\nfit.ER&lt;-fitMk(sunfish.tree,sunfish_tipdata,model=\"ER\")\nprint(fit.ER)\n\nThis will run for a while, and you should see traceplots updating in real time until it finishes:\n\n    fit.mcmc &lt;- mcmcMk(sunfish.tree, sunfish_tipdata, \n    model=\"ER\", ngen=10000)\n\nThe dimensions of fit.mcmc will be ngen * (number of parameters in the Mk model + 2), which for this run will be 10000 x 3 because we are only estimating a single parameter\nThe first column of fit.mcmc is timesteps of the MCMC routine. The last column of fit.mcmc is the logLikelihood, and the columns between first and last are the parameters at each timestep.\nWe can look at the traceplots:\n\nplot(fit.mcmc)\n\nWe can also plot the posterior distribution for our parameters. By default, this should toss out the first 20% of the MCMC updates as part of a burn-in (we discard transients because we only care about the stationary distribution of the MCMC run)\n\nplot(density(fit.mcmc))\n\nOf note, we can also use base R plotting to accomplish these things as well. Here is a histogram of the parameter values of the entire MCMC run:\n\nhist(fit.mcmc[,'[pisc,non]'],breaks=100) \n\n# and the last 80% of the run:\nhist(fit.mcmc[c(2001:10000),'[pisc,non]'],breaks=100) \n\nI also like to plot profile log- likelihood (logLik~parameters):\n\nplot(fit.mcmc[,'logLik']~fit.mcmc[,'[pisc,non]'])\n\nThis helps us visualize the peak of the likelihood surface. Can be useful for diagnosing convergence problems."
-  },
-  {
-    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#fitting-markov-models-with-stochastic-character-mapping",
-    "href": "topics/character_mapping/fit_stochastic_mapping.html#fitting-markov-models-with-stochastic-character-mapping",
-    "title": "Exercise set 1:",
-    "section": "",
-    "text": "rm(list=ls())\nlibrary(coda) # for handling output from MCMC\nlibrary(phytools) # simmap functions, Mk models\n\nThis code is complementary to the other one in this subdirectory, and walks through how to fit models using a character mapping approach.\nMost of the phytools stuff is based on the Mk model, which is a particular type of Markov model. M stands for “Markov”, and “k” indicates the number of states. (Lewis has an interesting discussion relating to the use of conditional likelihoods as a means of overcoming acquisition bias – the tendency to only record changes of state, and not maintenance of a character).\nfitMk fits the model to the data using nlminb, and optimization routine similar to quasi- Newton methods like BFGS. Compare this to ace.\nmcmcMk fits Mk models to trees using MCMC.\n\ndata(sunfish.tree)\ndata(sunfish.data)\n\n# extract discrete character (fish diet):\nsunfish_tipdata &lt;-setNames(sunfish.data$feeding.mode,\n    rownames(sunfish.data))\n\n# fit \"ER\" model\nfit.ER&lt;-fitMk(sunfish.tree,sunfish_tipdata,model=\"ER\")\nprint(fit.ER)\n\nThis will run for a while, and you should see traceplots updating in real time until it finishes:\n\n    fit.mcmc &lt;- mcmcMk(sunfish.tree, sunfish_tipdata, \n    model=\"ER\", ngen=10000)\n\nThe dimensions of fit.mcmc will be ngen * (number of parameters in the Mk model + 2), which for this run will be 10000 x 3 because we are only estimating a single parameter\nThe first column of fit.mcmc is timesteps of the MCMC routine. The last column of fit.mcmc is the logLikelihood, and the columns between first and last are the parameters at each timestep.\nWe can look at the traceplots:\n\nplot(fit.mcmc)\n\nWe can also plot the posterior distribution for our parameters. By default, this should toss out the first 20% of the MCMC updates as part of a burn-in (we discard transients because we only care about the stationary distribution of the MCMC run)\n\nplot(density(fit.mcmc))\n\nOf note, we can also use base R plotting to accomplish these things as well. Here is a histogram of the parameter values of the entire MCMC run:\n\nhist(fit.mcmc[,'[pisc,non]'],breaks=100) \n\n# and the last 80% of the run:\nhist(fit.mcmc[c(2001:10000),'[pisc,non]'],breaks=100) \n\nI also like to plot profile log- likelihood (logLik~parameters):\n\nplot(fit.mcmc[,'logLik']~fit.mcmc[,'[pisc,non]'])\n\nThis helps us visualize the peak of the likelihood surface. Can be useful for diagnosing convergence problems."
-  },
-  {
-    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section",
-    "href": "topics/character_mapping/fit_stochastic_mapping.html#section",
-    "title": "Exercise set 1:",
-    "section": "1.",
-    "text": "1.\nDid the fitMk routine produce the same estimates as mcmcMk? How would you determine this?"
-  },
-  {
-    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section-6",
-    "href": "topics/character_mapping/fit_stochastic_mapping.html#section-6",
-    "title": "Exercise set 1:",
-    "section": "1.",
-    "text": "1.\nWhy do you think the mcmcMk routine does not propose character mappings alongside parameters? Would anything be gained by treating character mappings as latent variables in MCMC and updating those alongside parameters?\nCheck this paper out if you are interested in MCMC and character mapping:\nMutations as Missing Data: Inferences on the Ages and Distributions of Nonsynonymous and Synonymous Mutations, by Rasmus Nielsen Genetics 159: 401-411 (September 2001)"
-  },
-  {
-    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section-7",
-    "href": "topics/character_mapping/fit_stochastic_mapping.html#section-7",
-    "title": "Exercise set 1:",
-    "section": "2.",
-    "text": "2.\nComment on any interesting things you see in profile loglikelihoods for models with multiple parameters. Can you deduce anything interesting about the geometry of the likelihood surface?"
-  },
-  {
-    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section-8",
-    "href": "topics/character_mapping/fit_stochastic_mapping.html#section-8",
-    "title": "Exercise set 1:",
-    "section": "3.",
-    "text": "3.\nIn the previous runs, how did we estimate Pi, the probability of the root states? Examine the fitMk and mcmcMk help page to determine what the default is. Try fitting the model under a different setting to see how results change."
-  },
-  {
-    "objectID": "topics/requirements.html",
-    "href": "topics/requirements.html",
-    "title": "Workshop Requirements",
-    "section": "",
-    "text": "Phylogeography, broadly speaking, is concerned with reconstructing evolutionary histories to explain spatial distributions of present-day organisms (be they pathogens, species of mammals, or anything else that evolves). Many of the methods used in phylogeography are common to other areas of evolutionary biology, and some are useful for answering questions like “Does a particular trait influence speciation?” We will attempt to cover as many of these different areas as time allows, but our emphasis will be to work towards an understanding of the mathematical models underpinning these methods, with a particular focus on the key assumptions they make that render them appropriate for certain types of analyses and not others.\nPrior experience in phylogenetics or evolution is not required or assumed, but enthusiasm is. Familiarity with statistics, Markov chains, R, and working in the terminal is great, but not strictly required. The target audience for this workshop includes all of the graduate students in MAGPIE, as well as anyone else who is interested to learn about mathematical models used in phylogeography and evolution of traits more generally.\nInstall all of the following things before Monday, September 29, so that we can hit the ground running.\n\n\n\nYou need to have R on your machine. It is usually good to have the latest version. Download it at https://www.r-project.org/\nYou will need the following R packages:\nape\nexpm\nphytools\ncoda\nmcmcensemble\ndiversitree\nThese will have their own dependencies – be sure to install those as necessary in order to get these packages to work.\nYou can use Rstudio if you wish, but it is not required. If you are OK with copying-and-pasting things into a terminal, you will be able to accomplish all of the tasks in this workshop.\nYou will probably like to have a text editor to modify the coding exercises to work through problems efficiently. If you want to do this workshop on Expert mode, consider learning how to use Vim at https://vim-adventures.com\n\n\n\nBEAST2 carries out Markov Chain Monte Carlo to reconstruct phylogenetic trees (and can do so jointly with geographic histories). There are a number of things you need to install to get this to work:\nBEAST2 (running MCMC): download at https://www.beast2.org/\nTracer (analyzing MCMC): download at https://tree.bio.ed.ac.uk/software/tracer/\nFigTree (examining trees produced by BEAST2): https://tree.bio.ed.ac.uk/software/figtree/\nAliView (useful for looking at multiple sequence alignments): https://ormbunkar.se/aliview/\n\n\n\nOn Thursday, we will try to get BEAST2 to run on the Fir server. You will need an account with the Digital Research Alliance of Canada. Create one here if you don’t have one aready:\nhttps://ccdb.alliancecan.ca/security/login"
-  },
-  {
-    "objectID": "topics/requirements.html#background",
-    "href": "topics/requirements.html#background",
-    "title": "Workshop Requirements",
-    "section": "",
-    "text": "Phylogeography, broadly speaking, is concerned with reconstructing evolutionary histories to explain spatial distributions of present-day organisms (be they pathogens, species of mammals, or anything else that evolves). Many of the methods used in phylogeography are common to other areas of evolutionary biology, and some are useful for answering questions like “Does a particular trait influence speciation?” We will attempt to cover as many of these different areas as time allows, but our emphasis will be to work towards an understanding of the mathematical models underpinning these methods, with a particular focus on the key assumptions they make that render them appropriate for certain types of analyses and not others.\nPrior experience in phylogenetics or evolution is not required or assumed, but enthusiasm is. Familiarity with statistics, Markov chains, R, and working in the terminal is great, but not strictly required. The target audience for this workshop includes all of the graduate students in MAGPIE, as well as anyone else who is interested to learn about mathematical models used in phylogeography and evolution of traits more generally.\nInstall all of the following things before Monday, September 29, so that we can hit the ground running."
-  },
-  {
-    "objectID": "topics/requirements.html#requirements-for-r",
-    "href": "topics/requirements.html#requirements-for-r",
-    "title": "Workshop Requirements",
-    "section": "",
-    "text": "You need to have R on your machine. It is usually good to have the latest version. Download it at https://www.r-project.org/\nYou will need the following R packages:\nape\nexpm\nphytools\ncoda\nmcmcensemble\ndiversitree\nThese will have their own dependencies – be sure to install those as necessary in order to get these packages to work.\nYou can use Rstudio if you wish, but it is not required. If you are OK with copying-and-pasting things into a terminal, you will be able to accomplish all of the tasks in this workshop.\nYou will probably like to have a text editor to modify the coding exercises to work through problems efficiently. If you want to do this workshop on Expert mode, consider learning how to use Vim at https://vim-adventures.com"
-  },
-  {
-    "objectID": "topics/requirements.html#requirements-for-beast2",
-    "href": "topics/requirements.html#requirements-for-beast2",
-    "title": "Workshop Requirements",
-    "section": "",
-    "text": "BEAST2 carries out Markov Chain Monte Carlo to reconstruct phylogenetic trees (and can do so jointly with geographic histories). There are a number of things you need to install to get this to work:\nBEAST2 (running MCMC): download at https://www.beast2.org/\nTracer (analyzing MCMC): download at https://tree.bio.ed.ac.uk/software/tracer/\nFigTree (examining trees produced by BEAST2): https://tree.bio.ed.ac.uk/software/figtree/\nAliView (useful for looking at multiple sequence alignments): https://ormbunkar.se/aliview/"
-  },
-  {
-    "objectID": "topics/requirements.html#requirements-for-compute-canada",
-    "href": "topics/requirements.html#requirements-for-compute-canada",
-    "title": "Workshop Requirements",
-    "section": "",
-    "text": "On Thursday, we will try to get BEAST2 to run on the Fir server. You will need an account with the Digital Research Alliance of Canada. Create one here if you don’t have one aready:\nhttps://ccdb.alliancecan.ca/security/login"
-  },
-  {
-    "objectID": "wednesday_preview.html",
-    "href": "wednesday_preview.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Whoops, it isn’t Day Two yet! Check back next week.\n\n\nHosted by:"
-  },
-  {
-    "objectID": "friday_preview.html",
-    "href": "friday_preview.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "… the workshop hasn’t even started! Check back later. \n\nHosted by:"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About This Workshop",
-    "section": "",
-    "text": "This workshop is organized and hosted by MAGPIE.\nIt is focused toward our graduate students, but anybody with interests in mathematical biology, evolutionary biology, infectious diseases, and statistics is welcome to join!\nThese pages are written by Alex Beams\nThank you Lars Berling for this website template!"
-  },
-  {
-    "objectID": "thursday_preview.html",
-    "href": "thursday_preview.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Wow, you’re really getting ahead of yourself – it’s not Day 3 yet! Check back next week.\n\n\nHosted by:"
-  },
-  {
-    "objectID": "friday.html",
-    "href": "friday.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Welcome to Day 4! We will start by analyzing output from BEAST2 before learning about more advanced functionality (like Bayesian stochastic search variable selection). We will finish by carrying out comparative analyses from discrete trait methods to see what we gain from more computationally intensive analyses in BEAST2.\n\n\n\nFriday[October 3, 2025]\n\n\n\n\nAnalyze overnight BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nAdvanced BEAST2 topics: BSSVS\n\nSlides\n\n\n\n\n\n\n\nBSSVS\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nComparing discrete trait analysis and phylodynamics\n\nPractical session in BEAST2/R\n\n\n\n\n\n\n\nClosing\n\nSlides/Group discussion\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
-  },
-  {
-    "objectID": "wednesday.html",
-    "href": "wednesday.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Welcome to Day Two! We will briefly recap things we learned on Monday before moving on to birth-death models and state-dependent speciation and extinction (SSE) models in R.\n\n\n\nWednesday[October 1, 2025]\n\n\n\n\n0930-1030: Intro to birth-death models\n\nSlides\n\n\n\n\n\n1030-1130: Estimating parameters of basic birth-death models\n\nPractical session in R\n\n\n\n\n\n\n1130-1230: Intro to State-dependent Speciation and Extinction (SSE) models\n\nSlides\n\n\n\n\n\n\n\n1330-1430: Simulating State-dependent Speciation and Extinction (SSE) models\n\nPractical session in R\n\n\n\n\n\n\n\n1430-1530: Fitting BiSSE models\n\nPractical session in R\n\n\n\n\n\n\n\n1530-1630: Ancestral state reconstruction with BiSSE\n\nPractical session in R\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
-  },
-  {
-    "objectID": "index_old.html",
-    "href": "index_old.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Welcome to the PhylogeogRaphy workshop (with BEAST2)!\nSessions are split into roughly two-hour chunks that align with typical start/end times of classes, and are meant to be as self-contained as possible – so, feel free to come and go as necessary! All materials will posted here for you to catch up on content if desired.\nParticipants should bring their own laptops for hands-on exercises.\nFor specific requirements, see the Requirements for workshop page.\n\n\n\n\nRequirements for workshop\n\nPre-workshop instructions\n\n\n\n\n\n\n\n\nMonday[September 29, 2025]\n\n\n\n\n\n0930–1030: Introduction to PhylogeogRaphy workshop\n\nSlides\n\n\n\n\n\n\n\n\n\n1030–1130: Working with phylogenetic trees in R\n\nPractical session in R\n\n\n\n\n\n\n\n\n\n1030–1130: Simulating nucleotide substitution models\n\nPractical session in R\n\n\n\n\n\n\n\n1130–1230: Ancestral character estimation models\n\nSlides\n\n\n\n\n\n\n1330–1430: Simulating and fitting Markov models with ace\n\nPractical session in R\n\n\n\n:::\n\n\n1430–1530: Introduction to Stochastic character mapping\n\nSlides\n\n\n\n:::\n\n\n\n\n1530–1630: Simulating Stochastic character mapping\n\nPractical session in R\n\n\n\n\n\n\n\n1530–1630: Fitting models with Stochastic character mapping\n\nShort description\n\n\n\n\n\n\n\nOptional: MCMC Primer\n\nPractical session in R\n\n\n\n\n\n\n\n\nWednesday[October 1, 2025]\n\n\n\n\n0930-1030: Intro to birth-death models\n\nSlides\n\n\n\n\n\n1030-1130: Estimating parameters of basic birth-death models\n\nPractical session in R\n\n\n\n\n\n\n1130-1230: Intro to State-dependent Speciation and Extinction (SSE) models\n\nSlides\n\n\n\n\n\n\n1330-1430: Simulating State-dependent Speciation and Extinction (SSE) models\n\nPractical session in R\n\n\n\n\n\n1430-1530: Fitting BiSSE models\n\nPractical session in R\n\n\n\n\n\n1530-1630: Ancestral state reconstruction with BiSSE\n\nPractical session in R\n\n\n\n\n\n\nThursday[October 2, 2025]\n\n\n\n\n\nIntro to Phylodynamics\n\nSlides\n\n\n\n\n\n\n\nBasic phylodynamics Models in R/BEAST2\n\nPractical session in R (or BEAST2)\n\n\n\n\n\n\n\n\n\nIntro to BEAST2\n\nShort description\n\n\n\n\n\n\nBasic BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\nMTBD and/or Structured Coalescent BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\nSetting up server runs\n\nPractical session in BEAST2/remote server\n\n\n\n\n\n\nFriday[October 3, 2025]\n\n\n\n\nAnalyze overnight BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nAdvanced BEAST2 topics: BSSVS\n\nSlides\n\n\n\n\n\n\n\nBSSVS\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nComparing discrete trait analysis and phylodynamics\n\nPractical session in BEAST2/R\n\n\n\n\n\n\n\nClosing\n\nSlides/Group discussion\n\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Welcome to the PhylogeogRaphy workshop (with BEAST2)!\nSessions are split into roughly two-hour chunks that align with typical start/end times of classes, and are meant to be as self-contained as possible – so, feel free to come and go as necessary! All materials will posted here for you to catch up on content if desired.\nParticipants should bring their own laptops for hands-on exercises.\nFor specific requirements, see the Requirements for workshop page.\n\n\n\n\nRequirements for workshop\n\nPre-workshop instructions\n\n\n\n\n\n\n\n\nMonday[September 29, 2025]\n\n\n\n\n\nMonday: Discrete trait analysis I in R\n\nIntroduction, ancestral character estimation, and stochastic character mapping\n\n\n\n\n\n\n\n\n\nWednesday[October 1, 2025]\n\n\n\n\n\nWednesday: Discrete trait analysis II in R\n\nBirth-death models, state-dependent speciation and extinction (SSE) models\n\n\n\n\n\n\n\n\n\nThursday[October 2, 2025]\n\n\n\n\n\nThursday: Phylodynamics I in R and BEAST2\n\nPhylodynamics models (multi-type birth-death models, structured coalescents), and analysis in BEAST2\n\n\n\n\n\n\n\n\n\nFriday[October 3, 2025]\n\n\n\n\n\nFriday: Phylodynamics II in BEAST2\n\nAnalysis in BEAST2 and advanced topics (Bayesian stochastic search variable selection)\n\n\n\n\n\n\n\n\n\nHosted by:"
-  },
-  {
-    "objectID": "monday.html",
-    "href": "monday.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Welcome to Day one!\nAfter an introduction to this week’s workshop, we will gain some experience working with phylogenetic trees in R before moving on to learn about ancestral character estimation and stochastic character mapping.\n\n\n\nMonday[September 29, 2025]\n\n\n\n\n\n0930–1030: Introduction to PhylogeogRaphy workshop\n\nSlides\n\n\n\n\n\n\n\n\n\n1030–1130: Working with phylogenetic trees in R\n\nPractical session in R\n\n\n\n\n\n\n\n\n\n1030–1130: Simulating nucleotide substitution models\n\nPractical session in R\n\n\n\n\n\n\n\n1130–1230: Ancestral character estimation models\n\nSlides\n\n\n\n\n\n\n1330–1430: Simulating and fitting Markov models with ace\n\nPractical session in R\n\n\n\n:::\n\n\n1430–1530: Introduction to Stochastic character mapping\n\nSlides\n\n\n\n:::\n\n\n\n\n1530–1630: Simulating Stochastic character mapping\n\nPractical session in R\n\n\n\n\n\n\n\n1530–1630: Fitting models with Stochastic character mapping\n\nShort description\n\n\n\n\n\n\n\nOptional: MCMC Primer\n\nPractical session in R\n\n\n\n\n\n\n\n\n\nHosted by:"
-  },
-  {
-    "objectID": "thursday.html",
-    "href": "thursday.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Welcome to Day 3! The state-dependent speciation and extinction (SSE) models we learned about yesterday will position us to understand the basic phylodynamics models (multi-type birth death, strucutred coalescent) used in BEAST2.\nReview the Requirements page to make sure you have everything installed for BEAST2.\nIf you want to get the most out of the afternoon sessions, make sure you have craeted an account with the Digital Research Alliance of Canada https://ccdb.alliancecan.ca/security/login\n\n\n\nThursday[October 2, 2025]\n\n\n\n\n\nIntro to Phylodynamics\n\nSlides\n\n\n\n\n\n\n\nBasic phylodynamics Models in R/BEAST2\n\nPractical session in R (or BEAST2)\n\n\n\n\n\n\n\n\n\nIntro to BEAST2\n\nShort description\n\n\n\n\n\n\nBasic BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\nMTBD and/or Structured Coalescent BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nSetting up server runs\n\nPractical session in BEAST2/remote server\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
-  },
-  {
-    "objectID": "beast2/intro/beast_intro.html",
-    "href": "beast2/intro/beast_intro.html",
-    "title": "Introduction to BEAST2",
-    "section": "",
-    "text": "Introduction to BEAST2\nFor ease of navigation, I am including (most of) the critical information for the workshop on this website, but you may find it valuable to navigate to\ntaming-the-beast.org\nwhich has a wealth of tutorials to help you navigate the BEAST2 ecosystem.\nSeveral of the example datasets we are using are available in the Taming the Beast tutorials. Briefly, they are:\n\nPrimate mitochrondrial DNA (12 sequences, 898 sites, no location data – for intro BEAST2 runs only)\nInfluenza H3N2 (60 sequences, 1762 sites, 2 locations)\nInfluenza H5N1 (43 sequences, 1698 sites, 5 locations)\nBat Rabies (372 sequences, 1353 sites, 14 locations, actually from the BEASTX tutorials but we will use it anyway)\nMERS (274 sequences, 30,130 sites, 2 host types – camel and human)"
-  },
-  {
-    "objectID": "topics/character_mapping/stochastic_mapping.html",
-    "href": "topics/character_mapping/stochastic_mapping.html",
-    "title": "Simulating stochasting character mappings",
-    "section": "",
-    "text": "This code simulates stochastic character mappings on a fixed phylogenetic tree. In the real world, we would be given a phylogeny with tip data (diets of finches, geographic location of influenza, etc.). The goal would be to estimate quantities like the number of changes, the timing of changes, whether one trait is ancestral to the rest, and so on. This would involve fitting models to estimate the stochastic rate matrix describing discrete state changes, as well as the root states.\nIn this code, we are going to start by exploring how we would interpret estimates. This involves simulating character mappings on the phylogeny using the true values of the Markov chain model, and our goal is to see if we can count the number of state changes, describe timing of changes, etc.\nOnce we have a feel for how the model works, we will then try to do the harder task of fitting it to data.\nClear out the console:\n\nrm(list=ls())\n\n# load in the package for stochastic character mapping:\nlibrary(phytools)\n\nLoading required package: ape\n\n\nLoading required package: maps\n\n# Set the number of stochastic character mappings to simulate:\nnsim = 1000\n\n# Create a tree: (could modify this to load in a tree as well)\ntree &lt;- pbtree(n=50, scale=1)\n\nSpecify a transition rate matrix for two states (A and B). In practice, we would want to estimate this from data. Let’s pretend we’ve done that step, and this can be taken as known without error:\n\nQ &lt;- matrix(c(-1,1,\n              1,-1),2,2)\nrownames(Q) &lt;- colnames(Q) &lt;- c(\"A\",\"B\")\n\nWe can scale down Q to have fewer transitions (for illustrative purposes)\n\nQ &lt;- Q/10\n\nSimulate tip states on the tree using our stochastic rate matrix Q. In practice, this would be observed in data, and in many instances we could assume it is observed without error. For our purposes here, we simulate tip states from the model:\n\ntip_states &lt;- sim.Mk(tree, Q)\n\nHow many of each state do we oberve?\n\ntable(tip_states)\n\ntip_states\n A  B \n44  6 \n\n\nSimulate stochastic character maps nsim times using the tree, tip states, and our Q matrix: Note: don’t set model=Q, otherwise that just re-estimates Q. Need to specify Q=Q in the make.simmap call.\nWe simulate from the root to the tips. We have to specify an initial condition at the root:\n\nPi &lt;- c(.5,.5)\n\n# Run the sims!\nsims &lt;- make.simmap(tree, tip_states, Q=Q, pi=Pi, nsim=nsim)\n\nmake.simmap is sampling character histories conditioned on\nthe transition matrix\n\nQ =\n     A    B\nA -0.1  0.1\nB  0.1 -0.1\n(specified by the user);\nand (mean) root node prior probabilities\npi =\n  A   B \n0.5 0.5 \n\n\nDone.\n\n# Uncomment this to visualize the different character mappings:\n#par(mfrow=c(1,1))\n#for(i in 1:nsim){\n#   plot(sims[[i]])\n#   Sys.sleep(.0002)\n#}\n\n# Let's start by summarizing the number of mutations that happen across the whole tree:\n\ncounts &lt;- lapply(sims, countSimmap)\nnumMutations &lt;- sapply(counts, function(x) x$N)\ntransitions &lt;- lapply(counts, function(x)x$Tr)\ntransitions_AB &lt;- sapply(transitions, function(x) x[1,2])\ntransitions_BA &lt;- sapply(transitions, function(x) x[2,1])\n\nLet’s plot an example character mapped tree, and histograms of number of mutations:\n\nsim = sims[[1]]\n#  overall, and by type\npar(mfrow=c(2,2))\n## plot the character mapped tree\nsim$tip.label &lt;- paste(sim$tip.label, \"(\", tip_states, \")\", sep=\"\")\nplotSimmap(sim, fsize = 0.8)\n\nno colors provided. using the following legend:\n        A         B \n  \"black\" \"#DF536B\" \n\n## plottig make.simmap objects messes up margins, let's reset these:\npar(mar=c(5,4,4,1))\n## histogram of total mutations:\nhist(numMutations)\n## histogram of mutations A -&gt; B\nhist(transitions_AB)\n## histogram of mutations B -&gt; A\nhist(transitions_BA)"
-  },
-  {
-    "objectID": "topics/character_mapping/stochastic_mapping.html#section",
-    "href": "topics/character_mapping/stochastic_mapping.html#section",
-    "title": "Simulating stochasting character mappings",
-    "section": "1.",
-    "text": "1.\nTry changing the initial condition at the root (Pi, also called the “root prior”) to see how results change"
-  },
-  {
-    "objectID": "topics/character_mapping/stochastic_mapping.html#section-1",
-    "href": "topics/character_mapping/stochastic_mapping.html#section-1",
-    "title": "Simulating stochasting character mappings",
-    "section": "2.",
-    "text": "2.\nLook at the logL values in the sims. What do you think that describes? In particular, do you think the reported logL is P(tip data | Q), or P(tip data, character mapping | Q)?"
-  },
-  {
-    "objectID": "topics/character_mapping/stochastic_mapping.html#a.",
-    "href": "topics/character_mapping/stochastic_mapping.html#a.",
-    "title": "Simulating stochasting character mappings",
-    "section": "2.a.",
-    "text": "2.a.\nCreate a new sims list, replacing Q with jitter(Q). What do you notice about the logL values?"
-  },
-  {
-    "objectID": "topics/character_mapping/stochastic_mapping.html#section-2",
-    "href": "topics/character_mapping/stochastic_mapping.html#section-2",
-    "title": "Simulating stochasting character mappings",
-    "section": "3.",
-    "text": "3.\nIn light of the previous questions, can you figure out what the form of the log-likelihood is for make.simmap? (is it actually a likelihood, or is it a conditional likelihood?) That is, do you think the form of the log-likelihood is P(tip data | Q) or P(tip data | Q, Pi) ?"
-  },
-  {
-    "objectID": "topics/character_mapping/stochastic_mapping.html#section-3",
-    "href": "topics/character_mapping/stochastic_mapping.html#section-3",
-    "title": "Simulating stochasting character mappings",
+    "objectID": "topics/sse_models/fit_bisse.html#section-3",
+    "href": "topics/sse_models/fit_bisse.html#section-3",
+    "title": "Fitting BiSSE models:",
     "section": "4.",
-    "text": "4.\nCalculate the log-likelihood of the tip data on the tree under the assumed Q matrix. Compare the log-likelihood reported from ace with the log-likelihood returned by make.simmap. What do you notice?"
+    "text": "4.\nSet migrations to be the same order of magnitude as the the diversification rates and repat the analysis. Does it always become easier to estimate q_ij?"
   },
   {
-    "objectID": "topics/character_mapping/stochastic_mapping.html#section-4",
-    "href": "topics/character_mapping/stochastic_mapping.html#section-4",
-    "title": "Simulating stochasting character mappings",
+    "objectID": "topics/sse_models/fit_bisse.html#section-4",
+    "href": "topics/sse_models/fit_bisse.html#section-4",
+    "title": "Fitting BiSSE models:",
     "section": "5.",
-    "text": "5.\nDo ace and make.simmap use the same log-likelihood? If not, what is the key difference? Use ?ace and ?make.simmap in your investigation."
+    "text": "5.\nSet migration to be asymmetric. How easy is this to detect? You can start by assuming diversification and extinction rates are the same in each location."
   },
   {
-    "objectID": "topics/ancestral_character_estimation/nucleotide_models.html",
-    "href": "topics/ancestral_character_estimation/nucleotide_models.html",
-    "title": "Simulating nucleotide substitution models",
-    "section": "",
-    "text": "rm(list=ls())\nlibrary(ape)\nlibrary(expm) # matrix exponential\n\nLoading required package: Matrix\n\n\n\nAttaching package: 'expm'\n\n\nThe following object is masked from 'package:Matrix':\n\n    expm\n\n\nThe following object is masked from 'package:ape':\n\n    balance"
-  },
-  {
-    "objectID": "topics/ancestral_character_estimation/nucleotide_models.html#a-refresher-on-continuous-time-discrete-state-markov-chains",
-    "href": "topics/ancestral_character_estimation/nucleotide_models.html#a-refresher-on-continuous-time-discrete-state-markov-chains",
-    "title": "Simulating nucleotide substitution models",
-    "section": "",
-    "text": "rm(list=ls())\nlibrary(ape)\nlibrary(expm) # matrix exponential\n\nLoading required package: Matrix\n\n\n\nAttaching package: 'expm'\n\n\nThe following object is masked from 'package:Matrix':\n\n    expm\n\n\nThe following object is masked from 'package:ape':\n\n    balance"
-  },
-  {
-    "objectID": "topics/ancestral_character_estimation/nucleotide_models.html#section",
-    "href": "topics/ancestral_character_estimation/nucleotide_models.html#section",
-    "title": "Simulating nucleotide substitution models",
-    "section": "1.",
-    "text": "1.\nWrite down a 4-state Markov model corresponding to A, C, T, and G in DNA. Evaluate the transition probabilities as above (hint: the matrix exponential can be calculated in R using the expm function from the package of the same name. Feel free to assume whatever constraints on parameters you like (or none at all)."
-  },
-  {
-    "objectID": "topics/ancestral_character_estimation/nucleotide_models.html#section-1",
-    "href": "topics/ancestral_character_estimation/nucleotide_models.html#section-1",
-    "title": "Simulating nucleotide substitution models",
-    "section": "2.",
-    "text": "2.\nThe Jukes-Cantor model is the simplest nucleotide substitution model. By assumption, the equilibrium probabilities of each nucleotide are equal, and the transition rates between states are likewise all equal. What is the generator for this process? Write a function to describe transition probabilities as a function of time. (Hint: how many parameters will your generator have if all transitions between states occur at equal rates?)"
-  },
-  {
-    "objectID": "topics/ancestral_character_estimation/nucleotide_models.html#section-2",
-    "href": "topics/ancestral_character_estimation/nucleotide_models.html#section-2",
-    "title": "Simulating nucleotide substitution models",
-    "section": "3.",
-    "text": "3.\nThe K80 (Kimura, 1980) model elaborates on the Jukes-Cantor model by allowing substitutions within pyrimidines (C,T) and within purines (A, G) to occur at a different rate than “transversions” between pyrimidines and purines. In biology, substitutions between two purines or between two pyrimidines are called “transitions” (but in Markov chains, mathematicians refer to all state changes as transitions – confusing). Assuming that transitions (in the biological sense of the word) occur at the same rate regardless of whether the nucleotides are purines or pyrimidines, and assuming that transversions in either direction occur at the same rate, write the generator for the Markov process and write a function that calculates transition probabilities as a function of time."
-  },
-  {
-    "objectID": "topics/mcmc_intro.html",
-    "href": "topics/mcmc_intro.html",
-    "title": "MCMC Primer",
-    "section": "",
-    "text": "By the end of this set of exercises and examples, we will code up a Metropolis-Hastings algorithm to carry out our own MCMC.\nWe will start by introducing some basic Monte Carlo techniques.\n\nMonte Carlo sampling to approximate \\(\\pi\\)\nMonte Carlo Integration\nImportance sampling\nMetropolis-Hastings and MCMC"
-  },
-  {
-    "objectID": "topics/mcmc_intro.html#question",
-    "href": "topics/mcmc_intro.html#question",
-    "title": "MCMC Primer",
-    "section": "Question:",
-    "text": "Question:\nHow many darts do you need to throw to approximate \\(\\pi\\) to three significant figures?\nIt seems like this approximation is doing.. ok. Against quadrature methods, this will not be nearly as computationally efficient. However, it is easy and straightforward to use, and generalizes well to more complicated tasks when quadrature methods are not tractable."
-  },
-  {
-    "objectID": "topics/mcmc_intro.html#example-3-importance-sampling",
-    "href": "topics/mcmc_intro.html#example-3-importance-sampling",
-    "title": "MCMC Primer",
-    "section": "Example 3: Importance sampling",
-    "text": "Example 3: Importance sampling\nThe mathematician in you might be annoyed at the crudeness of these approximations. After all, standard numerical quadrature approaches that we learn about in calculus are far more accurate. However, I hope you can appreciate the simplicity of this approach. Quadrature methods often need to be tailored for particular situations to work optimally. The code above can be used with very minor modification to evaluate any integral whatsoever.\nThis does have one rather extreme drawback, however. Let’s return to the Gaussian example in the previous section. Suppose instead I had asked you to calculate the definite integral with \\(a=5\\), \\(b=\\infty\\).\nLet’s plot this just to see what the trouble might be:\n\nplot(xvals, sapply(xvals, h), xlab='x', ylab='Gaussian',\n    type='l')\npoints(x=5, y=0,col='red')\n\n\n\n\n\n\n\n\nThere are some challenges here. I probably can’t use runif anymore because it requires a maximum value that is finite.\nNow, you might be saying to yourself, “Well, R has the ability to simulate variables from a standard normal distribuion, and our h(x) is just the PDF of a standard normal distribution. So, I could just simulate a large number of standard normal variates, and evaluate the fraction that are larger than 5.\n“Okay,” I reply. “Let’s do that.”\n\ntailsample &lt;- rnorm(1e4)\n\nWhile we’re at it, let’ just go ahead and use pnorm to figure out what the true answer really is:\n\ntailprob = 1-pnorm(5)\n\nprint(tailprob)\n\n[1] 2.866516e-07\n\n\nWhat proportion of tailsample was greater than 5?\n\nsum(tailsample &gt; 5)/length(tailsample)\n\n[1] 0\n\n\nI got zero. Let’s just use a larger sample:\n\ntailsample &lt;- rnorm(1e6)\nsum(tailsample &gt; 5)/length(tailsample)\n\n[1] 2e-06\n\n\nI’m seeing that I usually get 0 or 1 value larger than 5, so that our Monte Carlo approximation to the tail probability is either 0 or 1e-6.\nThe problem is that we are simulating rare events. We need a workaround.\nThis is what Importance Sampling is designed to accommodate. The key is to multiply by 1:\n\\[\\begin{align*}\nPr(Z&gt;5) &= \\int_5^\\infty h(x) dx ,\\\\\n    &= \\int_5^\\infty (h(x)/w(x)) w(x) dx,\\\\\n    &= \\int \\frac{h}{w} dw.\n\\end{align*}\\]\nThe interpretation of these two integrals is different:\nIn the first line, \\(\\int f(x) dx\\) means to sample x uniformly, and then average the \\(f(x_i)\\)\nIn the second line, \\(\\int f(x)/w(x) dw\\) means to sample x from a PDF \\(w(x)\\), instead of uniformly, and then average the ratios \\(f(x)/w(x)\\) to obtain the integral\n(If you’re familiar with Measure theory, this is using the Radon Nikodym derivative.)\nThe only restriction is here is that \\(w(x)\\) needs to be supported on the original domain of integration for \\(x\\), in this case, \\([5, \\infty)\\).\nHere’s an example:\n\nh &lt;- function(x) dnorm(x)\nw &lt;- function(x) dexp(x-5, rate=1/10)\n\n\ngetimportanceest &lt;- function(ndarts){\n    importance_sample &lt;- 5 + rexp(ndarts, rate=1/10)\n\n    ratios &lt;- sapply(importance_sample[importance_sample&gt;5], \n            function(x){h(x)/w(x)} ) \n\n    return(mean(ratios))\n}"
-  },
-  {
-    "objectID": "topics/mcmc_intro.html#example-metropolis-hastings-algorithm-for-a-normal-distribution",
-    "href": "topics/mcmc_intro.html#example-metropolis-hastings-algorithm-for-a-normal-distribution",
-    "title": "MCMC Primer",
-    "section": "Example: Metropolis Hastings algorithm for a Normal distribution",
-    "text": "Example: Metropolis Hastings algorithm for a Normal distribution\nObviously we could just sample using rnorm, but this is to show that the algorithm we are about to use works.\nTarget distribution (we want to obtain samples from this distribution, and are pretending that we are unable to do so directly at the moment): We DO need to be able to evaluate \\(f(x)\\) for this to work:\n\nf &lt;- function(x) dnorm(x,mean=0)\n\nThe Metropolis-Hastings algorithm works as follows:\nAt iteration k:\n    propose an update, y, which may become x_{k+1}\n    Evaluate f(y), and compare to f(x_k)\n        if f(y) &gt; f(x_k), accept y as x_{k+1} = y;\n    otherwise, accept y as x_{k+1} = y with probability less than one;\nRepeat ad infinitum\nWe have most of the ingredients we need; what remains is how to propose and accept updates. The MH algorithm is very flexible, in the sense that we can update parameters however we like: we can sample \\(y \\sim w(x)\\), where \\(w(x)\\) is any distribution whatsoever (or almost so). The catch is: some choices of \\(w(x)\\) result in a Markov chain that converges to the stationary distribution more rapidly than others.\nFor this first example, we will set \\(w(x)\\) to a uniform distribution centered at the current state, \\(x_k\\), and adds a small increment in the interval \\([x_k-\\delta, x_k+\\delta]\\):\n\nw &lt;- function(x, delta) runif(1, min=x-delta, max=x+delta)\n\nLet’s write the algorithm:\n\n# initialize state (and allocate into a vector):\nninits &lt;- 100000 # how long to run\nxk &lt;- rep(0, length=ninits) \n\nTo illustrate the method, let’s make the initial value different from zero (in practice, it’s good for the initial value to not be in the tails of \\(f(x)\\)):\nBut I will chose a “bad” guess in the tails to illustrate the algorithm’s behavior:\n\nxk[1] &lt;- 20\n\nfor(i in 1:ninits){\n    y &lt;- w(xk[i],1)\n    \n    # Calculate the \"acceptance ratio\":\n    alpha &lt;- f(y)/f(xk[i])\n    \n    # alpha &gt; 1 means we always accept y; alpha &lt; 1 means we only sometimes do:\n    u &lt;- runif(1)\n    if(alpha &gt; u){xk[i+1] &lt;- y}else{xk[i+1]=xk[i]}  \n}\n\npar(mfrow=c(2,1))\nplot(xk, type='l', xlab='Iteration of MH algorithm', ylab=bquote(x[k]))\nhist(xk, xlab=bquote(x[k]), freq=F, ylim=c(0,0.5), breaks=100, xlim=c(-20,20))\nlines(seq(-20,20,length=1000), sapply(seq(-20,20,length=1000), f), col='red')\nlegend('topright',legend=c('f(x) (true)'),col='red',lty=1)\n\n\n\n\n\n\n\n\nFrom looking at the “traceplot” (time series, top row), you will notice that there is a clear transient period toward the start of the simulation. MCMC practitioners usually discard the early portion of their MCMC runs as a “burn-in” period. The histogram in the second row obviously has a tail that is much larger than it should be, by virtue of the bad initial guess.\nHowever, it is a nice feature of MCMC that in teh long run it will wander to the current distribution.\nThe steps of the Metropolis-Hastings algorithm are very similar to importance sampling. We have near-total freedom to choose the proposal distribution, in much the same way that we have near-total freedom to choose the sampling distribution in importance sampling.\nIn Metropolis-Hastings, it is typical but not required to center the proposal distribution on the current value, \\(x_k\\), which can change each iteration. Above, we did this by proposing values uniformly form \\([x_k - \\delta, x_k + \\delta]\\)."
-  },
-  {
-    "objectID": "topics/mcmc_intro.html#section",
-    "href": "topics/mcmc_intro.html#section",
-    "title": "MCMC Primer",
-    "section": "0.",
-    "text": "0.\nModify the example above to use different values of \\(\\delta\\) in the Uniform proposal distribution. What happens if you make \\(\\delta\\) very small or very large? In either case, you should observe “poor mixing” of the Markov chain, but for different reasons."
-  },
-  {
-    "objectID": "topics/mcmc_intro.html#section-1",
-    "href": "topics/mcmc_intro.html#section-1",
-    "title": "MCMC Primer",
-    "section": "1.",
-    "text": "1.\nModify the MH algorithm above to approximate samples from a Poisson distributionwith mean 10. Is there a convenient alternative to runif for your proposals, y?"
-  },
-  {
-    "objectID": "topics/mcmc_intro.html#section-2",
-    "href": "topics/mcmc_intro.html#section-2",
-    "title": "MCMC Primer",
-    "section": "2.",
-    "text": "2.\nUse the acf function to determine the autocorellation in your MCMC runs. Compare this to what you should see from an equal number of samples drawn using rnorm or rpois. In light of this, are your MCMC samples “independent and identically distributed (iid)”?"
-  },
-  {
-    "objectID": "topics/mcmc_intro.html#section-3",
-    "href": "topics/mcmc_intro.html#section-3",
-    "title": "MCMC Primer",
-    "section": "3.",
-    "text": "3.\nModify the MH algorithm for \\(f(x) = p*f_1(x) + (1-p)*f_2(x)\\), where \\(f_1\\) and \\(f_2\\) are both normal distributions but with means of \\(\\mu_1=-10\\) and \\(\\mu_2=10\\), respectively (you can assume they both have unit variance). This is called a “mixture” distribution. See how the MH algorithm performs for \\(p=1/2\\), and modify your proposal distribution to see if you can ever approximate the full distribution (rather than just one of the mixture components)."
-  },
-  {
-    "objectID": "topics/sse_models/fit_bd.html",
-    "href": "topics/sse_models/fit_bd.html",
-    "title": "Estimating parameters of basic birth-death models",
-    "section": "",
-    "text": "Now that we have some familiarity with the behavior of the birth-death model, we will try to use the model for parameter inference, i.e. model fitting.\nModel fitting just consists of selecting parameters of the model so that the simulated outputs match our data as closely as possible. The dumbest way imaginable is to use the “eyeball test”. A more sophisticated approach is to use likelihoods.\nThe diversitree package has a convenient class of functions that can be used to define likelihood functions for different models. We will start with the simplest case - the birth death model.\n\n\nSimulate a list of bd trees here\n\ntree &lt;- tree.bd(c(lambda=5,mu=0), max.taxa = 20)\nloglik &lt;- make.bd(tree)\n\nThe make.bd function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))\nLet’s visualize the likelihood surface one parameter at a time (holding the other parameter at the true value):\n\nloglik_lambda &lt;- function(lambda) loglik(c(lambda,0))\nloglik_mu &lt;- function(mu) loglik(c(1,mu))\n\nlambdavals &lt;- exp( seq(-3,3,length=30))\nmuvals &lt;- exp( seq(-6,2,length=30))\nloglik_lambda_vals &lt;- sapply(lambdavals, loglik_lambda)\nloglik_mu_vals &lt;- sapply(muvals, loglik_mu)\n\nloglik_max &lt;- max(c(loglik_lambda_vals, loglik_mu_vals))\n\npar(mfrow=c(2,1))\nplot(lambdavals, loglik_lambda_vals, ylim=c(loglik_max-10,loglik_max+2))\nplot(muvals, loglik_mu_vals, ylim=c(loglik_max-10,loglik_max+2))\n\nThe maximum of the log-likelihood function roughly coincides with the parameters we used. How variable is this? Let’s simulate more trees:\n\ntreelist &lt;- trees(c(lambda=5,mu=0), \n        type=c(\"bd\"), n=100, \n        max.taxa=20)\n\n# make a log-likelihood function for each tree:\nlogliklist &lt;- lapply(treelist, make.bd )\n\nloglik_lambda_list &lt;- lapply(logliklist, function(x){\n            function(lambda) x(c(lambda,0))\n    })\n\nloglik_mu_list &lt;- lapply(logliklist, function(x){\n            function(mu) x(c(mu,0))\n    })\n\n\nlambdavals &lt;- exp( seq(-2,2,length=30))\nmuvals &lt;- exp( seq(-6,2,length=30))\n\nloglik_lambda_list_vals &lt;- sapply(loglik_lambda_list,\n    function(x){sapply(lambdavals, x)})\n\nloglik_mu_list_vals &lt;- sapply(loglik_mu_list,\n    function(x){sapply(muvals, x)})\n\nloglik_max &lt;- max(c(loglik_lambda_list_vals,loglik_mu_list_vals))\nloglik_min &lt;- min(c(loglik_lambda_list_vals,loglik_mu_list_vals))\n\n\npar(mfrow=c(2,1))\nplot(lambdavals, loglik_lambda_list_vals[,1]/abs(max(loglik_lambda_list_vals[,1])))\nfor(i in 2:100){\n    lines(lambdavals, loglik_lambda_list_vals[,i]/abs(max(loglik_lambda_list_vals[,i])))\n}\n\nplot(muvals, loglik_mu_list_vals[,1]/abs(max(loglik_mu_list_vals[,1])))\nfor(i in 2:100){\n    lines(muvals, loglik_mu_list_vals[,i]/abs(max(loglik_mu_list_vals[,i])))\n}\n\nSo, most of these have a maximum in the vicinity of the true parameter values that we suppied, but not all.\nThe “Maximum Likelihood Estimates” are the values of (lambda,mu) where the likelihood function is maximized. What does the distribution of MLEs look like for this set of trees?\n\nmles &lt;- lapply(logliklist, function(x){find.mle(x, c(1,0), method='subplex')})\n\nmles_pars &lt;- t(sapply(mles, function(x) x$par))\n\npar(mfrow=c(1,2))\nhist(mles_pars[,1],main='',\n    xlab=bquote(hat(lambda)))\nhist(mles_pars[,2],main='',\n    xlab=bquote(hat(mu)))\n\nRemember that the true value of mu we used was mu=0. A lot of the models suggest values of mu &gt; 0, which is interesting. This tells us that, in practice, we will probably not be able to reliably estimate mu when it is close to zero but positive.\nWe can frame a hypothesis test. Null hypothesis: mu=0. Alternative hypothesis: mu &gt; 0. Supposing we wish to keep false-positives at 5% or less, we could propose the statistical test that we reject the null hypothesis if our estimate of mu is at the 95-th percentile or greater of this “null” distribution. In our case, this critical value of mu would be approximately\n\nmu_critical &lt;- quantile(mles_pars[,'mu'], 0.95) \n\nSo in the future, if we estimate a value of mu greater than mu_critical, and we say “this appears significantly different from zero, therefore we reject the null hypothesis”, we will be making a type 1 error (“false-positive”) less than 5% of the time. A 1/20 chance of a mistake is reasonable in some circumstances, but less so in others."
-  },
-  {
-    "objectID": "topics/sse_models/fit_bd.html#example-1-benchmarking-from-simulations",
-    "href": "topics/sse_models/fit_bd.html#example-1-benchmarking-from-simulations",
-    "title": "Estimating parameters of basic birth-death models",
-    "section": "",
-    "text": "Simulate a list of bd trees here\n\ntree &lt;- tree.bd(c(lambda=5,mu=0), max.taxa = 20)\nloglik &lt;- make.bd(tree)\n\nThe make.bd function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))\nLet’s visualize the likelihood surface one parameter at a time (holding the other parameter at the true value):\n\nloglik_lambda &lt;- function(lambda) loglik(c(lambda,0))\nloglik_mu &lt;- function(mu) loglik(c(1,mu))\n\nlambdavals &lt;- exp( seq(-3,3,length=30))\nmuvals &lt;- exp( seq(-6,2,length=30))\nloglik_lambda_vals &lt;- sapply(lambdavals, loglik_lambda)\nloglik_mu_vals &lt;- sapply(muvals, loglik_mu)\n\nloglik_max &lt;- max(c(loglik_lambda_vals, loglik_mu_vals))\n\npar(mfrow=c(2,1))\nplot(lambdavals, loglik_lambda_vals, ylim=c(loglik_max-10,loglik_max+2))\nplot(muvals, loglik_mu_vals, ylim=c(loglik_max-10,loglik_max+2))\n\nThe maximum of the log-likelihood function roughly coincides with the parameters we used. How variable is this? Let’s simulate more trees:\n\ntreelist &lt;- trees(c(lambda=5,mu=0), \n        type=c(\"bd\"), n=100, \n        max.taxa=20)\n\n# make a log-likelihood function for each tree:\nlogliklist &lt;- lapply(treelist, make.bd )\n\nloglik_lambda_list &lt;- lapply(logliklist, function(x){\n            function(lambda) x(c(lambda,0))\n    })\n\nloglik_mu_list &lt;- lapply(logliklist, function(x){\n            function(mu) x(c(mu,0))\n    })\n\n\nlambdavals &lt;- exp( seq(-2,2,length=30))\nmuvals &lt;- exp( seq(-6,2,length=30))\n\nloglik_lambda_list_vals &lt;- sapply(loglik_lambda_list,\n    function(x){sapply(lambdavals, x)})\n\nloglik_mu_list_vals &lt;- sapply(loglik_mu_list,\n    function(x){sapply(muvals, x)})\n\nloglik_max &lt;- max(c(loglik_lambda_list_vals,loglik_mu_list_vals))\nloglik_min &lt;- min(c(loglik_lambda_list_vals,loglik_mu_list_vals))\n\n\npar(mfrow=c(2,1))\nplot(lambdavals, loglik_lambda_list_vals[,1]/abs(max(loglik_lambda_list_vals[,1])))\nfor(i in 2:100){\n    lines(lambdavals, loglik_lambda_list_vals[,i]/abs(max(loglik_lambda_list_vals[,i])))\n}\n\nplot(muvals, loglik_mu_list_vals[,1]/abs(max(loglik_mu_list_vals[,1])))\nfor(i in 2:100){\n    lines(muvals, loglik_mu_list_vals[,i]/abs(max(loglik_mu_list_vals[,i])))\n}\n\nSo, most of these have a maximum in the vicinity of the true parameter values that we suppied, but not all.\nThe “Maximum Likelihood Estimates” are the values of (lambda,mu) where the likelihood function is maximized. What does the distribution of MLEs look like for this set of trees?\n\nmles &lt;- lapply(logliklist, function(x){find.mle(x, c(1,0), method='subplex')})\n\nmles_pars &lt;- t(sapply(mles, function(x) x$par))\n\npar(mfrow=c(1,2))\nhist(mles_pars[,1],main='',\n    xlab=bquote(hat(lambda)))\nhist(mles_pars[,2],main='',\n    xlab=bquote(hat(mu)))\n\nRemember that the true value of mu we used was mu=0. A lot of the models suggest values of mu &gt; 0, which is interesting. This tells us that, in practice, we will probably not be able to reliably estimate mu when it is close to zero but positive.\nWe can frame a hypothesis test. Null hypothesis: mu=0. Alternative hypothesis: mu &gt; 0. Supposing we wish to keep false-positives at 5% or less, we could propose the statistical test that we reject the null hypothesis if our estimate of mu is at the 95-th percentile or greater of this “null” distribution. In our case, this critical value of mu would be approximately\n\nmu_critical &lt;- quantile(mles_pars[,'mu'], 0.95) \n\nSo in the future, if we estimate a value of mu greater than mu_critical, and we say “this appears significantly different from zero, therefore we reject the null hypothesis”, we will be making a type 1 error (“false-positive”) less than 5% of the time. A 1/20 chance of a mistake is reasonable in some circumstances, but less so in others."
-  },
-  {
-    "objectID": "topics/sse_models/fit_bd.html#section",
-    "href": "topics/sse_models/fit_bd.html#section",
-    "title": "Estimating parameters of basic birth-death models",
-    "section": "1.",
-    "text": "1.\nSuppose we want a more stringent statistical test for the previous example. What is the critical value of mu corresponding to a 1% chance of comitting a Type 1 error?"
-  },
-  {
-    "objectID": "topics/sse_models/fit_bd.html#section-1",
-    "href": "topics/sse_models/fit_bd.html#section-1",
-    "title": "Estimating parameters of basic birth-death models",
-    "section": "2.",
-    "text": "2.\nModify the previous example to see how things change for a different value of lambda. Try lambda = 5. Does the critical value of mu change?"
-  },
-  {
-    "objectID": "topics/sse_models/fit_bd.html#section-2",
-    "href": "topics/sse_models/fit_bd.html#section-2",
-    "title": "Estimating parameters of basic birth-death models",
-    "section": "3.",
-    "text": "3.\nThe Generalized Likelihood Ratio Test: another way to assess whether mu is significantly different from zero is to fit two versions of the log-Likelihood function: the one we already did, and a constrained version of the model with the constraint mu=0 hard-coded in (so that we just estimate lambda). The model with more parameters will always fit the data better, but it may not fit the data “that much” better. The GLT looks a log(ratio of likelihoods) = difference(log-Likelihoods) to produce a test statistic (also, rather annoyingly in this case, called lambda). Use constrain(loglik, mu ~ 0) to create the constrained log-likelihood functions, and fit them to obtain new estimates for lambda. Use Wikipedia, Google, or your favorite (work-safe) AI companion to help you formulate GLT test statistics and assess significant departues from the null hypothesis mu=0. Do the results of this statistical test match with those from earlier? If not, why not?\n(Hint: the GLR also makes an asymptotic approximation. What is that approximation, and under what situations would it apply here?)"
-  },
-  {
-    "objectID": "topics/sse_models/fit_bd.html#section-3",
-    "href": "topics/sse_models/fit_bd.html#section-3",
-    "title": "Estimating parameters of basic birth-death models",
-    "section": "4.",
-    "text": "4.\nConsider a different null hypothesis: lambda &gt; mu. Develop a test statistic for this hypothesis, and identify critical values of your test statistic for 95% and 99% confidence regions. (Simulate large numbers of trees to obtain MLEs; don’t worry about GLR tests unless you want to)."
-  },
-  {
-    "objectID": "topics/sse_models/fit_bd.html#section-4",
-    "href": "topics/sse_models/fit_bd.html#section-4",
-    "title": "Estimating parameters of basic birth-death models",
-    "section": "5.",
-    "text": "5.\nIf your simulation produced trees with estimated values of lambda &lt; mu, plot these trees and comment on any features they exhibit that stand out to you. If your simulation did not produce trees with MLEs having lambda &lt; mu, simulate as necessary until you find some."
-  },
-  {
-    "objectID": "topics/sse_models/fit_bd.html#section-5",
-    "href": "topics/sse_models/fit_bd.html#section-5",
-    "title": "Estimating parameters of basic birth-death models",
+    "objectID": "topics/sse_models/fit_bisse.html#section-5",
+    "href": "topics/sse_models/fit_bisse.html#section-5",
+    "title": "Fitting BiSSE models:",
     "section": "6.",
-    "text": "6.\nThe find.mle function uses a variety of numerical optimization algorithms to find MLEs. There is also a function called “mcmc”. Use this function with nsteps=1000 and w=c(2,1). Plot loglikelihood (“p”) against parameters to visualize profile log-likelihoods, and also plot lambda against mu. Comment on what you see, and discuss implications of correlations between lambda and mu. (Note: there are other mcmc routines besides this one in diversitree. If you have a favorit method, feel free to use it.)"
+    "text": "6.\nUnder what circumstances do you think it is possible to reliably estimate extinction rates? Carry out an analysis to confirm or refute your hypothesis."
   },
   {
-    "objectID": "topics/sse_models/fit_bd.html#section-6",
-    "href": "topics/sse_models/fit_bd.html#section-6",
-    "title": "Estimating parameters of basic birth-death models",
+    "objectID": "topics/sse_models/fit_bisse.html#section-6",
+    "href": "topics/sse_models/fit_bisse.html#section-6",
+    "title": "Fitting BiSSE models:",
     "section": "7.",
-    "text": "7.\nThe previous exercises and examples used the max.taxa argument to condition on trees of a particular size. Flip a coin ( rbinom(1,1,0.5)). If it comes up heads (=1), change max.taxa to a different number and repeat Exercises 1-6. If it comes up tails (=0), replace max.taxa with max.t to simulate trees for a fixed amount of time (with variable numbers of taxa), and then repeat Exercises 1-6. (Caution: injudicious choices of lambda and max.t can make your computer explode. Ctrl + c is useful (on Mac, anyway) for cancelling calculations in the Terminal.)"
+    "text": "7.\nAre there are any situations where it is difficult to estimate diversification rates? Comment on bias and variance."
   },
   {
-    "objectID": "topics/sse_models/asr_bisse.html",
-    "href": "topics/sse_models/asr_bisse.html",
-    "title": "Ancestral state reconstructions using BiSSE",
-    "section": "",
-    "text": "library(diversitree)\nlibrary(ape)\nlibrary(phytools)\n\nThe previous problem sets have illustrated the behavior of trees simulated from these models, some of their statistical behaviors, and now all that remains is to use fitted models to accomplish the goals of phylogeography, i.e. ancestral character estimation.\nNote: for most BiSSE users, the primary goal seems not to be ancestral reconstruction per se, but inferring relationships between states and diversification/extinction rates. As such, the documentation and support for the reconstruction methods that use BiSSE is more sparse than for ace or simmap.\nLet’s start by simulating a tree and fit the model to it. We will then infer ancestral states and compare these with the known values from the simulation itself.\nSimulate a BiSSE tree here:\n\npars &lt;- c(\n        lambda0=1,\n        lambda1=3,\n        mu0=0.1,\n        mu1=0.1,\n        q01=0.1,\n        q10=0.12)\n\ntree &lt;- tree.bisse(pars, max.taxa=100, x0=0)\n\npar(mfrow=c(1,2))\nplot(history.from.sim.discrete(tree, states=c(0,1)),\n    tree, col=c('0'='black','1'='red')) \n\nThe make.bisse function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))\n\nloglik &lt;- make.bisse(tree, tree$tip.state)\nloglikc &lt;- constrain(loglik, lambda0~lambda1)\n\n# What are the MLEs?\nmles &lt;- find.mle(loglik, pars)\nmlesc &lt;- find.mle(loglikc, pars[-2])\n\n\n# these are the parmeter values that this infers: \nmlepars &lt;- mles$par\n\n# We use the \"marginal\" reconstruction, which should be similar\n# to the type of calculation used by ace:\nasr_marginal &lt;- asr.marginal(loglik, mlepars)\n\nplot(tree, show.tip.label=F)\nnodelabels(pie=t(asr_marginal), piecol=c(\"black\", \"red\"), cex=0.7)\ntip_matrix &lt;- cbind(1-tree$tip.state, tree$tip.state)  # Convert to probabilities \ntiplabels(pie=tip_matrix, piecol=c(\"black\", \"red\"), cex=0.7)"
+    "objectID": "topics/sse_models/fit_bisse.html#section-7",
+    "href": "topics/sse_models/fit_bisse.html#section-7",
+    "title": "Fitting BiSSE models:",
+    "section": "8.",
+    "text": "8.\nNaively, one might think that having larger differences between parameters (lambda0 vs lambda1, for example) would make estimation easier. Why is that not necessarily the case with BiSSE models? Think back to aeons ago when we simulated these models under different parameter combinations…"
   },
   {
-    "objectID": "topics/sse_models/asr_bisse.html#section",
-    "href": "topics/sse_models/asr_bisse.html#section",
-    "title": "Ancestral state reconstructions using BiSSE",
-    "section": "1.",
-    "text": "1.\nSimulate a collection of BiSSE trees (n=30) and use asr_marginal to reconstruct ancestral states. For the same set of trees, use ace as well, and compare the reconstructions to each other. Is it obvious that marginal reconstruction with the BiSSE model out- performs the simpler Markov models in ace? Are there different combinations of parameters where that is the case? What if you use trees with more taxa (say, n=100 or n=500?)"
+    "objectID": "topics/sse_models/fit_bisse.html#section-8",
+    "href": "topics/sse_models/fit_bisse.html#section-8",
+    "title": "Fitting BiSSE models:",
+    "section": "9.",
+    "text": "9.\nTry setting a constraint in the log-likelihood function that mu0=mu1. Does this help estimate the other parameters? Does it make it easier to estimate the overall exctinction rate (mu)?\nHint: it works like this: loglik_constrained &lt;- constrain(loglik, mu0 ~ mu1)"
   },
   {
-    "objectID": "topics/sse_models/asr_bisse.html#section-1",
-    "href": "topics/sse_models/asr_bisse.html#section-1",
-    "title": "Ancestral state reconstructions using BiSSE",
-    "section": "2.",
-    "text": "2.\nIn your simulations, do you notice particular situations where reconstructions tend to be inaccurate (when does BiSSE get “tricked”)? Are there particular configurations of tip data that present challenges for the BiSSE model?"
-  },
-  {
-    "objectID": "topics/sse_models/asr_bisse.html#section-2",
-    "href": "topics/sse_models/asr_bisse.html#section-2",
-    "title": "Ancestral state reconstructions using BiSSE",
-    "section": "3.",
-    "text": "3.\nSet diversification rates in both states equal to each other when simulating yout trees, and likewise for the extinction rates. Compare models that impose constraints to reduce the number of parameters to estimate with models that impose no constraints, and explore the accuracy of reconstructions in each case. How sensitive are reconstructions to the parametric constraints you impose?"
-  },
-  {
-    "objectID": "topics/sse_models/asr_bisse.html#section-3",
-    "href": "topics/sse_models/asr_bisse.html#section-3",
-    "title": "Ancestral state reconstructions using BiSSE",
-    "section": "4.",
-    "text": "4.\nUse one of the example datasets of your choice, and carry out ancestral state reconstructions using BiSSE, comparing to results from either ace or simmap."
+    "objectID": "topics/sse_models/fit_bisse.html#probably-hard",
+    "href": "topics/sse_models/fit_bisse.html#probably-hard",
+    "title": "Fitting BiSSE models:",
+    "section": "10. (Probably hard)",
+    "text": "10. (Probably hard)\nLoad the phangorn package, and use the nni function to get all of the trees that are one nni move away from your simulated tree. Evaluate the likelihood of all of the trees (but just use the MLE for the other parameters). Does the true tree carry the highest likelihood? Do you think the tree itself is identifiable? (Hint: use the chronos function to produce ultrametric trees from the nni output)."
   }
 ]

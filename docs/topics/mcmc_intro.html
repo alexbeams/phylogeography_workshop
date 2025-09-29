@@ -135,7 +135,7 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body class="nav-fixed fullcontent quarto-light">
@@ -219,12 +219,6 @@ window.Quarto = {
 <section id="example-1-monte-carlo-sampling-to-approximate-pi" class="level1">
 <h1>Example 1: Monte Carlo sampling to approximate <span class="math inline">\(\pi\)</span></h1>
 <p>From calculus, we know how to evaluate integrals using antiderivatives. You might also be familiar with numerical quadrature techniques like the trapezoid rule and Simpson’s rule that approximate areas under curves with shapes that have nice are formulas.</p>
-</section>
-<section id="it-looks-like-this" class="level1">
-<h1>It looks like this:</h1>
-</section>
-<section id="code-up-example-trapezoidsimpsons-rule-w-picture" class="level1">
-<h1>code up example trapezoid/simpsons’ rule w/ picture</h1>
 <p>Monte Carlo integration works a little bit differently. Let’s start by approximating the area of a circle to approximate <span class="math inline">\(\pi\)</span>.</p>
 <p>Suppose there is a square dart board with a circle inscribed. My dart throws are random, so when I launch a dart at the board it lands randomly someplace in the square. Sometimes darts will land inside the circle, sometimes they will land outside.</p>
 <p>If I’ve chosen my square so that it is 1 meter x 1 meter, then the inscribed circle will have a diamter of 1 meter. Like this:</p>
@@ -444,7 +438,7 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>tailsample <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fl">1e6</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(tailsample <span class="sc">&gt;</span> <span class="dv">5</span>)<span class="sc">/</span><span class="fu">length</span>(tailsample)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2e-06</code></pre>
+<pre><code>[1] 0</code></pre>
 </div>
 </div>
 <p>I’m seeing that I usually get 0 or 1 value larger than 5, so that our Monte Carlo approximation to the tail probability is either 0 or 1e-6.</p>

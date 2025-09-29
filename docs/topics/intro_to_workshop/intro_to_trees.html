@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.24">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>intro_to_trees – Template Workshop</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../img/favicon.ico" rel="icon">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="nav-fixed fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../img/coffee_can.png" alt="" class="navbar-logo light-content">
+    <img src="../../img/coffee_can.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> <i class="bi bi-house" role="img">
+</i> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../monday.html"> <i class="bi bi-pie-chart" role="img">
+</i> 
+<span class="menu-text">Monday: Discrete trait analysis I in R</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../wednesday_preview.html"> <i class="bi bi-map" role="img">
+</i> 
+<span class="menu-text">Wednesday: Discrete trait analysis II in R</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../thursday_preview.html"> <i class="bi bi-activity" role="img">
+</i> 
+<span class="menu-text">Thursday: Phylodynamics I in R and BEAST2</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../friday_preview.html"> <i class="bi bi-tree" role="img">
+</i> 
+<span class="menu-text">Friday: Phylodynamics II in BEAST2</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> <i class="bi bi-space-shuttle" role="img">
+</i> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+    <a href="https://github.com/alexbeams/phylogeography_workshop" title="" class="quarto-navigation-tool px-1" aria-label="GitHub organization" target="_blank"><i class="bi bi-github"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+<section id="intro-to-trees-in-r" class="level1">
+<h1>Intro to trees in R</h1>
+<p>This is basically following the vignette Ancestral.html for phangorn The original vignette is written by Klaus Schliep (klaus.schliep@gmail.com)</p>
+<p>I’m annotating it a bit more for our purposes.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phangorn)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: ape</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phytools)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: maps</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Let's load in some primate data:</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>fdir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"extdata/trees"</span>, <span class="at">package =</span> <span class="st">"phangorn"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>primates <span class="ot">&lt;-</span> <span class="fu">read.phyDat</span>(<span class="fu">file.path</span>(fdir, <span class="st">"primates.dna"</span>),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">format =</span> <span class="st">"interleaved"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Let’s examine this.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(primates)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Mouse"      "Bovine"     "Lemur"      "Tarsier"    "Squir Monk"
+ [6] "Jpn Macaq"  "Rhesus Mac" "Crab-E.Mac" "BarbMacaq"  "Gibbon"    
+[11] "Orang"      "Gorilla"    "Chimp"      "Human"     </code></pre>
+</div>
+</div>
+<p>This shows us there are 14 sequences. Let’s look at Mouse:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>primates<span class="sc">$</span>Mouse</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] 1 2 2 1 1 1 1 1 1 1 2 1 4 2 2 1 1 1 2 1 2 1 1 2 2 2 2 1 3 2 2 2 4 4 2 3 2
+ [38] 1 1 4 3 2 2 1 4 2 1 3 1 1 4 1 4 4 1 4 1 2 4 1 2 4 1 1 1 1 1 2 4 2 1 1 1 4
+ [75] 4 1 1 2 4 2 4 4 4 1 1 4 2 4 4 4 1 4 1 2 1 1 2 1 4 4 2 2 1 2 2 1 1 2 2 4 1
+[112] 4 2 2 1 2 1 2 1 1 1 1 1 2 4 2 1 4 1 4 4 4 1 4 2 4 1 1 1 4 1 2 3 1 1 2 4 4
+[149] 2 1 2 1 2 1 1 2 2 4 4 1 2 1 2 1 4 1 1 1 2 1 4 2 2 2 2 1 3 2 2 1 1 2 1 2 2
+[186] 2 4 4 2 2 1 2 1 1 1 4 2 4 4 4 1 4 1 2 3 2 2 2 1 4 1 1 1 4 1 1 2</code></pre>
+</div>
+</div>
+<p>It’s a sequence of the numbers 1–4. Typing primates into the console indicates that the states are a,c,g,t:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>primates</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>14 sequences with 232 character and 217 different site patterns.
+The states are a c g t </code></pre>
+</div>
+</div>
+<p>So the Mouse sequence is really</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">'a'</span>,<span class="st">'c'</span>,<span class="st">'t'</span>,<span class="st">'g'</span>)[primates<span class="sc">$</span>Mouse]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "a" "c" "c" "a" "a" "a" "a" "a" "a" "a" "c" "a" "g" "c" "c" "a" "a" "a"
+ [19] "c" "a" "c" "a" "a" "c" "c" "c" "c" "a" "t" "c" "c" "c" "g" "g" "c" "t"
+ [37] "c" "a" "a" "g" "t" "c" "c" "a" "g" "c" "a" "t" "a" "a" "g" "a" "g" "g"
+ [55] "a" "g" "a" "c" "g" "a" "c" "g" "a" "a" "a" "a" "a" "c" "g" "c" "a" "a"
+ [73] "a" "g" "g" "a" "a" "c" "g" "c" "g" "g" "g" "a" "a" "g" "c" "g" "g" "g"
+ [91] "a" "g" "a" "c" "a" "a" "c" "a" "g" "g" "c" "c" "a" "c" "c" "a" "a" "c"
+[109] "c" "g" "a" "g" "c" "c" "a" "c" "a" "c" "a" "a" "a" "a" "a" "c" "g" "c"
+[127] "a" "g" "a" "g" "g" "g" "a" "g" "c" "g" "a" "a" "a" "g" "a" "c" "t" "a"
+[145] "a" "c" "g" "g" "c" "a" "c" "a" "c" "a" "a" "c" "c" "g" "g" "a" "c" "a"
+[163] "c" "a" "g" "a" "a" "a" "c" "a" "g" "c" "c" "c" "c" "a" "t" "c" "c" "a"
+[181] "a" "c" "a" "c" "c" "c" "g" "g" "c" "c" "a" "c" "a" "a" "a" "g" "c" "g"
+[199] "g" "g" "a" "g" "a" "c" "t" "c" "c" "c" "a" "g" "a" "a" "a" "g" "a" "a"
+[217] "c"</code></pre>
+</div>
+</div>
+<p>Let’s turn this into an R data frame to visualize the sequence alignment:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>primdat <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(primates)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Let’s look at the the beginning of the multiple sequence alignment:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(primdat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Mouse Bovine Lemur Tarsier Squir Monk Jpn Macaq Rhesus Mac Crab-E.Mac
+1     a      a     a       a          a         a          a          a
+2     c      c     c       t          c         c          c          c
+3     c      c     c       c          c         t          t          c
+4     a      a     a       t          c         c          t          c
+5     a      a     a       a          c         c          c          c
+6     a      a     a       c          a         a          a          a
+  BarbMacaq Gibbon Orang Gorilla Chimp Human
+1         a      a     a       a     a     a
+2         c      c     c       c     c     c
+3         c      t     c       c     c     c
+4         c      a     c       c     c     c
+5         t      t     c       c     c     c
+6         a      a     a       a     a     a</code></pre>
+</div>
+</div>
+<p>The sequences appear to be mostly similar. Let’s look at each pair in the data and find the number of differences in the sequences.</p>
+<p>For example, if we wanted to see how many sites differ between Mouse and Human, we could do this:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(primdat<span class="sc">$</span>Mouse <span class="sc">!=</span> primdat<span class="sc">$</span>Human)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 128</code></pre>
+</div>
+</div>
+<p>128 sites differ; there are</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(primdat)[<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 232</code></pre>
+</div>
+</div>
+<p>total sites.</p>
+<p>I will load these into a matrix, where the i,j entry tells me how many sites differ between species i and species j. #This matrix will obviously be symmetric, and the diagonal will be zero.</p>
+<p>So, I can just fill in the upper diagonal:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>seq_diff_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow=</span><span class="dv">14</span>,<span class="at">ncol=</span><span class="dv">14</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(seq_diff_matrix) <span class="ot">&lt;-</span> <span class="fu">names</span>(primates)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(seq_diff_matrix) <span class="ot">&lt;-</span> <span class="fu">names</span>(primates)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(seq_diff_matrix) <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co">#I will swallow my pride and write a nested for loop:</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">14</span>){</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(j <span class="cf">in</span> i<span class="sc">:</span><span class="dv">14</span>){</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>        seq_diff_matrix[i,j] <span class="ot">&lt;-</span> <span class="fu">sum</span>( primdat[,i] <span class="sc">!=</span> primdat[,j] )</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>seq_diff_matrix</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           Mouse Bovine Lemur Tarsier Squir Monk Jpn Macaq Rhesus Mac
+Mouse          0    121   130     132        125       131        137
+Bovine        NA      0   113     119        116       118        119
+Lemur         NA     NA     0     113        118       119        124
+Tarsier       NA     NA    NA       0        133       121        122
+Squir Monk    NA     NA    NA      NA          0       118        121
+Jpn Macaq     NA     NA    NA      NA         NA         0         22
+Rhesus Mac    NA     NA    NA      NA         NA        NA          0
+Crab-E.Mac    NA     NA    NA      NA         NA        NA         NA
+BarbMacaq     NA     NA    NA      NA         NA        NA         NA
+Gibbon        NA     NA    NA      NA         NA        NA         NA
+Orang         NA     NA    NA      NA         NA        NA         NA
+Gorilla       NA     NA    NA      NA         NA        NA         NA
+Chimp         NA     NA    NA      NA         NA        NA         NA
+Human         NA     NA    NA      NA         NA        NA         NA
+           Crab-E.Mac BarbMacaq Gibbon Orang Gorilla Chimp Human
+Mouse             136       122    136   133     123   129   128
+Bovine            122       115    113   109     119   128   124
+Lemur             128       122    130   125     117   139   130
+Tarsier           125       125    131   124     124   135   137
+Squir Monk        116       115    106   110     102   116   115
+Jpn Macaq          42        68    103    95      94   103    94
+Rhesus Mac         52        68     94    94      94   109    94
+Crab-E.Mac          0        66    105   103     111   115   103
+BarbMacaq          NA         0     99    91      99   106   109
+Gibbon             NA        NA      0    93      85    90    84
+Orang              NA        NA     NA     0      70    78    73
+Gorilla            NA        NA     NA    NA       0    62    56
+Chimp              NA        NA     NA    NA      NA     0    52
+Human              NA        NA     NA    NA      NA    NA     0</code></pre>
+</div>
+</div>
+<p>So already, it is abundantly clear that Humans, Chimps, and Gorillas are are pretty similar.</p>
+<p>Then if we invoke</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(seq_diff_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This looks a little funny. I’m going to fill in the rest of the matrix to see if this plots a little better</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>seq_diff_matrix[<span class="fu">lower.tri</span>(seq_diff_matrix)] <span class="ot">&lt;-</span> <span class="fu">t</span>(seq_diff_matrix)[<span class="fu">lower.tri</span>(<span class="fu">t</span>(seq_diff_matrix))]</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co">#check to make sure I did this right</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>seq_diff_matrix <span class="sc">==</span> <span class="fu">t</span>(seq_diff_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           Mouse Bovine Lemur Tarsier Squir Monk Jpn Macaq Rhesus Mac
+Mouse       TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
+Bovine      TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
+Lemur       TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
+Tarsier     TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
+Squir Monk  TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
+Jpn Macaq   TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
+Rhesus Mac  TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
+Crab-E.Mac  TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
+BarbMacaq   TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
+Gibbon      TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
+Orang       TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
+Gorilla     TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
+Chimp       TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
+Human       TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
+           Crab-E.Mac BarbMacaq Gibbon Orang Gorilla Chimp Human
+Mouse            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
+Bovine           TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
+Lemur            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
+Tarsier          TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
+Squir Monk       TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
+Jpn Macaq        TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
+Rhesus Mac       TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
+Crab-E.Mac       TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
+BarbMacaq        TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
+Gibbon           TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
+Orang            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
+Gorilla          TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
+Chimp            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
+Human            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Yes -- now plot again</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(seq_diff_matrix, <span class="at">symm=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Now it’s a little more apparent that some groups are more closely related to each other than others.</p>
+<p>It even makes a nice little dendogram tree!</p>
+<p>We have made a tree, but there are some potential drawbacks with this. Many evolutionary biologists originally held the view that if the tree reflects evolutionary history of these organisms, that the ancestors implied by the internal nodes of the tree should have their own sequences. In constructing a phylogeny, we should really be taking account of the fact that the location of nucleotide differences is important, not just the raw number of differences. Nothing we have done so far made use of the idea that ancestors should have similar sequences to their descendants.</p>
+<p>This is why the method of Parsimony was originally developed. Instead of looking at pairwise differences between sequences, we try to determine what the evolutionary history would have been, under the assumption that evolution is “parsimonious” – the number of nucleotide changes from the root of the tree to the leaves should be minimized.</p>
+<p>Let’s calculate a tree using this criterion:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">pratchet</span>(primates, <span class="at">trace=</span><span class="dv">0</span>) <span class="sc">|&gt;</span> <span class="fu">acctran</span>(primates) <span class="sc">|&gt;</span> <span class="fu">makeNodeLabel</span>()</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">parsimony</span>(tree, primates)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 746</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>anc.pars <span class="ot">&lt;-</span> <span class="fu">anc_pars</span>(tree, primates)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Let's look at the evolution of site 17 in the sequences:</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plotAnc</span>(anc.pars, <span class="dv">17</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="st">"MPR"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can calculate pairwise distances between the species once again, but this time using the branch lengths in the tree. The distance between two species corresponds to the sum of the branch lengths along the unique path connecting te two species through their most recent common ancestor. Because we are dealing with trees (a special type of graph), there is always a unique path connecting two leaves.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>parsmny_dist_mat <span class="ot">&lt;-</span> <span class="fu">cophenetic</span>(tree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>You can verify that this matrix is symmetric. Let’s visualize this:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(parsmny_dist_mat,<span class="at">symm=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This is slightly different from the pairwise sequence differene matrix. Let’s compare the pairwise distances in both:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> seq_diff_matrix</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> parsmny_dist_mat</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> m1[<span class="fu">rownames</span>(m2),<span class="fu">colnames</span>(m2)]</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> m1[<span class="fu">upper.tri</span>(m1)]</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> m2[<span class="fu">upper.tri</span>(m2)]</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m1,m2,<span class="at">xlab=</span><span class="st">'Nucleotide differences'</span>,<span class="at">ylab=</span><span class="st">'Patristic distances (parsimony)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Clearly these things are correlated - but they are not identical.</p>
+<p>There are some drawbacks for parsimony as well. The first major drawback is that the criterion to minimize the number of nucleotide changes tends to produce trees with branch lengths that …</p>
+<p>This is the motivation for the final tree construction method we will consider here – the so-called Likelihood methods. The likelihood methods all use Markov chains to describe rates of change in nucleotides over time. These models depend on parameters, and can be subsumed into Likelihood-based methods.</p>
+<p>Because our focus for this workshop is discrete phylogeography, we will not consider methods making use of continuous data at the tips of trees. It is possible to formulate diffusion models and stochastic processes such as the Ornstein-Uhlenbeck process to model evoultion of continuous traits from root to leaves. These are usually not employed to estimate phylogenetic trees from the outset, but rather to carry out ancestral character estimation for a continuous trait once a phylogeny has been obtained.</p>
+<p>Discrete-state Markov models, as well as the Brownian motion models for trait evolution all fall under the category of Likelihood methods for ancestral character estimation, because it is possible to fit these models to data using techniques from statistics that employ likelihood functions.</p>
+<p>We will estiamte parameters of a discrete-state Markov chain defined on the state space (A,C,G,T) and changing in continuous time. We will not estimate the tree topology, but this will adjust the branch lengths in thre tree:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">pml</span>(tree, primates)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">optim.pml</span>(fit, <span class="at">model=</span><span class="st">"F81"</span>, <span class="at">control =</span> <span class="fu">pml.control</span>(<span class="at">trace=</span><span class="dv">0</span>))</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="co">#This will give us also the most likely ancestral states:</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>anc.ml <span class="ot">&lt;-</span> <span class="fu">anc_pml</span>(fit)</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Let's look at site 17 in the sequences:</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plotAnc</span>(anc.ml, <span class="dv">17</span>)</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="st">"ML"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Let’s compare the parsimony and ML trees:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(anc.ml<span class="sc">$</span>tree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Let’s calculate pairwise distances in this tree:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>mldists <span class="ot">&lt;-</span> <span class="fu">cophenetic</span>(anc.ml<span class="sc">$</span>tree)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>c1 <span class="ot">&lt;-</span> mldists[<span class="fu">upper.tri</span>(mldists)]</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> parsmny_dist_mat[<span class="fu">upper.tri</span>(parsmny_dist_mat)]</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(c1,c2,<span class="at">xlab=</span><span class="st">'Markov model distances'</span>, <span class="at">ylab=</span><span class="st">'Parsimony tree distances'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>So the distances between species in the parsimony and Maximum Likelihood tree using the Markov model for nucleotide changes are pretty tightly correlated, but not identical.</p>
+</section>
+<section id="exercises." class="level1">
+<h1>Exercises.</h1>
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section">1.</h2>
+<p>Use the nni function on the original parsimony tree to obtain all of the trees that are one nearest-neighbor interchange away from the parsimony tree. Fit Markov models to each tree and calculate the likelihood for each tree under the optimized parameters of the Markov model. Based off of this, do you think it might be possible to estimate the most likely tree, given the Markov model structure and the primate data?</p>
+</section>
+<section id="section-1" class="level2">
+<h2 class="anchored" data-anchor-id="section-1">2.</h2>
+<p>Load in a different set of sequences from the workshop and try to construct a parsimony tree. Use a nucleotide substitution model of your choice (HKY, F81, etc.) to fit a Markov model describing sequence evolution on the parsimony tree. How much do branch lengths change after fitting the Markov model?</p>
+</section>
+<section id="section-2" class="level2">
+<h2 class="anchored" data-anchor-id="section-2">3.</h2>
+<p>Use the read.tree function to load in a tree that you download from someplace. Try plotting it, and if you can find associated metadata (from Nextstrain, for example) try plotting that on the tree as well. It can be handy to combine the plotTree and tiplabels functions from phytools for this purpose.</p>
+<p>It is optional, but the ggtree package in R also comes in handy for plotting trees and you might consider installing it.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("example\.com");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
