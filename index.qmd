@@ -32,7 +32,18 @@ Pre-workshop instructions
 :::
 :::
 
+:::{layout="[[10]]"}
 
+:::{.card .mb-3}
+:::{.card-body}
+[Schedule](schedule.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Topics and agenda
+:::
+:::
+:::
+:::
 
 
 <!-- ================= Day 1 ================= -->
@@ -65,7 +76,7 @@ Wednesday<br>[October 1, 2025]
 
 :::{.card .mb-3}
 :::{.card-body}
-[Wednesday: Discrete trait analysis II in R](wednesday_preview.qmd){.card-title .stretched-link}
+[Wednesday: Discrete trait analysis II in R](wednesday.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Birth-death models, state-dependent speciation and extinction (SSE) models

@@ -21,12 +21,16 @@
     <lastmod>2025-09-24T22:37:20.612Z</lastmod>
   </url>
   <url>
-    <loc>example.com/topics/character_mapping/fit_stochastic_mapping.html</loc>
-    <lastmod>2025-09-23T22:15:11.338Z</lastmod>
+    <loc>example.com/topics/character_mapping/waiting_times_simulation.html</loc>
+    <lastmod>2025-09-29T13:42:11.124Z</lastmod>
   </url>
   <url>
-    <loc>example.com/topics/requirements.html</loc>
-    <lastmod>2025-09-23T22:15:11.339Z</lastmod>
+    <loc>example.com/topics/character_mapping/stochastic_mapping.html</loc>
+    <lastmod>2025-09-29T23:51:51.623Z</lastmod>
+  </url>
+  <url>
+    <loc>example.com/schedule.html</loc>
+    <lastmod>2025-09-30T04:46:06.879Z</lastmod>
   </url>
   <url>
     <loc>example.com/thursday.html</loc>
@@ -34,11 +38,11 @@
   </url>
   <url>
     <loc>example.com/monday.html</loc>
-    <lastmod>2025-09-29T16:12:48.573Z</lastmod>
+    <lastmod>2025-09-30T02:09:19.283Z</lastmod>
   </url>
   <url>
     <loc>example.com/index.html</loc>
-    <lastmod>2025-09-29T13:15:52.457Z</lastmod>
+    <lastmod>2025-09-30T05:35:24.199Z</lastmod>
   </url>
   <url>
     <loc>example.com/friday.html</loc>
@@ -46,7 +50,7 @@
   </url>
   <url>
     <loc>example.com/wednesday.html</loc>
-    <lastmod>2025-09-23T22:15:11.340Z</lastmod>
+    <lastmod>2025-09-30T04:05:10.155Z</lastmod>
   </url>
   <url>
     <loc>example.com/thursday_preview.html</loc>
@@ -65,12 +69,16 @@
     <lastmod>2025-09-23T22:15:11.340Z</lastmod>
   </url>
   <url>
-    <loc>example.com/topics/character_mapping/stochastic_mapping.html</loc>
+    <loc>example.com/topics/requirements.html</loc>
+    <lastmod>2025-09-23T22:15:11.339Z</lastmod>
+  </url>
+  <url>
+    <loc>example.com/topics/character_mapping/fit_stochastic_mapping.html</loc>
     <lastmod>2025-09-23T22:15:11.338Z</lastmod>
   </url>
   <url>
-    <loc>example.com/topics/character_mapping/waiting_times_simulation.html</loc>
-    <lastmod>2025-09-29T13:42:11.124Z</lastmod>
+    <loc>example.com/topics/ancestral_character_estimation/ace_sims_edit.html</loc>
+    <lastmod>2025-09-29T20:56:47.273Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/ancestral_character_estimation/ace_sims.html</loc>

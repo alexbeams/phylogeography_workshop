@@ -51,7 +51,7 @@ observed without error. For our purposes here, we simulate tip states from the m
 tip_states <- sim.Mk(tree, Q)
 ```
 
-How many of each state do we oberve?
+How many of each state do we observe?
 
 ```{r}
 table(tip_states)

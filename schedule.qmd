@@ -1,0 +1,94 @@
+---
+title: MAGPIE PhylogeogRaphy Workshop (with BEAST 2)
+description: |
+  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.   
+
+  <center>[Register](https://docs.google.com/forms/d/e/1FAIpQLSeOv8vuo_HdsrBvmoONwcjoCHNAPPXnRvYSXVJmDQBSgpsrJw/viewform?usp=dialog){.btn .btn-outline-primary}</center>
+
+toc: false
+title-block-banner: true
+anchor-sections: false
+---
+
+# Day 1 
+
+0930 - 1030: **[lecture]** introduction to workshop and phylogenetic trees 
+
+1030 - 1130: R demos (Intro to trees in R and Simulating nucleotide substitution models) 
+
+1130 - 1230: **[lecture]** introduction to ancestral character estimation (ace in R)
+
+1230 - 1330: lunch (bring your own!)
+
+1330 - 1430: R demo: ancestral character estimation in R
+
+1430 - 1530: **[live coding session]** Introduction to stochastic character mapping -- simulating event times 
+
+1530 - 1630: R demos (simulating stochastic character mapping; fitting models with stochastic character mapping) 
+
+# Day 2 
+
+0930 - 1030: **[lecture]** Review of ancestral character estimation and stochastic character mapping
+
+1030 - 1130: **[live coding session]** Birth death models 
+
+1130 - 1230: R demo session: fitting and simulating birth death models
+ 
+1230 - 1330: lunch
+
+1330 - 1430: **[lectue]** Intro to state-dependent speciation and extinction (SSE) models 
+
+1430 - 1530: **[live coding session and R demo]** fitting and simulate SSE models
+
+1530 - 1600: R demo session: fit SSE models to virus data
+
+1600 - 1630: End of day review
+ 
+# Day 3
+
+0930 - 1030: **[lecture]** multi-type birth death (MTBD) models
+
+1030 - 1130: **[live coding session]** setting up a MTBD BEAST2 run 
+
+1130 - 1230: **[live coding session]** setting up a BEAST2 run on a remote server
+
+1230 - 1330: lunch
+
+1330 - 1430: Demo session: analyzing BEAST2 output (premade in the oven)
+
+1430 - 1530: **[lecture]** structured coalescent models 
+ 
+1530 - 1600: **[live coding session]** setting up a structured coalescent BEAST2 run
+
+1600 - 1630: Recap of day 
+
+# Day 4
+
+0930 - 1030: **[live demo session]** Examine BEAST2 server run 
+
+1030 - 1130: **[lecture]** Bayesian stochastic search variable selection
+
+1130 - 1230: **[live demo session]** setting up BSSVS in BEAST2
+
+1230 - 1330: lunch
+
+1330 - 1430: **[lecture]** SAASI
+ 
+1430 - 1530: **[live demo sesssion]** comparing discrete trait analysis and phylodynamics
+
+1530 - 1630: Recap, conclusions and closing
+
+<!--
+Can repeat for more days and sessions...
+-->
+
+<!--
+<br><br>
+![](img/duck_coffee.png){fig-alt="front logo"}
+-->
+
+<br>
+<center>Hosted by:</center>
+<br>
+
+<center>![](img/magpieLogo/lightBackground/transparentcircle_darktext.png){fig-alt="host logo" width="35%"}</center>

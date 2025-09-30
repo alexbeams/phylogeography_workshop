@@ -112,6 +112,10 @@ tree <- pratchet(primates, trace=0) |> acctran(primates) |> makeNodeLabel()
 
 anc.pars <- anc_pars(tree, primates)
 
+# Investigate why this didn't work right away
+# Or use ancestral.pars 
+# plotAnc(data=anc.pars, tree=tree, i=17)
+
 #Let's look at the evolution of site 17 in the sequences:
 plotAnc(anc.pars, 17)
 title("MPR")

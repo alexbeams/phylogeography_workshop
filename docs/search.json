@@ -217,195 +217,6 @@
     "text": "3.\nThe K80 (Kimura, 1980) model elaborates on the Jukes-Cantor model by allowing substitutions within pyrimidines (C,T) and within purines (A, G) to occur at a different rate than “transversions” between pyrimidines and purines. In biology, substitutions between two purines or between two pyrimidines are called “transitions” (but in Markov chains, mathematicians refer to all state changes as transitions – confusing). Assuming that transitions (in the biological sense of the word) occur at the same rate regardless of whether the nucleotides are purines or pyrimidines, and assuming that transversions in either direction occur at the same rate, write the generator for the Markov process and write a function that calculates transition probabilities as a function of time."
   },
   {
-    "objectID": "topics/character_mapping/fit_stochastic_mapping.html",
-    "href": "topics/character_mapping/fit_stochastic_mapping.html",
-    "title": "Exercise set 1:",
-    "section": "",
-    "text": "rm(list=ls())\nlibrary(coda) # for handling output from MCMC\nlibrary(phytools) # simmap functions, Mk models\n\nThis code is complementary to the other one in this subdirectory, and walks through how to fit models using a character mapping approach.\nMost of the phytools stuff is based on the Mk model, which is a particular type of Markov model. M stands for “Markov”, and “k” indicates the number of states. (Lewis has an interesting discussion relating to the use of conditional likelihoods as a means of overcoming acquisition bias – the tendency to only record changes of state, and not maintenance of a character).\nfitMk fits the model to the data using nlminb, and optimization routine similar to quasi- Newton methods like BFGS. Compare this to ace.\nmcmcMk fits Mk models to trees using MCMC.\n\ndata(sunfish.tree)\ndata(sunfish.data)\n\n# extract discrete character (fish diet):\nsunfish_tipdata &lt;-setNames(sunfish.data$feeding.mode,\n    rownames(sunfish.data))\n\n# fit \"ER\" model\nfit.ER&lt;-fitMk(sunfish.tree,sunfish_tipdata,model=\"ER\")\nprint(fit.ER)\n\nThis will run for a while, and you should see traceplots updating in real time until it finishes:\n\n    fit.mcmc &lt;- mcmcMk(sunfish.tree, sunfish_tipdata, \n    model=\"ER\", ngen=10000)\n\nThe dimensions of fit.mcmc will be ngen * (number of parameters in the Mk model + 2), which for this run will be 10000 x 3 because we are only estimating a single parameter\nThe first column of fit.mcmc is timesteps of the MCMC routine. The last column of fit.mcmc is the logLikelihood, and the columns between first and last are the parameters at each timestep.\nWe can look at the traceplots:\n\nplot(fit.mcmc)\n\nWe can also plot the posterior distribution for our parameters. By default, this should toss out the first 20% of the MCMC updates as part of a burn-in (we discard transients because we only care about the stationary distribution of the MCMC run)\n\nplot(density(fit.mcmc))\n\nOf note, we can also use base R plotting to accomplish these things as well. Here is a histogram of the parameter values of the entire MCMC run:\n\nhist(fit.mcmc[,'[pisc,non]'],breaks=100) \n\n# and the last 80% of the run:\nhist(fit.mcmc[c(2001:10000),'[pisc,non]'],breaks=100) \n\nI also like to plot profile log- likelihood (logLik~parameters):\n\nplot(fit.mcmc[,'logLik']~fit.mcmc[,'[pisc,non]'])\n\nThis helps us visualize the peak of the likelihood surface. Can be useful for diagnosing convergence problems."
-  },
-  {
-    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#fitting-markov-models-with-stochastic-character-mapping",
-    "href": "topics/character_mapping/fit_stochastic_mapping.html#fitting-markov-models-with-stochastic-character-mapping",
-    "title": "Exercise set 1:",
-    "section": "",
-    "text": "rm(list=ls())\nlibrary(coda) # for handling output from MCMC\nlibrary(phytools) # simmap functions, Mk models\n\nThis code is complementary to the other one in this subdirectory, and walks through how to fit models using a character mapping approach.\nMost of the phytools stuff is based on the Mk model, which is a particular type of Markov model. M stands for “Markov”, and “k” indicates the number of states. (Lewis has an interesting discussion relating to the use of conditional likelihoods as a means of overcoming acquisition bias – the tendency to only record changes of state, and not maintenance of a character).\nfitMk fits the model to the data using nlminb, and optimization routine similar to quasi- Newton methods like BFGS. Compare this to ace.\nmcmcMk fits Mk models to trees using MCMC.\n\ndata(sunfish.tree)\ndata(sunfish.data)\n\n# extract discrete character (fish diet):\nsunfish_tipdata &lt;-setNames(sunfish.data$feeding.mode,\n    rownames(sunfish.data))\n\n# fit \"ER\" model\nfit.ER&lt;-fitMk(sunfish.tree,sunfish_tipdata,model=\"ER\")\nprint(fit.ER)\n\nThis will run for a while, and you should see traceplots updating in real time until it finishes:\n\n    fit.mcmc &lt;- mcmcMk(sunfish.tree, sunfish_tipdata, \n    model=\"ER\", ngen=10000)\n\nThe dimensions of fit.mcmc will be ngen * (number of parameters in the Mk model + 2), which for this run will be 10000 x 3 because we are only estimating a single parameter\nThe first column of fit.mcmc is timesteps of the MCMC routine. The last column of fit.mcmc is the logLikelihood, and the columns between first and last are the parameters at each timestep.\nWe can look at the traceplots:\n\nplot(fit.mcmc)\n\nWe can also plot the posterior distribution for our parameters. By default, this should toss out the first 20% of the MCMC updates as part of a burn-in (we discard transients because we only care about the stationary distribution of the MCMC run)\n\nplot(density(fit.mcmc))\n\nOf note, we can also use base R plotting to accomplish these things as well. Here is a histogram of the parameter values of the entire MCMC run:\n\nhist(fit.mcmc[,'[pisc,non]'],breaks=100) \n\n# and the last 80% of the run:\nhist(fit.mcmc[c(2001:10000),'[pisc,non]'],breaks=100) \n\nI also like to plot profile log- likelihood (logLik~parameters):\n\nplot(fit.mcmc[,'logLik']~fit.mcmc[,'[pisc,non]'])\n\nThis helps us visualize the peak of the likelihood surface. Can be useful for diagnosing convergence problems."
-  },
-  {
-    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section",
-    "href": "topics/character_mapping/fit_stochastic_mapping.html#section",
-    "title": "Exercise set 1:",
-    "section": "1.",
-    "text": "1.\nDid the fitMk routine produce the same estimates as mcmcMk? How would you determine this?"
-  },
-  {
-    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section-6",
-    "href": "topics/character_mapping/fit_stochastic_mapping.html#section-6",
-    "title": "Exercise set 1:",
-    "section": "1.",
-    "text": "1.\nWhy do you think the mcmcMk routine does not propose character mappings alongside parameters? Would anything be gained by treating character mappings as latent variables in MCMC and updating those alongside parameters?\nCheck this paper out if you are interested in MCMC and character mapping:\nMutations as Missing Data: Inferences on the Ages and Distributions of Nonsynonymous and Synonymous Mutations, by Rasmus Nielsen Genetics 159: 401-411 (September 2001)"
-  },
-  {
-    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section-7",
-    "href": "topics/character_mapping/fit_stochastic_mapping.html#section-7",
-    "title": "Exercise set 1:",
-    "section": "2.",
-    "text": "2.\nComment on any interesting things you see in profile loglikelihoods for models with multiple parameters. Can you deduce anything interesting about the geometry of the likelihood surface?"
-  },
-  {
-    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section-8",
-    "href": "topics/character_mapping/fit_stochastic_mapping.html#section-8",
-    "title": "Exercise set 1:",
-    "section": "3.",
-    "text": "3.\nIn the previous runs, how did we estimate Pi, the probability of the root states? Examine the fitMk and mcmcMk help page to determine what the default is. Try fitting the model under a different setting to see how results change."
-  },
-  {
-    "objectID": "topics/requirements.html",
-    "href": "topics/requirements.html",
-    "title": "Workshop Requirements",
-    "section": "",
-    "text": "Phylogeography, broadly speaking, is concerned with reconstructing evolutionary histories to explain spatial distributions of present-day organisms (be they pathogens, species of mammals, or anything else that evolves). Many of the methods used in phylogeography are common to other areas of evolutionary biology, and some are useful for answering questions like “Does a particular trait influence speciation?” We will attempt to cover as many of these different areas as time allows, but our emphasis will be to work towards an understanding of the mathematical models underpinning these methods, with a particular focus on the key assumptions they make that render them appropriate for certain types of analyses and not others.\nPrior experience in phylogenetics or evolution is not required or assumed, but enthusiasm is. Familiarity with statistics, Markov chains, R, and working in the terminal is great, but not strictly required. The target audience for this workshop includes all of the graduate students in MAGPIE, as well as anyone else who is interested to learn about mathematical models used in phylogeography and evolution of traits more generally.\nInstall all of the following things before Monday, September 29, so that we can hit the ground running.\n\n\n\nYou need to have R on your machine. It is usually good to have the latest version. Download it at https://www.r-project.org/\nYou will need the following R packages:\nape\nexpm\nphytools\ncoda\nmcmcensemble\ndiversitree\nThese will have their own dependencies – be sure to install those as necessary in order to get these packages to work.\nYou can use Rstudio if you wish, but it is not required. If you are OK with copying-and-pasting things into a terminal, you will be able to accomplish all of the tasks in this workshop.\nYou will probably like to have a text editor to modify the coding exercises to work through problems efficiently. If you want to do this workshop on Expert mode, consider learning how to use Vim at https://vim-adventures.com\n\n\n\nBEAST2 carries out Markov Chain Monte Carlo to reconstruct phylogenetic trees (and can do so jointly with geographic histories). There are a number of things you need to install to get this to work:\nBEAST2 (running MCMC): download at https://www.beast2.org/\nTracer (analyzing MCMC): download at https://tree.bio.ed.ac.uk/software/tracer/\nFigTree (examining trees produced by BEAST2): https://tree.bio.ed.ac.uk/software/figtree/\nAliView (useful for looking at multiple sequence alignments): https://ormbunkar.se/aliview/\n\n\n\nOn Thursday, we will try to get BEAST2 to run on the Fir server. You will need an account with the Digital Research Alliance of Canada. Create one here if you don’t have one aready:\nhttps://ccdb.alliancecan.ca/security/login"
-  },
-  {
-    "objectID": "topics/requirements.html#background",
-    "href": "topics/requirements.html#background",
-    "title": "Workshop Requirements",
-    "section": "",
-    "text": "Phylogeography, broadly speaking, is concerned with reconstructing evolutionary histories to explain spatial distributions of present-day organisms (be they pathogens, species of mammals, or anything else that evolves). Many of the methods used in phylogeography are common to other areas of evolutionary biology, and some are useful for answering questions like “Does a particular trait influence speciation?” We will attempt to cover as many of these different areas as time allows, but our emphasis will be to work towards an understanding of the mathematical models underpinning these methods, with a particular focus on the key assumptions they make that render them appropriate for certain types of analyses and not others.\nPrior experience in phylogenetics or evolution is not required or assumed, but enthusiasm is. Familiarity with statistics, Markov chains, R, and working in the terminal is great, but not strictly required. The target audience for this workshop includes all of the graduate students in MAGPIE, as well as anyone else who is interested to learn about mathematical models used in phylogeography and evolution of traits more generally.\nInstall all of the following things before Monday, September 29, so that we can hit the ground running."
-  },
-  {
-    "objectID": "topics/requirements.html#requirements-for-r",
-    "href": "topics/requirements.html#requirements-for-r",
-    "title": "Workshop Requirements",
-    "section": "",
-    "text": "You need to have R on your machine. It is usually good to have the latest version. Download it at https://www.r-project.org/\nYou will need the following R packages:\nape\nexpm\nphytools\ncoda\nmcmcensemble\ndiversitree\nThese will have their own dependencies – be sure to install those as necessary in order to get these packages to work.\nYou can use Rstudio if you wish, but it is not required. If you are OK with copying-and-pasting things into a terminal, you will be able to accomplish all of the tasks in this workshop.\nYou will probably like to have a text editor to modify the coding exercises to work through problems efficiently. If you want to do this workshop on Expert mode, consider learning how to use Vim at https://vim-adventures.com"
-  },
-  {
-    "objectID": "topics/requirements.html#requirements-for-beast2",
-    "href": "topics/requirements.html#requirements-for-beast2",
-    "title": "Workshop Requirements",
-    "section": "",
-    "text": "BEAST2 carries out Markov Chain Monte Carlo to reconstruct phylogenetic trees (and can do so jointly with geographic histories). There are a number of things you need to install to get this to work:\nBEAST2 (running MCMC): download at https://www.beast2.org/\nTracer (analyzing MCMC): download at https://tree.bio.ed.ac.uk/software/tracer/\nFigTree (examining trees produced by BEAST2): https://tree.bio.ed.ac.uk/software/figtree/\nAliView (useful for looking at multiple sequence alignments): https://ormbunkar.se/aliview/"
-  },
-  {
-    "objectID": "topics/requirements.html#requirements-for-compute-canada",
-    "href": "topics/requirements.html#requirements-for-compute-canada",
-    "title": "Workshop Requirements",
-    "section": "",
-    "text": "On Thursday, we will try to get BEAST2 to run on the Fir server. You will need an account with the Digital Research Alliance of Canada. Create one here if you don’t have one aready:\nhttps://ccdb.alliancecan.ca/security/login"
-  },
-  {
-    "objectID": "thursday.html",
-    "href": "thursday.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Welcome to Day 3! The state-dependent speciation and extinction (SSE) models we learned about yesterday will position us to understand the basic phylodynamics models (multi-type birth death, strucutred coalescent) used in BEAST2.\nReview the Requirements page to make sure you have everything installed for BEAST2.\nIf you want to get the most out of the afternoon sessions, make sure you have craeted an account with the Digital Research Alliance of Canada https://ccdb.alliancecan.ca/security/login\n\n\n\nThursday[October 2, 2025]\n\n\n\n\n\nIntro to Phylodynamics\n\nSlides\n\n\n\n\n\n\n\nBasic phylodynamics Models in R/BEAST2\n\nPractical session in R (or BEAST2)\n\n\n\n\n\n\n\n\n\nIntro to BEAST2\n\nShort description\n\n\n\n\n\n\nBasic BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\nMTBD and/or Structured Coalescent BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nSetting up server runs\n\nPractical session in BEAST2/remote server\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
-  },
-  {
-    "objectID": "monday.html",
-    "href": "monday.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Welcome to Day one!\nAfter an introduction to this week’s workshop, we will gain some experience working with phylogenetic trees in R before moving on to learn about ancestral character estimation and stochastic character mapping.\n\n\n\nMonday[September 29, 2025]\n\n\n\n\n\n0930–1030: Introduction to PhylogeogRaphy workshop\n\nSlides\n\n\n\n\n\n\n\n\n\n1030–1130: Intro to trees in R\n\nPractical session in R\n\n\n\n\n\n\n\n\n\n1030–1130: Simulating nucleotide substitution models\n\nPractical session in R\n\n\n\n\n\n\n\n1130–1230: Ancestral character estimation models\n\nSlides\n\n\n\n\n\n\n1330–1430: Simulating and fitting Markov models with ace\n\nPractical session in R\n\n\n\n\n\n1430–1530: Introduction to Stochastic character mapping – Simulating event times\n\nR demo\n\n\n\n\n\n\n\n1530–1630: Simulating Stochastic character mapping\n\nPractical session in R\n\n\n\n\n\n\n\n1530–1630: Fitting models with Stochastic character mapping\n\nPractical session in R\n\n\n\n\n\n\n\nOptional: MCMC Primer\n\nPractical session in R\n\n\n\n\n\n\n\n\n\nHosted by:"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Welcome to the PhylogeogRaphy workshop (with BEAST2)!\nSessions are split into roughly two-hour chunks that align with typical start/end times of classes, and are meant to be as self-contained as possible – so, feel free to come and go as necessary! All materials will posted here for you to catch up on content if desired.\nParticipants should bring their own laptops for hands-on exercises.\nFor specific requirements, see the Requirements for workshop page.\n\n\n\n\nRequirements for workshop\n\nPre-workshop instructions\n\n\n\n\n\n\n\n\nMonday[September 29, 2025]\n\n\n\n\n\nMonday: Discrete trait analysis I in R\n\nIntroduction, ancestral character estimation, and stochastic character mapping\n\n\n\n\n\n\n\n\n\nWednesday[October 1, 2025]\n\n\n\n\n\nWednesday: Discrete trait analysis II in R\n\nBirth-death models, state-dependent speciation and extinction (SSE) models\n\n\n\n\n\n\n\n\n\nThursday[October 2, 2025]\n\n\n\n\n\nThursday: Phylodynamics I in R and BEAST2\n\nPhylodynamics models (multi-type birth-death models, structured coalescents), and analysis in BEAST2\n\n\n\n\n\n\n\n\n\nFriday[October 3, 2025]\n\n\n\n\n\nFriday: Phylodynamics II in BEAST2\n\nAnalysis in BEAST2 and advanced topics (Bayesian stochastic search variable selection)\n\n\n\n\n\n\n\n\n\nHosted by:"
-  },
-  {
-    "objectID": "friday.html",
-    "href": "friday.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Welcome to Day 4! We will start by analyzing output from BEAST2 before learning about more advanced functionality (like Bayesian stochastic search variable selection). We will finish by carrying out comparative analyses from discrete trait methods to see what we gain from more computationally intensive analyses in BEAST2.\n\n\n\nFriday[October 3, 2025]\n\n\n\n\nAnalyze overnight BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nAdvanced BEAST2 topics: BSSVS\n\nSlides\n\n\n\n\n\n\n\nBSSVS\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nComparing discrete trait analysis and phylodynamics\n\nPractical session in BEAST2/R\n\n\n\n\n\n\n\nClosing\n\nSlides/Group discussion\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
-  },
-  {
-    "objectID": "wednesday.html",
-    "href": "wednesday.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Welcome to Day Two! We will briefly recap things we learned on Monday before moving on to birth-death models and state-dependent speciation and extinction (SSE) models in R.\n\n\n\nWednesday[October 1, 2025]\n\n\n\n\n0930-1030: Intro to birth-death models\n\nSlides\n\n\n\n\n\n1030-1130: Estimating parameters of basic birth-death models\n\nPractical session in R\n\n\n\n\n\n\n1130-1230: Intro to State-dependent Speciation and Extinction (SSE) models\n\nSlides\n\n\n\n\n\n\n\n1330-1430: Simulating State-dependent Speciation and Extinction (SSE) models\n\nPractical session in R\n\n\n\n\n\n\n\n1430-1530: Fitting BiSSE models\n\nPractical session in R\n\n\n\n\n\n\n\n1530-1630: Ancestral state reconstruction with BiSSE\n\nPractical session in R\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
-  },
-  {
-    "objectID": "thursday_preview.html",
-    "href": "thursday_preview.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Wow, you’re really getting ahead of yourself – it’s not Day 3 yet! Check back next week.\n\n\nHosted by:"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About This Workshop",
-    "section": "",
-    "text": "This workshop is organized and hosted by MAGPIE.\nIt is focused toward our graduate students, but anybody with interests in mathematical biology, evolutionary biology, infectious diseases, and statistics is welcome to join!\nThese pages are written by Alex Beams\nThank you Lars Berling for this website template!"
-  },
-  {
-    "objectID": "friday_preview.html",
-    "href": "friday_preview.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "… the workshop hasn’t even started! Check back later. \n\nHosted by:"
-  },
-  {
-    "objectID": "wednesday_preview.html",
-    "href": "wednesday_preview.html",
-    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
-    "section": "",
-    "text": "Whoops, it isn’t Day Two yet! Check back next week.\n\n\nHosted by:"
-  },
-  {
-    "objectID": "topics/character_mapping/stochastic_mapping.html",
-    "href": "topics/character_mapping/stochastic_mapping.html",
-    "title": "Simulating stochasting character mappings",
-    "section": "",
-    "text": "This code simulates stochastic character mappings on a fixed phylogenetic tree. In the real world, we would be given a phylogeny with tip data (diets of finches, geographic location of influenza, etc.). The goal would be to estimate quantities like the number of changes, the timing of changes, whether one trait is ancestral to the rest, and so on. This would involve fitting models to estimate the stochastic rate matrix describing discrete state changes, as well as the root states.\nIn this code, we are going to start by exploring how we would interpret estimates. This involves simulating character mappings on the phylogeny using the true values of the Markov chain model, and our goal is to see if we can count the number of state changes, describe timing of changes, etc.\nOnce we have a feel for how the model works, we will then try to do the harder task of fitting it to data.\nClear out the console:\n\nrm(list=ls())\n\n# load in the package for stochastic character mapping:\nlibrary(phytools)\n\nLoading required package: ape\n\n\nLoading required package: maps\n\n# Set the number of stochastic character mappings to simulate:\nnsim = 1000\n\n# Create a tree: (could modify this to load in a tree as well)\ntree &lt;- pbtree(n=50, scale=1)\n\nSpecify a transition rate matrix for two states (A and B). In practice, we would want to estimate this from data. Let’s pretend we’ve done that step, and this can be taken as known without error:\n\nQ &lt;- matrix(c(-1,1,\n              1,-1),2,2)\nrownames(Q) &lt;- colnames(Q) &lt;- c(\"A\",\"B\")\n\nWe can scale down Q to have fewer transitions (for illustrative purposes)\n\nQ &lt;- Q/10\n\nSimulate tip states on the tree using our stochastic rate matrix Q. In practice, this would be observed in data, and in many instances we could assume it is observed without error. For our purposes here, we simulate tip states from the model:\n\ntip_states &lt;- sim.Mk(tree, Q)\n\nHow many of each state do we oberve?\n\ntable(tip_states)\n\ntip_states\n A  B \n 3 47 \n\n\nSimulate stochastic character maps nsim times using the tree, tip states, and our Q matrix: Note: don’t set model=Q, otherwise that just re-estimates Q. Need to specify Q=Q in the make.simmap call.\nWe simulate from the root to the tips. We have to specify an initial condition at the root:\n\nPi &lt;- c(.5,.5)\n\n# Run the sims!\nsims &lt;- make.simmap(tree, tip_states, Q=Q, pi=Pi, nsim=nsim)\n\nmake.simmap is sampling character histories conditioned on\nthe transition matrix\n\nQ =\n     A    B\nA -0.1  0.1\nB  0.1 -0.1\n(specified by the user);\nand (mean) root node prior probabilities\npi =\n  A   B \n0.5 0.5 \n\n\nDone.\n\n# Uncomment this to visualize the different character mappings:\n#par(mfrow=c(1,1))\n#for(i in 1:nsim){\n#   plot(sims[[i]])\n#   Sys.sleep(.0002)\n#}\n\n# Let's start by summarizing the number of mutations that happen across the whole tree:\n\ncounts &lt;- lapply(sims, countSimmap)\nnumMutations &lt;- sapply(counts, function(x) x$N)\ntransitions &lt;- lapply(counts, function(x)x$Tr)\ntransitions_AB &lt;- sapply(transitions, function(x) x[1,2])\ntransitions_BA &lt;- sapply(transitions, function(x) x[2,1])\n\nLet’s plot an example character mapped tree, and histograms of number of mutations:\n\nsim = sims[[1]]\n#  overall, and by type\npar(mfrow=c(2,2))\n## plot the character mapped tree\nsim$tip.label &lt;- paste(sim$tip.label, \"(\", tip_states, \")\", sep=\"\")\nplotSimmap(sim, fsize = 0.8)\n\nno colors provided. using the following legend:\n        A         B \n  \"black\" \"#DF536B\" \n\n## plottig make.simmap objects messes up margins, let's reset these:\npar(mar=c(5,4,4,1))\n## histogram of total mutations:\nhist(numMutations)\n## histogram of mutations A -&gt; B\nhist(transitions_AB)\n## histogram of mutations B -&gt; A\nhist(transitions_BA)"
-  },
-  {
-    "objectID": "topics/character_mapping/stochastic_mapping.html#section",
-    "href": "topics/character_mapping/stochastic_mapping.html#section",
-    "title": "Simulating stochasting character mappings",
-    "section": "1.",
-    "text": "1.\nTry changing the initial condition at the root (Pi, also called the “root prior”) to see how results change"
-  },
-  {
-    "objectID": "topics/character_mapping/stochastic_mapping.html#section-1",
-    "href": "topics/character_mapping/stochastic_mapping.html#section-1",
-    "title": "Simulating stochasting character mappings",
-    "section": "2.",
-    "text": "2.\nLook at the logL values in the sims. What do you think that describes? In particular, do you think the reported logL is P(tip data | Q), or P(tip data, character mapping | Q)?"
-  },
-  {
-    "objectID": "topics/character_mapping/stochastic_mapping.html#a.",
-    "href": "topics/character_mapping/stochastic_mapping.html#a.",
-    "title": "Simulating stochasting character mappings",
-    "section": "2.a.",
-    "text": "2.a.\nCreate a new sims list, replacing Q with jitter(Q). What do you notice about the logL values?"
-  },
-  {
-    "objectID": "topics/character_mapping/stochastic_mapping.html#section-2",
-    "href": "topics/character_mapping/stochastic_mapping.html#section-2",
-    "title": "Simulating stochasting character mappings",
-    "section": "3.",
-    "text": "3.\nIn light of the previous questions, can you figure out what the form of the log-likelihood is for make.simmap? (is it actually a likelihood, or is it a conditional likelihood?) That is, do you think the form of the log-likelihood is P(tip data | Q) or P(tip data | Q, Pi) ?"
-  },
-  {
-    "objectID": "topics/character_mapping/stochastic_mapping.html#section-3",
-    "href": "topics/character_mapping/stochastic_mapping.html#section-3",
-    "title": "Simulating stochasting character mappings",
-    "section": "4.",
-    "text": "4.\nCalculate the log-likelihood of the tip data on the tree under the assumed Q matrix. Compare the log-likelihood reported from ace with the log-likelihood returned by make.simmap. What do you notice?"
-  },
-  {
-    "objectID": "topics/character_mapping/stochastic_mapping.html#section-4",
-    "href": "topics/character_mapping/stochastic_mapping.html#section-4",
-    "title": "Simulating stochasting character mappings",
-    "section": "5.",
-    "text": "5.\nDo ace and make.simmap use the same log-likelihood? If not, what is the key difference? Use ?ace and ?make.simmap in your investigation."
-  },
-  {
     "objectID": "topics/character_mapping/waiting_times_simulation.html",
     "href": "topics/character_mapping/waiting_times_simulation.html",
     "title": "Simulating event times",
@@ -453,6 +264,230 @@
     "title": "Simulating event times",
     "section": "",
     "text": "In simulating a stochastic character mapping, does it matter which direction we simulate from? Mathematically, there is no reason why we couldn’t use tip states as initial conditions, but that doesn’t really seem consistent with evolution occurring in forward time. Are there situations where the two approaches are equivalent? Why or why not?"
+  },
+  {
+    "objectID": "topics/character_mapping/stochastic_mapping.html",
+    "href": "topics/character_mapping/stochastic_mapping.html",
+    "title": "Simulating stochasting character mappings",
+    "section": "",
+    "text": "This code simulates stochastic character mappings on a fixed phylogenetic tree. In the real world, we would be given a phylogeny with tip data (diets of finches, geographic location of influenza, etc.). The goal would be to estimate quantities like the number of changes, the timing of changes, whether one trait is ancestral to the rest, and so on. This would involve fitting models to estimate the stochastic rate matrix describing discrete state changes, as well as the root states.\nIn this code, we are going to start by exploring how we would interpret estimates. This involves simulating character mappings on the phylogeny using the true values of the Markov chain model, and our goal is to see if we can count the number of state changes, describe timing of changes, etc.\nOnce we have a feel for how the model works, we will then try to do the harder task of fitting it to data.\nClear out the console:\n\nrm(list=ls())\n\n# load in the package for stochastic character mapping:\nlibrary(phytools)\n\nLoading required package: ape\n\n\nLoading required package: maps\n\n# Set the number of stochastic character mappings to simulate:\nnsim = 1000\n\n# Create a tree: (could modify this to load in a tree as well)\ntree &lt;- pbtree(n=50, scale=1)\n\nSpecify a transition rate matrix for two states (A and B). In practice, we would want to estimate this from data. Let’s pretend we’ve done that step, and this can be taken as known without error:\n\nQ &lt;- matrix(c(-1,1,\n              1,-1),2,2)\nrownames(Q) &lt;- colnames(Q) &lt;- c(\"A\",\"B\")\n\nWe can scale down Q to have fewer transitions (for illustrative purposes)\n\nQ &lt;- Q/10\n\nSimulate tip states on the tree using our stochastic rate matrix Q. In practice, this would be observed in data, and in many instances we could assume it is observed without error. For our purposes here, we simulate tip states from the model:\n\ntip_states &lt;- sim.Mk(tree, Q)\n\nHow many of each state do we observe?\n\ntable(tip_states)\n\ntip_states\n A  B \n47  3 \n\n\nSimulate stochastic character maps nsim times using the tree, tip states, and our Q matrix: Note: don’t set model=Q, otherwise that just re-estimates Q. Need to specify Q=Q in the make.simmap call.\nWe simulate from the root to the tips. We have to specify an initial condition at the root:\n\nPi &lt;- c(.5,.5)\n\n# Run the sims!\nsims &lt;- make.simmap(tree, tip_states, Q=Q, pi=Pi, nsim=nsim)\n\nmake.simmap is sampling character histories conditioned on\nthe transition matrix\n\nQ =\n     A    B\nA -0.1  0.1\nB  0.1 -0.1\n(specified by the user);\nand (mean) root node prior probabilities\npi =\n  A   B \n0.5 0.5 \n\n\nDone.\n\n# Uncomment this to visualize the different character mappings:\n#par(mfrow=c(1,1))\n#for(i in 1:nsim){\n#   plot(sims[[i]])\n#   Sys.sleep(.0002)\n#}\n\n# Let's start by summarizing the number of mutations that happen across the whole tree:\n\ncounts &lt;- lapply(sims, countSimmap)\nnumMutations &lt;- sapply(counts, function(x) x$N)\ntransitions &lt;- lapply(counts, function(x)x$Tr)\ntransitions_AB &lt;- sapply(transitions, function(x) x[1,2])\ntransitions_BA &lt;- sapply(transitions, function(x) x[2,1])\n\nLet’s plot an example character mapped tree, and histograms of number of mutations:\n\nsim = sims[[1]]\n#  overall, and by type\npar(mfrow=c(2,2))\n## plot the character mapped tree\nsim$tip.label &lt;- paste(sim$tip.label, \"(\", tip_states, \")\", sep=\"\")\nplotSimmap(sim, fsize = 0.8)\n\nno colors provided. using the following legend:\n        A         B \n  \"black\" \"#DF536B\" \n\n## plottig make.simmap objects messes up margins, let's reset these:\npar(mar=c(5,4,4,1))\n## histogram of total mutations:\nhist(numMutations)\n## histogram of mutations A -&gt; B\nhist(transitions_AB)\n## histogram of mutations B -&gt; A\nhist(transitions_BA)"
+  },
+  {
+    "objectID": "topics/character_mapping/stochastic_mapping.html#section",
+    "href": "topics/character_mapping/stochastic_mapping.html#section",
+    "title": "Simulating stochasting character mappings",
+    "section": "1.",
+    "text": "1.\nTry changing the initial condition at the root (Pi, also called the “root prior”) to see how results change"
+  },
+  {
+    "objectID": "topics/character_mapping/stochastic_mapping.html#section-1",
+    "href": "topics/character_mapping/stochastic_mapping.html#section-1",
+    "title": "Simulating stochasting character mappings",
+    "section": "2.",
+    "text": "2.\nLook at the logL values in the sims. What do you think that describes? In particular, do you think the reported logL is P(tip data | Q), or P(tip data, character mapping | Q)?"
+  },
+  {
+    "objectID": "topics/character_mapping/stochastic_mapping.html#a.",
+    "href": "topics/character_mapping/stochastic_mapping.html#a.",
+    "title": "Simulating stochasting character mappings",
+    "section": "2.a.",
+    "text": "2.a.\nCreate a new sims list, replacing Q with jitter(Q). What do you notice about the logL values?"
+  },
+  {
+    "objectID": "topics/character_mapping/stochastic_mapping.html#section-2",
+    "href": "topics/character_mapping/stochastic_mapping.html#section-2",
+    "title": "Simulating stochasting character mappings",
+    "section": "3.",
+    "text": "3.\nIn light of the previous questions, can you figure out what the form of the log-likelihood is for make.simmap? (is it actually a likelihood, or is it a conditional likelihood?) That is, do you think the form of the log-likelihood is P(tip data | Q) or P(tip data | Q, Pi) ?"
+  },
+  {
+    "objectID": "topics/character_mapping/stochastic_mapping.html#section-3",
+    "href": "topics/character_mapping/stochastic_mapping.html#section-3",
+    "title": "Simulating stochasting character mappings",
+    "section": "4.",
+    "text": "4.\nCalculate the log-likelihood of the tip data on the tree under the assumed Q matrix. Compare the log-likelihood reported from ace with the log-likelihood returned by make.simmap. What do you notice?"
+  },
+  {
+    "objectID": "topics/character_mapping/stochastic_mapping.html#section-4",
+    "href": "topics/character_mapping/stochastic_mapping.html#section-4",
+    "title": "Simulating stochasting character mappings",
+    "section": "5.",
+    "text": "5.\nDo ace and make.simmap use the same log-likelihood? If not, what is the key difference? Use ?ace and ?make.simmap in your investigation."
+  },
+  {
+    "objectID": "schedule.html",
+    "href": "schedule.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Day 1\n0930 - 1030: [lecture] introduction to workshop and phylogenetic trees\n1030 - 1130: R demos (Intro to trees in R and Simulating nucleotide substitution models)\n1130 - 1230: [lecture] introduction to ancestral character estimation (ace in R)\n1230 - 1330: lunch (bring your own!)\n1330 - 1430: R demo: ancestral character estimation in R\n1430 - 1530: [live coding session] Introduction to stochastic character mapping – simulating event times\n1530 - 1630: R demos (simulating stochastic character mapping; fitting models with stochastic character mapping)\n\n\nDay 2\n0930 - 1030: [lecture] Review of ancestral character estimation and stochastic character mapping\n1030 - 1130: [live coding session] Birth death models\n1130 - 1230: R demo session: fitting and simulating birth death models\n1230 - 1330: lunch\n1330 - 1430: [lectue] Intro to state-dependent speciation and extinction (SSE) models\n1430 - 1530: [live coding session and R demo] fitting and simulate SSE models\n1530 - 1600: R demo session: fit SSE models to virus data\n1600 - 1630: End of day review\n\n\nDay 3\n0930 - 1030: [lecture] multi-type birth death (MTBD) models\n1030 - 1130: [live coding session] setting up a MTBD BEAST2 run\n1130 - 1230: [live coding session] setting up a BEAST2 run on a remote server\n1230 - 1330: lunch\n1330 - 1430: Demo session: analyzing BEAST2 output (premade in the oven)\n1430 - 1530: [lecture] structured coalescent models\n1530 - 1600: [live coding session] setting up a structured coalescent BEAST2 run\n1600 - 1630: Recap of day\n\n\nDay 4\n0930 - 1030: [live demo session] Examine BEAST2 server run\n1030 - 1130: [lecture] Bayesian stochastic search variable selection\n1130 - 1230: [live demo session] setting up BSSVS in BEAST2\n1230 - 1330: lunch\n1330 - 1430: [lecture] SAASI\n1430 - 1530: [live demo sesssion] comparing discrete trait analysis and phylodynamics\n1530 - 1630: Recap, conclusions and closing\n\n\n\n\nHosted by:"
+  },
+  {
+    "objectID": "thursday.html",
+    "href": "thursday.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Welcome to Day 3! The state-dependent speciation and extinction (SSE) models we learned about yesterday will position us to understand the basic phylodynamics models (multi-type birth death, strucutred coalescent) used in BEAST2.\nReview the Requirements page to make sure you have everything installed for BEAST2.\nIf you want to get the most out of the afternoon sessions, make sure you have craeted an account with the Digital Research Alliance of Canada https://ccdb.alliancecan.ca/security/login\n\n\n\nThursday[October 2, 2025]\n\n\n\n\n\nIntro to Phylodynamics\n\nSlides\n\n\n\n\n\n\n\nBasic phylodynamics Models in R/BEAST2\n\nPractical session in R (or BEAST2)\n\n\n\n\n\n\n\n\n\nIntro to BEAST2\n\nShort description\n\n\n\n\n\n\nBasic BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\nMTBD and/or Structured Coalescent BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nSetting up server runs\n\nPractical session in BEAST2/remote server\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
+  },
+  {
+    "objectID": "monday.html",
+    "href": "monday.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Welcome to Day one!\nAfter an introduction to this week’s workshop, we will gain some experience working with phylogenetic trees in R before moving on to learn about ancestral character estimation and stochastic character mapping.\n\n\n\nMonday[September 29, 2025]\n\n\n\n\n\n0930–1030: Introduction to PhylogeogRaphy workshop\n\nSlides\n\n\n\n\n\n\n\n\n\n1030–1130: Intro to trees in R\n\nPractical session in R\n\n\n\n\n\n\n\n\n\n1030–1130: Simulating nucleotide substitution models\n\nPractical session in R\n\n\n\n\n\n\n\n1130–1230: Ancestral character estimation models\n\nSlides\n\n\n\n\n\n\n1330–1430: Simulating and fitting Markov models with ace\n\nPractical session in R\n\n\n\n\n\n1430–1530: Introduction to Stochastic character mapping – Simulating event times\n\nR demo\n\n\n\n\n\n\n\n1530–1630: Simulating Stochastic character mapping\n\nPractical session in R\n\n\n\n\n\n\n\n1530–1630: Fitting models with Stochastic character mapping\n\nPractical session in R\n\n\n\n\n\n\n\nOptional: MCMC Primer\n\nPractical session in R\n\n\n\n\n\n\n\n\n\nHosted by:"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Welcome to the PhylogeogRaphy workshop (with BEAST2)!\nSessions are split into roughly two-hour chunks that align with typical start/end times of classes, and are meant to be as self-contained as possible – so, feel free to come and go as necessary! All materials will posted here for you to catch up on content if desired.\nParticipants should bring their own laptops for hands-on exercises.\nFor specific requirements, see the Requirements for workshop page.\n\n\n\n\nRequirements for workshop\n\nPre-workshop instructions\n\n\n\n\n\n\n\n\n\nSchedule\n\nTopics and agenda\n\n\n\n\n\n\n\n\nMonday[September 29, 2025]\n\n\n\n\n\nMonday: Discrete trait analysis I in R\n\nIntroduction, ancestral character estimation, and stochastic character mapping\n\n\n\n\n\n\n\n\n\nWednesday[October 1, 2025]\n\n\n\n\n\nWednesday: Discrete trait analysis II in R\n\nBirth-death models, state-dependent speciation and extinction (SSE) models\n\n\n\n\n\n\n\n\n\nThursday[October 2, 2025]\n\n\n\n\n\nThursday: Phylodynamics I in R and BEAST2\n\nPhylodynamics models (multi-type birth-death models, structured coalescents), and analysis in BEAST2\n\n\n\n\n\n\n\n\n\nFriday[October 3, 2025]\n\n\n\n\n\nFriday: Phylodynamics II in BEAST2\n\nAnalysis in BEAST2 and advanced topics (Bayesian stochastic search variable selection)\n\n\n\n\n\n\n\n\n\nHosted by:"
+  },
+  {
+    "objectID": "friday.html",
+    "href": "friday.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Welcome to Day 4! We will start by analyzing output from BEAST2 before learning about more advanced functionality (like Bayesian stochastic search variable selection). We will finish by carrying out comparative analyses from discrete trait methods to see what we gain from more computationally intensive analyses in BEAST2.\n\n\n\nFriday[October 3, 2025]\n\n\n\n\nAnalyze overnight BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nAdvanced BEAST2 topics: BSSVS\n\nSlides\n\n\n\n\n\n\n\nBSSVS\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nComparing discrete trait analysis and phylodynamics\n\nPractical session in BEAST2/R\n\n\n\n\n\n\n\nClosing\n\nSlides/Group discussion\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
+  },
+  {
+    "objectID": "wednesday.html",
+    "href": "wednesday.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Welcome to Day Two! We will briefly recap things we learned on Monday before moving on to birth-death models and state-dependent speciation and extinction (SSE) models in R.\n\n\n\nWednesday[October 1, 2025]\n\n\n\n\n0930-1030: Intro to birth-death models\n\nSlides\n\n\n\n\n\n1030-1130: Estimating parameters of basic birth-death models\n\nPractical session in R\n\n\n\n\n\n\n1130-1230: Intro to State-dependent Speciation and Extinction (SSE) models\n\nSlides\n\n\n\n\n\n\n\n1330-1430: Simulating State-dependent Speciation and Extinction (SSE) models\n\nPractical session in R\n\n\n\n\n\n\n\n1430-1530: Fitting BiSSE models\n\nPractical session in R\n\n\n\n\n\n\n\n1530-1630: Ancestral state reconstruction with BiSSE\n\nPractical session in R\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
+  },
+  {
+    "objectID": "thursday_preview.html",
+    "href": "thursday_preview.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Wow, you’re really getting ahead of yourself – it’s not Day 3 yet! Check back next week.\n\n\nHosted by:"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About This Workshop",
+    "section": "",
+    "text": "This workshop is organized and hosted by MAGPIE.\nIt is focused toward our graduate students, but anybody with interests in mathematical biology, evolutionary biology, infectious diseases, and statistics is welcome to join!\nThese pages are written by Alex Beams\nThank you Lars Berling for this website template!"
+  },
+  {
+    "objectID": "friday_preview.html",
+    "href": "friday_preview.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "… the workshop hasn’t even started! Check back later. \n\nHosted by:"
+  },
+  {
+    "objectID": "wednesday_preview.html",
+    "href": "wednesday_preview.html",
+    "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
+    "section": "",
+    "text": "Whoops, it isn’t Day Two yet! Check back next week.\n\n\nHosted by:"
+  },
+  {
+    "objectID": "topics/requirements.html",
+    "href": "topics/requirements.html",
+    "title": "Workshop Requirements",
+    "section": "",
+    "text": "Phylogeography, broadly speaking, is concerned with reconstructing evolutionary histories to explain spatial distributions of present-day organisms (be they pathogens, species of mammals, or anything else that evolves). Many of the methods used in phylogeography are common to other areas of evolutionary biology, and some are useful for answering questions like “Does a particular trait influence speciation?” We will attempt to cover as many of these different areas as time allows, but our emphasis will be to work towards an understanding of the mathematical models underpinning these methods, with a particular focus on the key assumptions they make that render them appropriate for certain types of analyses and not others.\nPrior experience in phylogenetics or evolution is not required or assumed, but enthusiasm is. Familiarity with statistics, Markov chains, R, and working in the terminal is great, but not strictly required. The target audience for this workshop includes all of the graduate students in MAGPIE, as well as anyone else who is interested to learn about mathematical models used in phylogeography and evolution of traits more generally.\nInstall all of the following things before Monday, September 29, so that we can hit the ground running.\n\n\n\nYou need to have R on your machine. It is usually good to have the latest version. Download it at https://www.r-project.org/\nYou will need the following R packages:\nape\nexpm\nphytools\ncoda\nmcmcensemble\ndiversitree\nThese will have their own dependencies – be sure to install those as necessary in order to get these packages to work.\nYou can use Rstudio if you wish, but it is not required. If you are OK with copying-and-pasting things into a terminal, you will be able to accomplish all of the tasks in this workshop.\nYou will probably like to have a text editor to modify the coding exercises to work through problems efficiently. If you want to do this workshop on Expert mode, consider learning how to use Vim at https://vim-adventures.com\n\n\n\nBEAST2 carries out Markov Chain Monte Carlo to reconstruct phylogenetic trees (and can do so jointly with geographic histories). There are a number of things you need to install to get this to work:\nBEAST2 (running MCMC): download at https://www.beast2.org/\nTracer (analyzing MCMC): download at https://tree.bio.ed.ac.uk/software/tracer/\nFigTree (examining trees produced by BEAST2): https://tree.bio.ed.ac.uk/software/figtree/\nAliView (useful for looking at multiple sequence alignments): https://ormbunkar.se/aliview/\n\n\n\nOn Thursday, we will try to get BEAST2 to run on the Fir server. You will need an account with the Digital Research Alliance of Canada. Create one here if you don’t have one aready:\nhttps://ccdb.alliancecan.ca/security/login"
+  },
+  {
+    "objectID": "topics/requirements.html#background",
+    "href": "topics/requirements.html#background",
+    "title": "Workshop Requirements",
+    "section": "",
+    "text": "Phylogeography, broadly speaking, is concerned with reconstructing evolutionary histories to explain spatial distributions of present-day organisms (be they pathogens, species of mammals, or anything else that evolves). Many of the methods used in phylogeography are common to other areas of evolutionary biology, and some are useful for answering questions like “Does a particular trait influence speciation?” We will attempt to cover as many of these different areas as time allows, but our emphasis will be to work towards an understanding of the mathematical models underpinning these methods, with a particular focus on the key assumptions they make that render them appropriate for certain types of analyses and not others.\nPrior experience in phylogenetics or evolution is not required or assumed, but enthusiasm is. Familiarity with statistics, Markov chains, R, and working in the terminal is great, but not strictly required. The target audience for this workshop includes all of the graduate students in MAGPIE, as well as anyone else who is interested to learn about mathematical models used in phylogeography and evolution of traits more generally.\nInstall all of the following things before Monday, September 29, so that we can hit the ground running."
+  },
+  {
+    "objectID": "topics/requirements.html#requirements-for-r",
+    "href": "topics/requirements.html#requirements-for-r",
+    "title": "Workshop Requirements",
+    "section": "",
+    "text": "You need to have R on your machine. It is usually good to have the latest version. Download it at https://www.r-project.org/\nYou will need the following R packages:\nape\nexpm\nphytools\ncoda\nmcmcensemble\ndiversitree\nThese will have their own dependencies – be sure to install those as necessary in order to get these packages to work.\nYou can use Rstudio if you wish, but it is not required. If you are OK with copying-and-pasting things into a terminal, you will be able to accomplish all of the tasks in this workshop.\nYou will probably like to have a text editor to modify the coding exercises to work through problems efficiently. If you want to do this workshop on Expert mode, consider learning how to use Vim at https://vim-adventures.com"
+  },
+  {
+    "objectID": "topics/requirements.html#requirements-for-beast2",
+    "href": "topics/requirements.html#requirements-for-beast2",
+    "title": "Workshop Requirements",
+    "section": "",
+    "text": "BEAST2 carries out Markov Chain Monte Carlo to reconstruct phylogenetic trees (and can do so jointly with geographic histories). There are a number of things you need to install to get this to work:\nBEAST2 (running MCMC): download at https://www.beast2.org/\nTracer (analyzing MCMC): download at https://tree.bio.ed.ac.uk/software/tracer/\nFigTree (examining trees produced by BEAST2): https://tree.bio.ed.ac.uk/software/figtree/\nAliView (useful for looking at multiple sequence alignments): https://ormbunkar.se/aliview/"
+  },
+  {
+    "objectID": "topics/requirements.html#requirements-for-compute-canada",
+    "href": "topics/requirements.html#requirements-for-compute-canada",
+    "title": "Workshop Requirements",
+    "section": "",
+    "text": "On Thursday, we will try to get BEAST2 to run on the Fir server. You will need an account with the Digital Research Alliance of Canada. Create one here if you don’t have one aready:\nhttps://ccdb.alliancecan.ca/security/login"
+  },
+  {
+    "objectID": "topics/character_mapping/fit_stochastic_mapping.html",
+    "href": "topics/character_mapping/fit_stochastic_mapping.html",
+    "title": "Exercise set 1:",
+    "section": "",
+    "text": "rm(list=ls())\nlibrary(coda) # for handling output from MCMC\nlibrary(phytools) # simmap functions, Mk models\n\nThis code is complementary to the other one in this subdirectory, and walks through how to fit models using a character mapping approach.\nMost of the phytools stuff is based on the Mk model, which is a particular type of Markov model. M stands for “Markov”, and “k” indicates the number of states. (Lewis has an interesting discussion relating to the use of conditional likelihoods as a means of overcoming acquisition bias – the tendency to only record changes of state, and not maintenance of a character).\nfitMk fits the model to the data using nlminb, and optimization routine similar to quasi- Newton methods like BFGS. Compare this to ace.\nmcmcMk fits Mk models to trees using MCMC.\n\ndata(sunfish.tree)\ndata(sunfish.data)\n\n# extract discrete character (fish diet):\nsunfish_tipdata &lt;-setNames(sunfish.data$feeding.mode,\n    rownames(sunfish.data))\n\n# fit \"ER\" model\nfit.ER&lt;-fitMk(sunfish.tree,sunfish_tipdata,model=\"ER\")\nprint(fit.ER)\n\nThis will run for a while, and you should see traceplots updating in real time until it finishes:\n\n    fit.mcmc &lt;- mcmcMk(sunfish.tree, sunfish_tipdata, \n    model=\"ER\", ngen=10000)\n\nThe dimensions of fit.mcmc will be ngen * (number of parameters in the Mk model + 2), which for this run will be 10000 x 3 because we are only estimating a single parameter\nThe first column of fit.mcmc is timesteps of the MCMC routine. The last column of fit.mcmc is the logLikelihood, and the columns between first and last are the parameters at each timestep.\nWe can look at the traceplots:\n\nplot(fit.mcmc)\n\nWe can also plot the posterior distribution for our parameters. By default, this should toss out the first 20% of the MCMC updates as part of a burn-in (we discard transients because we only care about the stationary distribution of the MCMC run)\n\nplot(density(fit.mcmc))\n\nOf note, we can also use base R plotting to accomplish these things as well. Here is a histogram of the parameter values of the entire MCMC run:\n\nhist(fit.mcmc[,'[pisc,non]'],breaks=100) \n\n# and the last 80% of the run:\nhist(fit.mcmc[c(2001:10000),'[pisc,non]'],breaks=100) \n\nI also like to plot profile log- likelihood (logLik~parameters):\n\nplot(fit.mcmc[,'logLik']~fit.mcmc[,'[pisc,non]'])\n\nThis helps us visualize the peak of the likelihood surface. Can be useful for diagnosing convergence problems."
+  },
+  {
+    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#fitting-markov-models-with-stochastic-character-mapping",
+    "href": "topics/character_mapping/fit_stochastic_mapping.html#fitting-markov-models-with-stochastic-character-mapping",
+    "title": "Exercise set 1:",
+    "section": "",
+    "text": "rm(list=ls())\nlibrary(coda) # for handling output from MCMC\nlibrary(phytools) # simmap functions, Mk models\n\nThis code is complementary to the other one in this subdirectory, and walks through how to fit models using a character mapping approach.\nMost of the phytools stuff is based on the Mk model, which is a particular type of Markov model. M stands for “Markov”, and “k” indicates the number of states. (Lewis has an interesting discussion relating to the use of conditional likelihoods as a means of overcoming acquisition bias – the tendency to only record changes of state, and not maintenance of a character).\nfitMk fits the model to the data using nlminb, and optimization routine similar to quasi- Newton methods like BFGS. Compare this to ace.\nmcmcMk fits Mk models to trees using MCMC.\n\ndata(sunfish.tree)\ndata(sunfish.data)\n\n# extract discrete character (fish diet):\nsunfish_tipdata &lt;-setNames(sunfish.data$feeding.mode,\n    rownames(sunfish.data))\n\n# fit \"ER\" model\nfit.ER&lt;-fitMk(sunfish.tree,sunfish_tipdata,model=\"ER\")\nprint(fit.ER)\n\nThis will run for a while, and you should see traceplots updating in real time until it finishes:\n\n    fit.mcmc &lt;- mcmcMk(sunfish.tree, sunfish_tipdata, \n    model=\"ER\", ngen=10000)\n\nThe dimensions of fit.mcmc will be ngen * (number of parameters in the Mk model + 2), which for this run will be 10000 x 3 because we are only estimating a single parameter\nThe first column of fit.mcmc is timesteps of the MCMC routine. The last column of fit.mcmc is the logLikelihood, and the columns between first and last are the parameters at each timestep.\nWe can look at the traceplots:\n\nplot(fit.mcmc)\n\nWe can also plot the posterior distribution for our parameters. By default, this should toss out the first 20% of the MCMC updates as part of a burn-in (we discard transients because we only care about the stationary distribution of the MCMC run)\n\nplot(density(fit.mcmc))\n\nOf note, we can also use base R plotting to accomplish these things as well. Here is a histogram of the parameter values of the entire MCMC run:\n\nhist(fit.mcmc[,'[pisc,non]'],breaks=100) \n\n# and the last 80% of the run:\nhist(fit.mcmc[c(2001:10000),'[pisc,non]'],breaks=100) \n\nI also like to plot profile log- likelihood (logLik~parameters):\n\nplot(fit.mcmc[,'logLik']~fit.mcmc[,'[pisc,non]'])\n\nThis helps us visualize the peak of the likelihood surface. Can be useful for diagnosing convergence problems."
+  },
+  {
+    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section",
+    "href": "topics/character_mapping/fit_stochastic_mapping.html#section",
+    "title": "Exercise set 1:",
+    "section": "1.",
+    "text": "1.\nDid the fitMk routine produce the same estimates as mcmcMk? How would you determine this?"
+  },
+  {
+    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section-6",
+    "href": "topics/character_mapping/fit_stochastic_mapping.html#section-6",
+    "title": "Exercise set 1:",
+    "section": "1.",
+    "text": "1.\nWhy do you think the mcmcMk routine does not propose character mappings alongside parameters? Would anything be gained by treating character mappings as latent variables in MCMC and updating those alongside parameters?\nCheck this paper out if you are interested in MCMC and character mapping:\nMutations as Missing Data: Inferences on the Ages and Distributions of Nonsynonymous and Synonymous Mutations, by Rasmus Nielsen Genetics 159: 401-411 (September 2001)"
+  },
+  {
+    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section-7",
+    "href": "topics/character_mapping/fit_stochastic_mapping.html#section-7",
+    "title": "Exercise set 1:",
+    "section": "2.",
+    "text": "2.\nComment on any interesting things you see in profile loglikelihoods for models with multiple parameters. Can you deduce anything interesting about the geometry of the likelihood surface?"
+  },
+  {
+    "objectID": "topics/character_mapping/fit_stochastic_mapping.html#section-8",
+    "href": "topics/character_mapping/fit_stochastic_mapping.html#section-8",
+    "title": "Exercise set 1:",
+    "section": "3.",
+    "text": "3.\nIn the previous runs, how did we estimate Pi, the probability of the root states? Examine the fitMk and mcmcMk help page to determine what the default is. Try fitting the model under a different setting to see how results change."
+  },
+  {
+    "objectID": "topics/ancestral_character_estimation/ace_sims_edit.html",
+    "href": "topics/ancestral_character_estimation/ace_sims_edit.html",
+    "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
+    "section": "",
+    "text": "rm(list=ls())\n\nlibrary(ape)\nlibrary(expm) # matrix exponential\n\nLoading required package: Matrix\n\n\n\nAttaching package: 'expm'\n\n\nThe following object is masked from 'package:Matrix':\n\n    expm\n\n\nThe following object is masked from 'package:ape':\n\n    balance\n\n\nThis code simulates output from the ace function. We will first try to grasp how the model behaves before we we try fitting it to data.\nAncestral character estimation methods can be based on a variety of approaches, but we will consider Markov chains superimposed on phylogenies. In the accompanying code to this we will learn how to fit these models using Maximum Likelihood, but for now we focus on simulating Markov chains on trees to understand how the models work.\nFirst, let’s simulate a tree and some tip states:\n\ntree &lt;- rcoal(10)\nx &lt;- sample(c(0,1), size=10, replace=T)\n\nplot(tree)\ntiplabels(pch=21,bg=x)\n\n\n\n\n\n\n\nfit &lt;- ace(x, tree, type='discrete', model='ARD')\n\nWarning in sqrt(diag(solve(h))): NaNs produced"
+  },
+  {
+    "objectID": "topics/ancestral_character_estimation/ace_sims_edit.html#section",
+    "href": "topics/ancestral_character_estimation/ace_sims_edit.html#section",
+    "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
+    "section": "1.",
+    "text": "1.\nSimulate some tip states on a tree using a Markov model that you specify, and use ace to estimate it. Scale this up for a large number of tip state configurations to see how the distribution of Maximum Likelihood estimates for the Markov model rates compare with the true values you supplied. Are there particular combinations of branch lengths and rates that make it difficult to estimate model parameters?"
+  },
+  {
+    "objectID": "topics/ancestral_character_estimation/ace_sims_edit.html#hard-or-maybe-impossible",
+    "href": "topics/ancestral_character_estimation/ace_sims_edit.html#hard-or-maybe-impossible",
+    "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
+    "section": "2. (Hard, or maybe impossible)",
+    "text": "2. (Hard, or maybe impossible)\nModify the code above to condition on a particular tip state configuration. This way, we can observe distributions of evolutionary scenarios consistent with a particular set of observations."
+  },
+  {
+    "objectID": "topics/ancestral_character_estimation/ace_sims_edit.html#section-1",
+    "href": "topics/ancestral_character_estimation/ace_sims_edit.html#section-1",
+    "title": "Fitting and simulating Markov models on trees using ancestral character estimation (ace)",
+    "section": "3.",
+    "text": "3.\nIn a fitted ace object, there is an element called lik.anc which records the probability of ancestral states at each node of the tree. Plot a dataset of your choice with pie charts displaying the ancestral state probabilities associated with models that you fit using ace. Navigate through the help pages (?ace) to specify a few different versions of models that impose constraints on the Markov generator, Q. How sensitive are ancestral state probabilities to your modeling choices?"
   },
   {
     "objectID": "topics/ancestral_character_estimation/ace_sims.html",

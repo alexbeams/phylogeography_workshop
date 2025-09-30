@@ -25,7 +25,7 @@ Monday<br>[September 29, 2025]
 
 :::{.card .mb-3}
 :::{.card-body}
-[0930--1030: Introduction to PhylogeogRaphy workshop](topics/intro_to_workshop/introduction_to_workshop.pdfx){.card-title .stretched-link}
+[0930--1030: Introduction to PhylogeogRaphy workshop](topics/intro_to_workshop/introduction_to_workshop.pdf){.card-title .stretched-link}
 
 :::{.text-muted}
 Slides
