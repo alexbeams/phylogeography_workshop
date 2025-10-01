@@ -32,15 +32,15 @@ anchor-sections: false
 
 1030 - 1130: **[live coding session]** Birth death models 
 
-1130 - 1230: R demo session: fitting and simulating birth death models
- 
+1130 - 1230: **[lecture]** Intro to state-dependent speciation and extinction (SSE) models 
+
 1230 - 1330: lunch
 
-1330 - 1430: **[lectue]** Intro to state-dependent speciation and extinction (SSE) models 
+1330 - 1430: **[mix of live coding and demo session]** simulating state-dependent speciation and extinction (SSE) models 
 
-1430 - 1530: **[live coding session and R demo]** fitting and simulate SSE models
+1430 - 1530: **[mix of live coding and demo session]** fitting state-dependent speciation and extinction (SSE) models 
 
-1530 - 1600: R demo session: fit SSE models to virus data
+1530 - 1600: **[live coding and demo session]** ancestral state reconstruction with SSE models
 
 1600 - 1630: End of day review
  

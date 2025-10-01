@@ -24,7 +24,7 @@ Wednesday<br>[October 1, 2025]
 
 :::{.card .mb-3}
 :::{.card-body}
-[0930-1030: Review of ancestral character estimations and stochastic character mapping](topics/ancestral_character_estimation/ace_and_simmap_review.pdf){.card-title .stretched-link}
+[0930-1030: Review of ancestral character estimations and stochastic character mapping](topics/character_mapping/ace_and_simmap_review.pdf){.card-title .stretched-link}
 
 :::{.text-muted}
 Slides
