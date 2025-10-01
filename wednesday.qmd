@@ -24,7 +24,7 @@ Wednesday<br>[October 1, 2025]
 
 :::{.card .mb-3}
 :::{.card-body}
-[0930-1030: Intro to birth-death models](topics/sse_models/birth_death_models.pdf){.card-title .stretched-link}
+[0930-1030: Review of ancestral character estimations and stochastic character mapping](topics/ancestral_character_estimation/ace_and_simmap_review.pdf){.card-title .stretched-link}
 
 :::{.text-muted}
 Slides
@@ -59,17 +59,7 @@ Slides
 
 :::{.card .mb-3}
 :::{.card-body}
-[1330-1430: Simulating State-dependent Speciation and Extinction (SSE) models](topics/sse_models/sim_sse.qmd){.card-title .stretched-link}
-
-:::{.text-muted}
-Practical session in R
-:::
-:::
-:::
-
-:::{.card .mb-3}
-:::{.card-body}
-[1430-1530: Fitting BiSSE models](topics/sse_models/fit_bisse.qmd){.card-title .stretched-link}
+[1330-1530: Simulating and fitting SSE models](topics/sse_models/sim_sse.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Practical session in R
