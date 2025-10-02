@@ -1,0 +1,7 @@
+# MTBD BEAST2 runs
+
+Navigate [here](https://taming-the-beast.org/tutorials/Structured-birth-death-model/) to find instructions to set up a multi-type birth death model run in BEAST2.
+
+This site also has pre-made BEAST2 output for us to download and analyze.
+
+

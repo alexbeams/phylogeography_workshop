@@ -96,10 +96,10 @@ Thursday<br>[October 2, 2025]
 
 :::{.card .mb-3}
 :::{.card-body}
-[Thursday: Phylodynamics I in R and BEAST2](thursday_preview.qmd){.card-title .stretched-link}
+[Thursday: Phylodynamics I in R and BEAST2](thursday.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
-Phylodynamics models (multi-type birth-death models, structured coalescents), and analysis in BEAST2
+Joint estimation of character change with phylogeny, and Phylodynamics models in BEAST2
 :::
 :::
 :::
@@ -115,10 +115,10 @@ Friday<br>[October 3, 2025]
 
 :::{.card .mb-3}
 :::{.card-body}
-[Friday: Phylodynamics II in BEAST2](friday_preview.qmd){.card-title .stretched-link}
+[Friday: Phylodynamics II in BEAST2](friday.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
-Analysis in BEAST2 and advanced topics (Bayesian stochastic search variable selection)
+Bayesian stochastic search variable selection
 :::
 :::
 :::

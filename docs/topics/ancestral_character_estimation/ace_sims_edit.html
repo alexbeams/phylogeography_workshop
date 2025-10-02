@@ -138,17 +138,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Monday: Discrete trait analysis I in R</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../wednesday_preview.html"> <i class="bi bi-map" role="img">
+    <a class="nav-link" href="../../wednesday.html"> <i class="bi bi-map" role="img">
 </i> 
 <span class="menu-text">Wednesday: Discrete trait analysis II in R</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../thursday_preview.html"> <i class="bi bi-activity" role="img">
+    <a class="nav-link" href="../../thursday.html"> <i class="bi bi-activity" role="img">
 </i> 
 <span class="menu-text">Thursday: Phylodynamics I in R and BEAST2</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../friday_preview.html"> <i class="bi bi-tree" role="img">
+    <a class="nav-link" href="../../friday.html"> <i class="bi bi-tree" role="img">
 </i> 
 <span class="menu-text">Friday: Phylodynamics II in BEAST2</span></a>
   </li>  
@@ -218,51 +218,48 @@ Attaching package: 'expm'</code></pre>
 </div>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ARD'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in sqrt(diag(solve(h))): NaNs produced</code></pre>
-</div>
 </div>
 </section>
 <section id="exercise-1" class="level1">
 <h1>Exercise 1</h1>
 <p>Navigate through the ace help pages to determine whether Qij corresponds to the transition rate from state i-&gt; j or from state j -&gt; i. Based on your answer, does the Master equation for the Markov process use column or row vectors? Then, define a generator matrix, Q, in terms of the rates estimated just above (replacing the following line):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>),<span class="at">ncol=</span><span class="dv">2</span>) </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># can scale rates up or down:</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>Q <span class="ot">&lt;-</span> Q<span class="sc">/</span><span class="dv">1</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>getP <span class="ot">&lt;-</span> <span class="cf">function</span>(t,Q){</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    P <span class="ot">&lt;-</span> <span class="fu">expm</span>(Q<span class="sc">*</span>t)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(P)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>),<span class="at">ncol=</span><span class="dv">2</span>) </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># can scale rates up or down:</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>Q <span class="ot">&lt;-</span> Q<span class="sc">/</span><span class="dv">1</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>getP <span class="ot">&lt;-</span> <span class="cf">function</span>(t,Q){</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    P <span class="ot">&lt;-</span> <span class="fu">expm</span>(Q<span class="sc">*</span>t)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(P)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Now, we will start at the root of the tree and simulate states at the internal nodes and at the tips of the tree. (The ape package does not have a function to easily do this for us, but it is good exercise to practice it ourselves).</p>
 <p>First, let’s create a vector to store all of the states we simulate:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>states_vec <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>,(tree<span class="sc">$</span>Nnode <span class="sc">+</span> <span class="fu">length</span>(tree<span class="sc">$</span>tip.label)))</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(states_vec) <span class="ot">&lt;-</span> <span class="fu">c</span>(tree<span class="sc">$</span>tip.label, <span class="fu">paste0</span>(<span class="st">"node"</span>, <span class="dv">1</span><span class="sc">:</span>tree<span class="sc">$</span>Nnode))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>states_vec <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>,(tree<span class="sc">$</span>Nnode <span class="sc">+</span> <span class="fu">length</span>(tree<span class="sc">$</span>tip.label)))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(states_vec) <span class="ot">&lt;-</span> <span class="fu">c</span>(tree<span class="sc">$</span>tip.label, <span class="fu">paste0</span>(<span class="st">"node"</span>, <span class="dv">1</span><span class="sc">:</span>tree<span class="sc">$</span>Nnode))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Let’s just work with binary states for now:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>state_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'blue'</span>,<span class="st">'red'</span>) <span class="co">#for plotting</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>state_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'blue'</span>,<span class="st">'red'</span>) <span class="co">#for plotting</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Let’s assign a condition at the root; could be probabilities generally, but let’s say it starts in the first state with certainty for now:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pi_root <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pi_root <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Let’s start with the root state:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>root <span class="ot">&lt;-</span> <span class="fu">length</span>(tree<span class="sc">$</span>tip.label) <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>states_vec[root] <span class="ot">&lt;-</span> <span class="fu">sample</span>(states, <span class="dv">1</span>, <span class="at">prob =</span> pi_root)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>root <span class="ot">&lt;-</span> <span class="fu">length</span>(tree<span class="sc">$</span>tip.label) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>states_vec[root] <span class="ot">&lt;-</span> <span class="fu">sample</span>(states, <span class="dv">1</span>, <span class="at">prob =</span> pi_root)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Let’s plot this as we go:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>tip_states <span class="ot">&lt;-</span> states_vec[tree<span class="sc">$</span>tip.label]</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tiplabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[tip_states], <span class="at">cex=</span><span class="dv">2</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>node_states <span class="ot">&lt;-</span> states_vec[<span class="fu">paste0</span>(<span class="st">"node"</span>, <span class="dv">1</span><span class="sc">:</span>tree<span class="sc">$</span>Nnode)] </span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">nodelabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[node_states], <span class="at">cex=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>tip_states <span class="ot">&lt;-</span> states_vec[tree<span class="sc">$</span>tip.label]</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tiplabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[tip_states], <span class="at">cex=</span><span class="dv">2</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>node_states <span class="ot">&lt;-</span> states_vec[<span class="fu">paste0</span>(<span class="st">"node"</span>, <span class="dv">1</span><span class="sc">:</span>tree<span class="sc">$</span>Nnode)] </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">nodelabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[node_states], <span class="at">cex=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -273,52 +270,52 @@ Attaching package: 'expm'</code></pre>
 </div>
 <p>We will do a preorder traversal, which starts at the root and descends down the tree to the tips:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>preorder <span class="ot">&lt;-</span> <span class="fu">rev</span>(<span class="fu">postorder</span>(tree))  <span class="co"># parent before children</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>preorder <span class="ot">&lt;-</span> <span class="fu">rev</span>(<span class="fu">postorder</span>(tree))  <span class="co"># parent before children</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The list of all of the edges of the tree is located in tree$edge:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> tree<span class="sc">$</span>edge</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> tree<span class="sc">$</span>edge</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Each row is an edge. The first column represents the parent, the second represents the descendant.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(edges) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'parent'</span>,<span class="st">'descendant'</span>)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(edges) <span class="co"># to use the handy $ command for columns</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(edges) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'parent'</span>,<span class="st">'descendant'</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(edges) <span class="co"># to use the handy $ command for columns</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The entry in</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>tree<span class="sc">$</span>edge.length</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>tree<span class="sc">$</span>edge.length</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>is a vector of lengths for each of the edges; it corresponds to the same edges in tree$edge:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>edge.lengths <span class="ot">&lt;-</span> tree<span class="sc">$</span>edge.length</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>edge.lengths <span class="ot">&lt;-</span> tree<span class="sc">$</span>edge.length</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>we start with the initial state at the root and use the Markov chain to sample subsequent states:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>edges<span class="sc">$</span>parentstate <span class="ot">&lt;-</span> states_vec[edges<span class="sc">$</span>parent]</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>edges<span class="sc">$</span>nextstate <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>edges<span class="sc">$</span>lengths <span class="ot">&lt;-</span> edge.lengths</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(edges)){</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    parent_state <span class="ot">&lt;-</span> <span class="cf">if</span>(edges[i,<span class="st">'parentstate'</span>]<span class="sc">==</span><span class="dv">1</span>){<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>)}<span class="cf">else</span>{<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)}</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    prob <span class="ot">=</span> <span class="fu">getP</span>(edges<span class="sc">$</span>lengths[i],Q) <span class="sc">%*%</span> parent_state</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    next_state <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">size=</span><span class="dv">1</span>, <span class="at">prob=</span><span class="fu">c</span>(prob))</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    new_parent <span class="ot">&lt;-</span> edges[i, <span class="st">'descendant'</span>]</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    edges[i,<span class="st">'nextstate'</span>] <span class="ot">&lt;-</span> next_state  </span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    edges[edges<span class="sc">$</span>parent<span class="sc">==</span>new_parent, <span class="st">'parentstate'</span>] <span class="ot">&lt;-</span> next_state</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>edges<span class="sc">$</span>parentstate <span class="ot">&lt;-</span> states_vec[edges<span class="sc">$</span>parent]</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>edges<span class="sc">$</span>nextstate <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>edges<span class="sc">$</span>lengths <span class="ot">&lt;-</span> edge.lengths</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(edges)){</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    parent_state <span class="ot">&lt;-</span> <span class="cf">if</span>(edges[i,<span class="st">'parentstate'</span>]<span class="sc">==</span><span class="dv">1</span>){<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>)}<span class="cf">else</span>{<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)}</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    prob <span class="ot">=</span> <span class="fu">getP</span>(edges<span class="sc">$</span>lengths[i],Q) <span class="sc">%*%</span> parent_state</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    next_state <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">size=</span><span class="dv">1</span>, <span class="at">prob=</span><span class="fu">c</span>(prob))</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    new_parent <span class="ot">&lt;-</span> edges[i, <span class="st">'descendant'</span>]</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    edges[i,<span class="st">'nextstate'</span>] <span class="ot">&lt;-</span> next_state  </span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    edges[edges<span class="sc">$</span>parent<span class="sc">==</span>new_parent, <span class="st">'parentstate'</span>] <span class="ot">&lt;-</span> next_state</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Now fill in states_vec:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>states_vec[edges<span class="sc">$</span>parent] <span class="ot">&lt;-</span> edges<span class="sc">$</span>parentstate</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>states_vec[edges<span class="sc">$</span>descendant] <span class="ot">&lt;-</span> edges<span class="sc">$</span>nextstate</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>states_vec[edges<span class="sc">$</span>parent] <span class="ot">&lt;-</span> edges<span class="sc">$</span>parentstate</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>states_vec[edges<span class="sc">$</span>descendant] <span class="ot">&lt;-</span> edges<span class="sc">$</span>nextstate</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Let’s plot this:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>tip_states <span class="ot">&lt;-</span> states_vec[tree<span class="sc">$</span>tip.label]</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tiplabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[tip_states], <span class="at">cex=</span><span class="dv">2</span>)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>node_states <span class="ot">&lt;-</span> states_vec[<span class="fu">paste0</span>(<span class="st">"node"</span>, <span class="dv">1</span><span class="sc">:</span>tree<span class="sc">$</span>Nnode)] </span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">nodelabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[node_states], <span class="at">cex=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>tip_states <span class="ot">&lt;-</span> states_vec[tree<span class="sc">$</span>tip.label]</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tiplabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[tip_states], <span class="at">cex=</span><span class="dv">2</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>node_states <span class="ot">&lt;-</span> states_vec[<span class="fu">paste0</span>(<span class="st">"node"</span>, <span class="dv">1</span><span class="sc">:</span>tree<span class="sc">$</span>Nnode)] </span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">nodelabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[node_states], <span class="at">cex=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">

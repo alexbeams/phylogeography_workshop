@@ -1,0 +1,22 @@
+# BEAST2 analysis of example datasets:
+
+
+## BSSVS on the server for analysis tomorrow
+
+We will set up BEAST2 to carry out Bayesian stochastic search variable selection (BSSVS) to identify the most probable
+migration pathways between geographic locations. How different will this analysis be from a basic discrete trait analysis, or
+even a simple analysis that uses ace in R to estimate ancestral locations from trees sampled in step 1 above?
+
+
+## Alternatively, you can choose a dataset (influenza H5N1, influenza H3N2, or MERS coronavirus) to analyze with MTBD models
+ 
+## Size of datasets
+
+influenza H5N1 and H3N2 are fairly small, and should be able to run on your laptop if you select a simple model. The MERS dataset is probably worth running on the remote server because of its size.
+
+influenza H5N1: 43 sequences, 5 locations
+
+influenza H3N2: 60 sequences, 2 locations
+
+MERS: 274 sequences, 2 hosts (camels and humans)
+

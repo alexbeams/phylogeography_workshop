@@ -27,7 +27,7 @@ Thursday<br>[October 2, 2025]
 
 :::{.card .mb-3}
 :::{.card-body}
-[Intro to Phylodynamics](pages/embedR.qmd){.card-title .stretched-link}
+[0930-1030: Bayesian discrete trait analysis](topics/bayesian_discrete_trait_analysis/bayesian_discrete_trait_analysis.pdf){.card-title .stretched-link}
 
 :::{.text-muted}
 Slides
@@ -37,10 +37,10 @@ Slides
 
 :::{.card .mb-3}
 :::{.card-body}
-[Basic phylodynamics Models in R/BEAST2](topics/intro_to_phylodynamics/multi_type_birth_death.qmd){.card-title .stretched-link}
+[1030-1130: Basic BEAST2 runs: Influenza H5N1](topics/bayesian_discrete_trait_analysis/H5N1_tutorial.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
-Practical session in R (or BEAST2)
+Practical session in BEAST2
 :::
 :::
 :::
@@ -52,10 +52,10 @@ Practical session in R (or BEAST2)
 
 :::{.card .mb-3}
 :::{.card-body}
-[Intro to BEAST2](beast2/intro/beast_intro.qmd){.card-title .stretched-link}
+[1130 - 1230: Running BEAST2 on a remote server](topics/bayesian_discrete_trait_analysis/remote_runs.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
-Short description
+Save your laptop's memory 
 :::
 :::
 :::
@@ -64,7 +64,19 @@ Short description
 
 :::{.card .mb-3}
 :::{.card-body}
-[Basic BEAST2 runs](beast2/intro/basic_beast2_runs.qmd){.card-title .stretched-link}
+[1330 - 1430: Multi-type birth death models](topics/intro_to_phylodynamics/mtbd_models.pdf){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides
+:::
+:::
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[1430 - 1530: MTBD BEAST2 tutorial](topics/intro_to_phylodynamics/mtbd.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Practical session in BEAST2
@@ -76,7 +88,7 @@ Practical session in BEAST2
 
 :::{.card .mb-3}
 :::{.card-body}
-[MTBD and/or Structured Coalescent BEAST2 runs](beast2/intro/mtbd_and_structured_coalescents.qmd){.card-title .stretched-link}
+[1530 - 1630: Set up overnight BEAST2 analyses](intro_to_phylodynamics/mers.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Practical session in BEAST2
@@ -84,14 +96,12 @@ Practical session in BEAST2
 :::
 :::
 
-:::{layout="[[10]]"}
-
 :::{.card .mb-3}
 :::{.card-body}
-[Setting up server runs ](beast2/intro/server_runs.qmd){.card-title .stretched-link}
+[Optional: Multi-type birth death models in R](topics/intro_to_phylodynamics/multi_type_birth_death.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
-Practical session in BEAST2/remote server
+Simulate MTBD models in R
 :::
 :::
 :::

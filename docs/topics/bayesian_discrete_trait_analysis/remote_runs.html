@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>asr_bisse – Template Workshop</title>
+<title>remote_runs – Template Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,41 +19,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -176,72 +141,69 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="ancestral-state-reconstructions-using-bisse" class="level1">
-<h1>Ancestral state reconstructions using BiSSE</h1>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(diversitree)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phytools)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>The previous problem sets have illustrated the behavior of trees simulated from these models, some of their statistical behaviors, and now all that remains is to use fitted models to accomplish the goals of phylogeography, i.e.&nbsp;ancestral character estimation.</p>
-<p>Note: for most BiSSE users, the primary goal seems not to be ancestral reconstruction per se, but inferring relationships between states and diversification/extinction rates. As such, the documentation and support for the reconstruction methods that use BiSSE is more sparse than for ace or simmap.</p>
-<p>Let’s start by simulating a tree and fit the model to it. We will then infer ancestral states and compare these with the known values from the simulation itself.</p>
-<p>Simulate a BiSSE tree here:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">lambda0=</span><span class="dv">1</span>,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">lambda1=</span><span class="dv">3</span>,</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">mu0=</span><span class="fl">0.1</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">mu1=</span><span class="fl">0.1</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">q01=</span><span class="fl">0.1</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">q10=</span><span class="fl">0.12</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">tree.bisse</span>(pars, <span class="at">max.taxa=</span><span class="dv">100</span>, <span class="at">x0=</span><span class="dv">0</span>)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">history.from.sim.discrete</span>(tree, <span class="at">states=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)),</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    tree, <span class="at">col=</span><span class="fu">c</span>(<span class="st">'0'</span><span class="ot">=</span><span class="st">'black'</span>,<span class="st">'1'</span><span class="ot">=</span><span class="st">'red'</span>)) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>The make.bisse function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>loglik <span class="ot">&lt;-</span> <span class="fu">make.bisse</span>(tree, tree<span class="sc">$</span>tip.state)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>loglikc <span class="ot">&lt;-</span> <span class="fu">constrain</span>(loglik, lambda0<span class="sc">~</span>lambda1)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># What are the MLEs?</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>mles <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglik, pars)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>mlesc <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglikc, pars[<span class="sc">-</span><span class="dv">2</span>])</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># these are the parmeter values that this infers: </span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>mlepars <span class="ot">&lt;-</span> mles<span class="sc">$</span>par</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># We use the "marginal" reconstruction, which should be similar</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># to the type of calculation used by ace:</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>asr_marginal <span class="ot">&lt;-</span> <span class="fu">asr.marginal</span>(loglik, mlepars)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree, <span class="at">show.tip.label=</span>F)</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="fu">nodelabels</span>(<span class="at">pie=</span><span class="fu">t</span>(asr_marginal), <span class="at">piecol=</span><span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"red"</span>), <span class="at">cex=</span><span class="fl">0.7</span>)</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>tip_matrix <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span><span class="sc">-</span>tree<span class="sc">$</span>tip.state, tree<span class="sc">$</span>tip.state)  <span class="co"># Convert to probabilities </span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="fu">tiplabels</span>(<span class="at">pie=</span>tip_matrix, <span class="at">piecol=</span><span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"red"</span>), <span class="at">cex=</span><span class="fl">0.7</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</section>
-<section id="exercises" class="level1">
-<h1>Exercises:</h1>
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section">1.</h2>
-<p>Simulate a collection of BiSSE trees (n=30) and use asr_marginal to reconstruct ancestral states. For the same set of trees, use ace as well, and compare the reconstructions to each other. Is it obvious that marginal reconstruction with the BiSSE model out- performs the simpler Markov models in ace? Are there different combinations of parameters where that is the case? What if you use trees with more taxa (say, n=100 or n=500?)</p>
-</section>
-<section id="section-1" class="level2">
-<h2 class="anchored" data-anchor-id="section-1">2.</h2>
-<p>In your simulations, do you notice particular situations where reconstructions tend to be inaccurate (when does BiSSE get “tricked”)? Are there particular configurations of tip data that present challenges for the BiSSE model?</p>
-</section>
-<section id="section-2" class="level2">
-<h2 class="anchored" data-anchor-id="section-2">3.</h2>
-<p>Set diversification rates in both states equal to each other when simulating yout trees, and likewise for the extinction rates. Compare models that impose constraints to reduce the number of parameters to estimate with models that impose no constraints, and explore the accuracy of reconstructions in each case. How sensitive are reconstructions to the parametric constraints you impose?</p>
-</section>
-<section id="section-3" class="level2">
-<h2 class="anchored" data-anchor-id="section-3">4.</h2>
-<p>Use one of the example datasets of your choice, and carry out ancestral state reconstructions using BiSSE, comparing to results from either ace or simmap.</p>
+<section id="remote-runs-of-beast2" class="level1">
+<h1>Remote runs of BEAST2</h1>
+<p>This will be a live coding session where I log in the Fir server on campus and attempt to run a Bayesian discrete trait analysis with BSSVS (which we have not so far defined) in the hopes that it will finish running by tomorrow (when we will discuss BSSVS).</p>
+<p>If you want to follow along, make sure you can log in here:</p>
+<p><a href="https://ccdb.alliancecan.ca/security/login">https://ccdb.alliancecan.ca/security/login</a></p>
+<p>The password that logs you in here will also be your password for logging in to the remote server through SSH.</p>
+<p>You will also need Duo two-factor authentication set up (it’s pretty fast if you already have the Duo app):</p>
+<p><a href="https://docs.alliancecan.ca/wiki/Multifactor_authentication">https://docs.alliancecan.ca/wiki/Multifactor_authentication</a></p>
+<p>It’s best to set up SSH keys, but you could get throug this demo without setting them up.</p>
+<p>This has information about the server we will be logging in to:</p>
+<p><a href="https://docs.alliancecan.ca/wiki/Fir">https://docs.alliancecan.ca/wiki/Fir</a></p>
+<p>If you navigate to this previous link, you should be able to determine what your SSH login is.</p>
+<p>To log in to the server, you need to be on the SFU network if you’re on campus, or on the VPN if you are not.</p>
+<p>To log in, open the terminal and type `<code>ssh username@servername</code></p>
+<p>It will ask for a password if you don’t have SSH keys set up, and then it will ask you for an authentication option (such as Duo). Once you press accept (or something similar) on the Duo app on your phone, you will be logged in.</p>
+<p>There should be a directory called scratch. Navigate into it:</p>
+<p><code>cd scratch</code></p>
+<p>Create a directory. I ran this:</p>
+<p><code>mkdir mybeastrun</code></p>
+<p>Navigate into the directory you just made</p>
+<p><code>cd mybeastrun</code></p>
+<p>(If you are trying to use the BDMM package, you will need to load that instead.)</p>
+<section id="running-beast2" class="level2">
+<h2 class="anchored" data-anchor-id="running-beast2">Running BEAST2</h2>
+<p>Unless you want to write up an .xml file in Vim or something, you probably want to upload one from your laptop that you created in BEAUti. To do this, navigate into the working directory where your .xml lives on your laptop (NOT in the server), and run</p>
+<pre><code>scp xmlfilename.xml username@servername/working_directory_to_mybeastrun/mybeastrun/ </code></pre>
+<p>This will elicit a password/Duo interaction, but if successful, you should see the .xml in the server.</p>
+<p>Then, we create a file on the remote server (I just keep it in the same mybeastruns directory) that will invoke the BEAST2 run.</p>
+<p>First, create the file:</p>
+<pre><code>vim slurm_beast2.sh</code></pre>
+<p>This will open up a new document in Vim. Copy and paste this into it:</p>
+<pre><code>#!/bin/bash
+#SBATCH --account=def-ccolijn
+#SBATCH --job-name=my_beast2
+#SBATCH --time=01-00:00:00
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=2G
+
+# beast file to run
+BEAST_XML_FILE=xmlfilename.xml
+
+# module loading
+module load StdEnv/2020
+module load beast/2.7.5
+
+# run script
+beast $BEAST_XML_FILE</code></pre>
+<p>modifying xmlfilename.xml accordingly.</p>
+<p>Then, press :w followed by :q to save and quit Vim.</p>
+<p>If you invoke ls, you should see the .xml file and the .sh file in mybeastruns.</p>
+<p>To get the BEAST2 run going, invoke</p>
+<pre><code>source slurm_beast2.sh</code></pre>
+<p>and presto! you should see the server working.</p>
+<p>Once you’re finished, you probably want to use scp to send the stuff on the server to your own machine for analysis (if it isn’t too huge).</p>
+<p>The best way to do this might be to navigate back up into scratch, just above the mybeastruns folder, and then compress mybeastruns:</p>
+<pre><code>tar -cvzf mybeastruns.tar.gz mybeastruns</code></pre>
+<p>The command tar compresses and unzips stuff on Linux; the -cvzf means ``compress, verbose, zip, folder’’, the first bit with .gar.gz is the name you assign to the compressed folder, and the last bit is the folder you are trying to compress.</p>
+<p>This way you can scp the compressed mybeastruns.tar.gz to yourself, instead of all of the stuff inside mybeastruns individually.</p>
+<p>In your laptop terminal (not the server), you would type</p>
+<pre><code>scp username@servername/working_directory/file_of_interest . 
+</code></pre>
+<p>The period ( . ) is key – it says to scp the stuff into whatever working directory you’re currently in.</p>
+<p>That’s it.</p>
 
 
 </section>

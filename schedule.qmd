@@ -46,21 +46,19 @@ anchor-sections: false
  
 # Day 3
 
-0930 - 1030: **[lecture]** multi-type birth death (MTBD) models
-
-1030 - 1130: **[live coding session]** setting up a MTBD BEAST2 run 
+0930 - 1030: **[lecture]** Bayesian discrete trait analysis
+ 
+1030 - 1130: **[live coding session]** setting up basic BEAST2 runs 
 
 1130 - 1230: **[live coding session]** setting up a BEAST2 run on a remote server
 
 1230 - 1330: lunch
 
-1330 - 1430: Demo session: analyzing BEAST2 output (premade in the oven)
-
-1430 - 1530: **[lecture]** structured coalescent models 
+1330 - 1430: **[lecture]** multi-type birth death (MTBD) models
  
-1530 - 1600: **[live coding session]** setting up a structured coalescent BEAST2 run
+1430 - 1530: **[live coding session]** setting up a MTBD BEAST2 run
 
-1600 - 1630: Recap of day 
+1530 - 1630: Analyze BEAST2 output
 
 # Day 4
 

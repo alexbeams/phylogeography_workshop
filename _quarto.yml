@@ -18,13 +18,13 @@ website:
         href: monday.qmd
         icon: pie-chart
       - text: "Wednesday: Discrete trait analysis II in R"
-        href: wednesday_preview.qmd
+        href: wednesday.qmd
         icon: map
       - text: "Thursday: Phylodynamics I in R and BEAST2"
-        href: thursday_preview.qmd
+        href: thursday.qmd
         icon: activity
       - text: "Friday: Phylodynamics II in BEAST2"
-        href: friday_preview.qmd
+        href: friday.qmd
         icon: tree
       - text: "About"
         href: about.qmd
