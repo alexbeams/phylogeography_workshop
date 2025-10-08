@@ -136,8 +136,4 @@ Can repeat for more days and sessions...
 ![](img/duck_coffee.png){fig-alt="front logo"}
 -->
 
-<br>
-<center>Hosted by:</center>
-<br>
-
-<center>![](img/magpieLogo/lightBackground/transparentcircle_darktext.png){fig-alt="host logo" width="35%"}</center>
+{{< include _footer.html >}}
