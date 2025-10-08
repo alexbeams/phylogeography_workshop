@@ -13,7 +13,7 @@ So far, we have been treating the trees as given
       relationships we observe, and we would like to detect
       these effects.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(diversitree)
 ```
 
@@ -70,7 +70,7 @@ Try different combinations of the parameters (try
 lambda = 20, 50, 100, and mu = 20, 50, 100). What do you
 notice about your simulations?
 
-It might be conenient to write a function called "getnumdieoffs"
+It might be convenient to write a function called `getnumdieoffs`
 that accepts lambda, mu, and numtaxa, and then spits out
 treelist. Then you can create another function that acts on
 treelist to return numdieoffs.
@@ -85,25 +85,25 @@ Try to simulate trees with lambda = 1, mu = 2, and 10 taxa.
 
 
 ## 3.
-Use ?trees to examine the help page for some of other tree
+Use `?trees` to examine the help page for some of other tree
 simulation models. You will notcie tree.bd and tree.yule
 toward the bottom. Use your investigative abilities to
 research the Yule process and compare it to the birth-
 death process.
 
 ## 4.
-Do you think that tree.yule(1, max.taxa=10) and tree.bd(lambda=2,mu=1, max.taxa=10)
+Do you think that `tree.yule(1, max.taxa=10)` and `tree.bd(lambda=2,mu=1, max.taxa=10)`
 simulate the same process? Justify your answer.
 
 ## 5.
-Do you think that tree.yule(1, max.taxa=10) and tree.bd(lambda=1,mu=0, max.taxa=10)
+Do you think that `tree.yule(1, max.taxa=10)` and `tree.bd(lambda=1,mu=0, max.taxa=10)`
 simulate the same process? Justify your answer.
 
 ## 6.
 The diversitree package can simulate tip data using Markov
 models for two discrete states initialized from a particular
 state at the root. One model is the "mk2" model:
-sim.character(tree, pars, x0=0, model="mk2", br=NULL)
+`sim.character(tree, pars, x0=0, model="mk2", br=NULL)`
 the "pars" argument is a vector of the form (q12,q21)
 corresponding to the transition rates of the stochastic
 rate matrix, Q (the model argument can also be set to "mkn"
@@ -190,7 +190,7 @@ mle <- find.mle(loglik, c(1,0), method='subplex')
 
 ```
 
-The find.mle function stores the MLE in mle$par, and the maximum log-likelihood is stored
+The find.mle function stores the MLE in `mle$par`, and the maximum log-likelihood is stored
 in \textbf{lnLik}. We can look at \textbf{message} to see if the numerical method found a reasonable
 solution to the optimization problem:
 
@@ -203,7 +203,7 @@ print(mle$lnLik)
 ```
 Are the estimates close to the values we used ($\lambda=5, \mu-0$)?
 
-The value of mle$lnLik in that particular run appears to be positive... hmm.
+The value of `mle$lnLik` in that particular run appears to be positive... hmm.
 
 The maximum of the log-likelihood function roughly coincides with the
 parameters we used. How variable is this? Let's simulate more
@@ -298,5 +298,3 @@ Replace max.taxa with max.t in the tree.bd function to simulate trees
 for a fixed amount of time (with variable numbers of taxa), and then repeat Exercises 1-6. (Caution:
 injudicious choices of lambda and max.t can make your computer explode. Ctrl + c is useful (on Mac,
 anyway) for cancelling calculations in the Terminal.)
-
-
