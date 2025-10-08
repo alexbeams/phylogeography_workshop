@@ -1,13 +1,13 @@
 # Fitting and simulating Markov models on trees using ancestral character estimation (ace)
 
-```{r}
-rm(list=ls())
+```{r, message=FALSE, warning=FALSE}
+# rm(list=ls())
 
 library(ape)
 library(expm) # matrix exponential
 ```
 
-This code simulates output from the ace function. We will first try to grasp how the model behaves before we we try fitting it to data.
+This code simulates output from the ace function. We will first try to grasp how the model behaves before we try fitting it to data.
 
 Ancestral character estimation methods can be based on a
 variety of approaches, but we will consider Markov chains
@@ -99,7 +99,7 @@ and descends down the tree to the tips:
 preorder <- rev(postorder(tree))  # parent before children
 ```
 
-The list of all of the edges of the tree is located in tree$edge:
+The list of all of the edges of the tree is located in `tree$edge`:
 
 ```{r}
 edges <- tree$edge
@@ -113,19 +113,15 @@ colnames(edges) <- c('parent','descendant')
 edges <- as.data.frame(edges) # to use the handy $ command for columns
 ```
 
-The entry in
-```{r,eval=FALSE}
-tree$edge.length
-```
-is a vector of lengths for each of
-the edges; it corresponds to the same edges in tree$edge:
+The entry in `tree$edge.length` is a vector of lengths for each of
+the edges; it corresponds to the same edges in `tree$edge`:
 
 ```{r}
 edge.lengths <- tree$edge.length
 ```
 
 
-we start with the initial state at the root and use the Markov
+We start with the initial state at the root and use the Markov
 chain to sample subsequent states:
 
 ```{r}

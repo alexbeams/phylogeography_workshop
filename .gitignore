@@ -4,3 +4,6 @@
 
 # To ignore quarto generated files folder
 *_files/
+
+# temporary R files
+.knit.md
