@@ -1,4 +1,4 @@
-# Estimating parameters of basic birth-death models 
+# Estimating parameters of basic birth-death models
 
 ## First: simulating trees
 
@@ -46,7 +46,7 @@ numdieoffs <- sum(dieoffs)
 
 ```{r}
 numtrees <- 50
-treelist <- lapply(1:numtrees, 
+treelist <- lapply(1:numtrees,
                 function(x) tree.bd(c(lambda=10, mu=5), max.taxa = 50)
 )
 
@@ -54,25 +54,25 @@ dieoffs <- sapply(treelist, is.null)
 numdieoffs <- sum(dieoffs)
 ```
 
-Sometimes we fail to generate a tree with max.taxa number of 
+Sometimes we fail to generate a tree with max.taxa number of
 lineages because they all go extinct (this is stochastic).
-How many died off before reaching 50 taxa? 
+How many died off before reaching 50 taxa?
 
 ```{r}
 print(numdieoffs)
 ```
 
 # Exercises:
-## 1. 
+## 1.
 The parameter "lambda" is the birth/diversification rate,
 and the parameter "mu" is the mortality/extinction rate.
-Try different combinations of the parameters (try 
+Try different combinations of the parameters (try
 lambda = 20, 50, 100, and mu = 20, 50, 100). What do you
 notice about your simulations?
 
 It might be conenient to write a function called "getnumdieoffs"
-that accepts lambda, mu, and numtaxa, and then spits out 
-treelist. Then you can create another function that acts on 
+that accepts lambda, mu, and numtaxa, and then spits out
+treelist. Then you can create another function that acts on
 treelist to return numdieoffs.
 
 Organize the results of your simulations in a nice display.
@@ -99,17 +99,17 @@ simulate the same process? Justify your answer.
 Do you think that tree.yule(1, max.taxa=10) and tree.bd(lambda=1,mu=0, max.taxa=10)
 simulate the same process? Justify your answer.
 
-## 6. 
+## 6.
 The diversitree package can simulate tip data using Markov
-models for two discrete states initialized from a particular 
-state at the root. One model is the "mk2" model: 
+models for two discrete states initialized from a particular
+state at the root. One model is the "mk2" model:
 sim.character(tree, pars, x0=0, model="mk2", br=NULL)
 the "pars" argument is a vector of the form (q12,q21)
 corresponding to the transition rates of the stochastic
 rate matrix, Q (the model argument can also be set to "mkn"
 to simulate Markov models with n states).
-Compare sim.character with the simMk function from phytools. 
-Confirm whether these two R functions simulate the same process.        
+Compare sim.character with the simMk function from phytools.
+Confirm whether these two R functions simulate the same process.
 
 
 ## Estimating parameters
@@ -118,18 +118,18 @@ Now that we have some familiarity with the behavior of the birth-death
 model, we will try to use the model for parameter inference,
 i.e. model fitting.
 
- 
+
 The diversitree package has a convenient class of functions that can be
 used to define likelihood functions for different models. We will
-start with the simplest case - the birth death model. 
+start with the simplest case - the birth death model.
 
-The diversitree package only works on ultrametric trees. Thus, we won't be able 
+The diversitree package only works on ultrametric trees. Thus, we won't be able
 to use these functions to understand our own datasets, but the properties of these models
 will prove useful for understanding more complicated phylodynamics models later.
 
 ## Benchmarking from simulations
 
-Start by simulating a collection of birth death trees. The tree.bd function can 
+Start by simulating a collection of birth death trees. The tree.bd function can
 simulate BiSSE, MuSSE, and other types of trees in addition to the basic birth-death
 model, but we will just start by using it to simulate the basic birth-death process
 in this demo.
@@ -156,9 +156,9 @@ The make.bd function is a scalar function of two variables
 of the form loglik = loglik(c(lambda,mu)). Typing loglik into the console will print some
 information about the model.
 
-Let's visualize the likelihood surface one parameter at a time 
+Let's visualize the likelihood surface one parameter at a time
 (holding the other parameter at the true value).
- 
+
 ```{r}
 
 #specify grids of values for the parameters:
@@ -182,7 +182,7 @@ plot(muvals, loglik_mu_vals, ylim=c(loglik_max-10,loglik_max+2),
 
 ```
 
-We can easily maximize the loglik over $(\lambda, \mu)$ to obtain a 
+We can easily maximize the loglik over $(\lambda, \mu)$ to obtain a
 maximum likelihood estimate (MLE):
 
 ```{r}
@@ -201,18 +201,18 @@ print(mle$message)
 print(mle$par)
 print(mle$lnLik)
 ```
-Are the estimates close to the values we used ($\lambda=5, \mu-0$)? 
+Are the estimates close to the values we used ($\lambda=5, \mu-0$)?
 
 The value of mle$lnLik in that particular run appears to be positive... hmm.
 
 The maximum of the log-likelihood function roughly coincides with the
-parameters we used. How variable is this? Let's simulate more 
+parameters we used. How variable is this? Let's simulate more
 trees. The make.bd function can be lapply'd to the treelist to give us a
 list of likelihood functions corresponding to our list of trees.
 
 ```{r}
-treelist <- trees(c(lambda=5,mu=0), 
-		type=c("bd"), n=100, 
+treelist <- trees(c(lambda=5,mu=0),
+		type=c("bd"), n=100,
 		max.taxa=20)
 
 # make a log-likelihood function for each tree:
@@ -237,66 +237,66 @@ hist(mles_pars[,2],main='',
 The estimates $\hat{\lambda}$ seem to be close to the true value of $\lambda=5$, but the
 extinction rate, which was $\mu=0$, seems a little harder to pin down.
 
-Remember that the true value of mu we used was mu=0. A lot of the models suggest values of 
+Remember that the true value of mu we used was mu=0. A lot of the models suggest values of
 $\mu$ > 0, which might be interesting. Why might that be?
 
- 
+
 # Exercises:
 
-## 1. 
-Use constrain(loglik, mu ~ 0) to 
-create constrained log-likelihood functions, and fit them to obtain new estimates for lambda. How does the 
+## 1.
+Use constrain(loglik, mu ~ 0) to
+create constrained log-likelihood functions, and fit them to obtain new estimates for lambda. How does the
 variance in $\hat{\lambda}$ change?
 
 
-## 2. 
-The Generalized Likelihood Ratio Test is one way to assess whether $\mu$ is significantly different from 
-zero. The model with more parameters will always fit the data better, but it may not fit the data "that much" 
+## 2.
+The Generalized Likelihood Ratio Test is one way to assess whether $\mu$ is significantly different from
+zero. The model with more parameters will always fit the data better, but it may not fit the data "that much"
 better. The GLR test looks a log(ratio of likelihoods) = difference(log-Likelihoods) to produce a test
-statistic (also, rather annoyingly in this case, called $\lambda$). 
+statistic (also, rather annoyingly in this case, called $\lambda$).
 
-Use 
+Use
 
 ```{r,eval=F}
 
-constrain(loglik, mu ~ 0) 
+constrain(loglik, mu ~ 0)
 
 ```
 
-to create the constrained log-likelihood functions, and fit them to obtain new estimates for lambda. 
+to create the constrained log-likelihood functions, and fit them to obtain new estimates for lambda.
 
-Then, use Wikipedia, Google, or your favorite AI companion to help you formulate GLR test 
-statistics and assess significant departues from a null hypothesis of $\mu=0$. 
+Then, use Wikipedia, Google, or your favorite AI companion to help you formulate GLR test
+statistics and assess significant departues from a null hypothesis of $\mu=0$.
 
 (Hint: the GLR test makes an asymptotic approximation. What is that approximation, and under
 what situations would it apply in this case?)
 
 (Double hint: find.mle stores log-likelihood values in lnLik).
 
-## 3. 
+## 3.
 Consider a different hypothesis: $\lambda > \mu$. Look at your estimates $\hat{\lambda}$
-and $\hat{\mu}$ to see how often would you conclude that $\lambda < \mu$. 
+and $\hat{\mu}$ to see how often would you conclude that $\lambda < \mu$.
 
 If your simulation produced trees with estimated values of $\hat{\lambda} < \hat{\mu}$, plot these trees and comment
 on any features they exhibit that stand out to you. If your simulation did not produce trees with
 MLEs having $\hat{\lambda} < \hat{\mu}$, look at a friend's computer to see if theirs did.
- 
-## 5. 
+
+## 5.
 The find.mle function uses a variety of numerical optimization algorithms to find MLEs. There is also a
 function called \textbf{mcmc} that accepts a log-likelihood function, and initial parameter guess (x.init),
 and a number of iterations to run (nsteps). It also requires a ``tuning parameter'' called w to help the
 MCMC routine work more efficiently.
 
 Use the mcmc function with nsteps=1000 and w=c(2,1). Plot loglikelihood ("p")
-against parameters to visualize profile log-likelihoods, and also plot lambda against mu. Comment 
+against parameters to visualize profile log-likelihoods, and also plot lambda against mu. Comment
 on what you see, and discuss implications of correlations between lambda and mu. (Note: there are
-other mcmc routines besides this one in diversitree. If you have a favorit method, feel free to 
-use it.) 
+other mcmc routines besides this one in diversitree. If you have a favorit method, feel free to
+use it.)
 
-## 6. 
-Replace max.taxa with max.t in the tree.bd function to simulate trees 
+## 6.
+Replace max.taxa with max.t in the tree.bd function to simulate trees
 for a fixed amount of time (with variable numbers of taxa), and then repeat Exercises 1-6. (Caution:
-injudicious choices of lambda and max.t can make your computer explode. Ctrl + c is useful (on Mac, 
-anyway) for cancelling calculations in the Terminal.) 
+injudicious choices of lambda and max.t can make your computer explode. Ctrl + c is useful (on Mac,
+anyway) for cancelling calculations in the Terminal.)
 
 

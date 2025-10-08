@@ -6,12 +6,12 @@ library(phytools)
 
 # The previous problem sets have illustrated the behavior of trees
 # simulated from these models, some of their statistical behaviors,
-# and now all that remains is to use fitted models to accomplish 
+# and now all that remains is to use fitted models to accomplish
 # the goals of phylogeography, i.e. ancestral character estimation.
 
 # Note: for most BiSSE users, the primary goal seems not to be ancestral
 # reconstruction per se, but inferring relationships between states
-# and diversification/extinction rates. As such, the documentation 
+# and diversification/extinction rates. As such, the documentation
 # and support for the reconstruction methods that use BiSSE is more
 # sparse than for ace or simmap.
 
@@ -34,7 +34,7 @@ tree <- tree.bisse(pars, max.taxa=100, x0=0)
 
 par(mfrow=c(1,2))
 plot(history.from.sim.discrete(tree, states=c(0,1)),
-	tree, col=c('0'='black','1'='red')) 
+	tree, col=c('0'='black','1'='red'))
 
 
 # the make.bisse function is a scalar function of two variables
@@ -49,7 +49,7 @@ mles <- find.mle(loglik, pars)
 mlesc <- find.mle(loglikc, pars[-2])
 
 
-# these are the parmeter values that this infers: 
+# these are the parmeter values that this infers:
 mlepars <- mles$par
 
 # We use the "marginal" reconstruction, which should be similar
@@ -58,7 +58,7 @@ asr_marginal <- asr.marginal(loglik, mlepars)
 
 plot(tree, show.tip.label=F)
 nodelabels(pie=t(asr_marginal), piecol=c("black", "red"), cex=0.7)
-tip_matrix <- cbind(1-tree$tip.state, tree$tip.state)  # Convert to probabilities 
+tip_matrix <- cbind(1-tree$tip.state, tree$tip.state)  # Convert to probabilities
 tiplabels(pie=tip_matrix, piecol=c("black", "red"), cex=0.7)
 
 
@@ -68,7 +68,7 @@ tiplabels(pie=tip_matrix, piecol=c("black", "red"), cex=0.7)
 #	ace as well, and compare the reconstructions to each other. Is it
 #	obvious that marginal reconstruction with the BiSSE model out-
 #	performs the simpler Markov models in ace? Are there different
-#	combinations of parameters where that is the case? What if you 
+#	combinations of parameters where that is the case? What if you
 #	use trees with more taxa (say, n=100 or n=500?)
 
 # 2. In your simulations, do you notice particular situations where
@@ -77,12 +77,12 @@ tiplabels(pie=tip_matrix, piecol=c("black", "red"), cex=0.7)
 #	that present clear challenges for the BiSSE model?
 
 # 3. Set diversification rates in both states equal to each other when simulating
-#	yout trees, and likewise for the extinction rates. Compare models 
+#	yout trees, and likewise for the extinction rates. Compare models
 #	that impose constraints to reduce the number of parameters to estimate
 #	with models that impose no constraints, and explore the accuracy of
-#	reconstructions in each case. How sensitive are reconstructions to 
+#	reconstructions in each case. How sensitive are reconstructions to
 #	the parametric constraints you impose?
 
- 
+
 
 

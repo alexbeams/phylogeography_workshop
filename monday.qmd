@@ -1,7 +1,7 @@
 ---
 title: MAGPIE PhylogeogRaphy Workshop (with BEAST 2)
 description: |
-  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.   
+  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.
 
   <center>[Register](https://docs.google.com/forms/d/e/1FAIpQLSeOv8vuo_HdsrBvmoONwcjoCHNAPPXnRvYSXVJmDQBSgpsrJw/viewform?usp=dialog){.btn .btn-outline-primary}</center>
 
@@ -10,7 +10,7 @@ title-block-banner: true
 anchor-sections: false
 ---
 
-Welcome to Day one! 
+Welcome to Day one!
 
 After an introduction to this week's workshop, we will gain some experience working with phylogenetic trees in R before moving on to learn about ancestral character estimation and stochastic character mapping.
 

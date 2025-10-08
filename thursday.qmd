@@ -1,7 +1,7 @@
 ---
 title: MAGPIE PhylogeogRaphy Workshop (with BEAST 2)
 description: |
-  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.   
+  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.
 
   <center>[Register](https://docs.google.com/forms/d/e/1FAIpQLSeOv8vuo_HdsrBvmoONwcjoCHNAPPXnRvYSXVJmDQBSgpsrJw/viewform?usp=dialog){.btn .btn-outline-primary}</center>
 
@@ -14,7 +14,7 @@ Welcome to Day 3! The state-dependent speciation and extinction (SSE) models we 
 
 Review the [Requirements](topics/requirements.qmd) page to make sure you have everything installed for BEAST2.
 
-If you want to get the most out of the afternoon sessions, make sure you have craeted an account with the Digital Research Alliance of Canada [https://ccdb.alliancecan.ca/security/login](https://ccdb.alliancecan.ca/security/login) 
+If you want to get the most out of the afternoon sessions, make sure you have craeted an account with the Digital Research Alliance of Canada [https://ccdb.alliancecan.ca/security/login](https://ccdb.alliancecan.ca/security/login)
 
 <!-- ================= Day 3 ================= -->
 :::{layout="[[12]]"}
@@ -55,7 +55,7 @@ Practical session in BEAST2
 [1130 - 1230: Running BEAST2 on a remote server](topics/bayesian_discrete_trait_analysis/remote_runs.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
-Save your laptop's memory 
+Save your laptop's memory
 :::
 :::
 :::

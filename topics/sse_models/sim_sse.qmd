@@ -15,25 +15,25 @@ State-dependent speciation and extion (SSE) models
 
 So now, we are able to simulate trees using the birth-death process,
 and we learned earlier this week how to simulate trait evolution
-on a given tree. Now, we want to explore what happens if 
+on a given tree. Now, we want to explore what happens if
 the tree generation process interacts with the traits. To do this,
 we will simulate Binary State Speciation and Extinction (BiSSE)
-models. We will start by simulating BiSSE models, then try fitting them 
+models. We will start by simulating BiSSE models, then try fitting them
 (very similar to the basic birth-death model fitting).
 
 BiSSE has 5 parameters: birth/diversification rates (lambda0, lambda1)
-corresponding to the two values of the trait (0 and 1); two 
+corresponding to the two values of the trait (0 and 1); two
 death/extinction rates (mu0, mu1), and rates of the stochastic
 rate matrix, Q, (q01 and q10).
 
 ```{r}
 pars <- c(
-	lambda0=0.1, 
-	lambda1=0.2, 
-	mu0=0.03, 
-	mu1=0.03, 
-	q01=0.01, 
-	q10=0.01) 
+	lambda0=0.1,
+	lambda1=0.2,
+	mu0=0.03,
+	mu1=0.03,
+	q01=0.01,
+	q10=0.01)
 
 tree <- tree.bisse(pars, max.taxa=50, x0=0)
 ```
@@ -44,11 +44,11 @@ it is convenient to invoke the following:
 
 ```{r}
 plot(history.from.sim.discrete(tree, states=c(0,1)),
-	tree, col=c('0'='black','1'='red')) 
+	tree, col=c('0'='black','1'='red'))
 ```
 
-The `history.from.sim.discrete` function accepts a tree produced by tree.bisse 
-or tree.musse, and the states. The help pages indicate that the states should 
+The `history.from.sim.discrete` function accepts a tree produced by tree.bisse
+or tree.musse, and the states. The help pages indicate that the states should
 be 0 and 1 for BiSSE models. The history.from.sim.discrete object includes
 values for ```tip.state```, ```node.state```, ```history```, ```discrete```,
 and ```states```:
@@ -57,7 +57,7 @@ and ```states```:
 names(history.from.sim.discrete(tree, states=c(0,1)))
 ```
 
-I'm going to write a function to simulate and plot 
+I'm going to write a function to simulate and plot
 from parameter values I supply:
 
 ```{r}
@@ -72,20 +72,20 @@ plotbissesim <- function(
 	x0=0){
 
 	pars <- c(
-		lambda0=lambda0, 
-		lambda1=lambda1, 
-		mu0=mu0, 
-		mu1=mu1, 
-		q01=q01, 
-		q10=q10) 
+		lambda0=lambda0,
+		lambda1=lambda1,
+		mu0=mu0,
+		mu1=mu1,
+		q01=q01,
+		q10=q10)
 
 	tree <- tree.bisse(pars, max.taxa=maxtaxa, x0=x0)
 	plot(history.from.sim.discrete(tree, states=c(0,1)),
-		tree, col=c('0'='black','1'='red')) 
-	legend("topleft", 
-           legend=c("state 0","state 1"), 
-           col=c("black","red"), 
-           lty=1, lwd=2, 
+		tree, col=c('0'='black','1'='red'))
+	legend("topleft",
+           legend=c("state 0","state 1"),
+           col=c("black","red"),
+           lty=1, lwd=2,
            bty="n", cex=0.8)
 }
 ```
@@ -108,21 +108,21 @@ plotbissesim(lambda0=0.1,lambda1=1,q01=.1,q10=1,x0=1)
 
 ## BiSSE Simulation Exercises:
 
-## 1 . 
+## 1 .
 Simulate a population that starts in a hostile environment but can move
-to a safer habitat with less predation. Assume the organisms are dumb 
+to a safer habitat with less predation. Assume the organisms are dumb
 (or just plants), so that individuals tend to spend the same amount of
-time in each habitat before moving to the other one. Do the simulations 
-match your intuition about what should happen to the population in 
+time in each habitat before moving to the other one. Do the simulations
+match your intuition about what should happen to the population in
 this scenario? Do you see different outcomes if migration is slow
-or fast relative to the birth and death rates? What happens if you 
+or fast relative to the birth and death rates? What happens if you
 simulate more taxa? (Try up to 10^4 or 10^5).
 
 Also, try setting include.extinct=TRUE in your simulations to see how
 things change.
 
-## 2. 
-Simulate a population that can move to a new habitat where there are 
+## 2.
+Simulate a population that can move to a new habitat where there are
 more resources available, and organisms can produce more offspring.
 Assume that organisms have the same life expectancy in each area.
 You can also assume that individuals spend the same amount of
@@ -135,16 +135,16 @@ to a terrible environment at a much faster rate than they can
 escape. If you didn't know the parameters you used, would it be
 obvious from the trees that one of the locations is worse than the
 the other?
- 
+
 ## 4.
-Supose the organisms are intelligent, and preferentially move to the 
+Supose the organisms are intelligent, and preferentially move to the
 location where there is less predation, and/or better resources.
 Do you think the phylogenies contain information about the crummy habitat?
 
 
-## 5. 
+## 5.
 Try to simulate multi-state models using tree.musse. This example comes from the help page for ?tree.musse. Modify this to include 4 states with equal rates of movement between
-all of the states. 
+all of the states.
 
 ```{r}
 ## A 3-state example where movement is only allowed between neighbouring
@@ -214,12 +214,12 @@ What are the MLEs?
 ```{r}
 mles <- find.mle(loglik, pars)
 
-# these are the parmeter values that this infers: 
+# these are the parmeter values that this infers:
 print(mlepars <- mles$par)
 ```
 
-Let's visualize the likelihood surface one parameter at a time 
-(holding the other parameter at the MLE; not exactly profile 
+Let's visualize the likelihood surface one parameter at a time
+(holding the other parameter at the MLE; not exactly profile
 likelihoods, but pretty close):
 
 ```{r}
@@ -274,11 +274,11 @@ that is expected.
 Of course, these approximations of profile likelihoods don't show how correlated some of these
 parameters are with each other. We might as well use MCMC to do this:
 
-This will take quite a lot longer than our birth-death model with 
+This will take quite a lot longer than our birth-death model with
 	just 2 parameters:
 
 ```{r,eval=FALSE}
-mcmc_fit <- mcmc(loglik, pars, nsteps = 1000, w=1) 
+mcmc_fit <- mcmc(loglik, pars, nsteps = 1000, w=1)
 ```
 
 Looking at the different plots of the MCMC output, are you able to say which parameters
@@ -288,61 +288,61 @@ that are more difficult to estimate than others?
 
 # Exercises
 
-## 1. 
+## 1.
 What parameters seem to exhibit the highest correlations? The lowest?
 (You will need to plot all the pairwise combinations.) How do parameter
 estimates compare to the values used in the simulation? Is it easier to
 estimate one diversification rate or the other? Ditto for the mu's and q's.
 Why do you think that is?
 
-##  2. 
+##  2.
 Increase the number of taxa in your tree. How does your ability
 to estimate parameters change? Does it become easier to estimate migration
 rates, or death rates? Using 200 taxa should be doable, but see how high
-you can go before computations get bogged down. Be sure to describe 
-bias as well as precision of estimates. 
+you can go before computations get bogged down. Be sure to describe
+bias as well as precision of estimates.
 
-##  3. 
+##  3.
 You may notice that the "data" (putting it in quotes b/c we simulated it)
 contain more information about one of the migration rates than the other. Which
 migration rate is it, and why do you think it might be easier to estimate
 it with greater precision than the other one? It might be helpful to plot
-the tree. 
+the tree.
 
 ```{r}
 plot(history.from.sim.discrete(tree, states=c(0,1)),
                 tree, col=c('0'='black','1'='red'))
 ```
 
-##  4. 
-Set migrations to be the same order of magnitude as the 
+##  4.
+Set migrations to be the same order of magnitude as the
 the diversification rates and repat the analysis. Does it always
 become easier to estimate q_ij?
 
-##  5. 
+##  5.
 Set migration to be asymmetric. How easy is this to detect?
 You can start by assuming diversification and extinction rates
 are the same in each location.
 
-##  6. 
+##  6.
 Under what circumstances do you think it is possible to reliably
 estimate extinction rates? Carry out an analysis to confirm or refute your
 hypothesis.
 
-## 7. 
-Are there are any situations where it is difficult to estimate 
-diversification rates? Comment on bias and variance. 
+## 7.
+Are there are any situations where it is difficult to estimate
+diversification rates? Comment on bias and variance.
 
-##  8. 
+##  8.
 Naively, one might think that having larger differences between
-parameters (lambda0 vs lambda1, for example) would make estimation easier. 
+parameters (lambda0 vs lambda1, for example) would make estimation easier.
 Why is that not necessarily the case with BiSSE models?
 (Hint: what happens in simulations with large differences in diversification
 rates?)
 
-##  9. 
+##  9.
 Try setting a constraint in the log-likelihood function that mu0=mu1.
-Does this help estimate the other parameters? Does it make it easier to 
+Does this help estimate the other parameters? Does it make it easier to
 estimate the overall exctinction rate (mu)?
 
 Hint: it works like this: loglik_constrained <- constrain(loglik, mu0 ~ mu1)
@@ -353,7 +353,7 @@ Hint: it works like this: loglik_constrained <- constrain(loglik, mu0 ~ mu1)
 # Optional ensemble MCMC method
 
 Let's use an ensemble MCMC sampler from the package `mcmcensemble`. This implements an ensemble
-MCMC method that is well-suited to problems where paramters exhibit high correlation. If you're 
+MCMC method that is well-suited to problems where paramters exhibit high correlation. If you're
 interested, check out this paper:
 
 
@@ -394,9 +394,9 @@ mcmc_inits <- matrix(nrow=nwalkers, ncol=6)
 for(i in 1:nwalkers) mcmc_inits[i,] <- jitter(log(mlepars))
 
 # run the ensemble MCMC:
-mcmc_fit <- MCMCEnsemble(loglik_transformed, 
-	inits=mcmc_inits, 
-	max.iter=nwalkers*nsteps, 
+mcmc_fit <- MCMCEnsemble(loglik_transformed,
+	inits=mcmc_inits,
+	max.iter=nwalkers*nsteps,
 	n.walkers = nwalkers)
 
 # Now, let's try to visualize the profile log-likelihoods (including
@@ -405,22 +405,22 @@ mcmc_fit <- MCMCEnsemble(loglik_transformed,
 par(mfrow=c(3,2))
 
 plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,1],xlab=bquote(lambda[0]))
-#lines(log(lambdavals), loglik_lambda0_vals, col='red') 
+#lines(log(lambdavals), loglik_lambda0_vals, col='red')
 
 plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,2],xlab=bquote(lambda[1]))
-#lines(log(lambdavals), loglik_lambda1_vals, col='red') 
+#lines(log(lambdavals), loglik_lambda1_vals, col='red')
 
 plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,3],xlab=bquote(mu[0]))
-#lines(log(muvals), loglik_mu0_vals, col='red') 
+#lines(log(muvals), loglik_mu0_vals, col='red')
 
 plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,4],xlab=bquote(mu[1]))
-#lines(log(muvals), loglik_mu1_vals, col='red') 
+#lines(log(muvals), loglik_mu1_vals, col='red')
 
 plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,5],xlab=bquote(q[0~1]))
-#lines(log(qvals), loglik_q01_vals, col='red') 
+#lines(log(qvals), loglik_q01_vals, col='red')
 
 plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,6],xlab=bquote(q[1~0]))
-#lines(log(qvals), loglik_q10_vals, col='red') 
+#lines(log(qvals), loglik_q10_vals, col='red')
 ```
 
 In the vicinity of the MLE, the MCMC results should closely match
