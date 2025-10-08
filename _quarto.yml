@@ -8,7 +8,7 @@ website:
   repo-url: https://github.com/alexbeams/phylogeography_workshop
   site-url: example.com
   navbar:
-    logo: img/coffee_can.png
+    # logo: img/coffee_can.png
     title: false
     left:
       - text: "Home"

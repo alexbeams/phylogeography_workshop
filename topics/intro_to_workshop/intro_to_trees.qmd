@@ -5,7 +5,7 @@ The original vignette is written by Klaus Schliep (klaus.schliep@gmail.com)
 
 I'm annotating it a bit more for our purposes.
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(phangorn)
 library(phytools)
 library(ape)

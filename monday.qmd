@@ -45,6 +45,7 @@ Practical session in R
 :::
 :::
 :::
+[<i class="bi bi-rocket"></i> Open raw Rmd source](https://raw.githubusercontent.com/alexbeams/phylogeography_workshop/main/topics/intro_to_workshop/intro_to_trees.qmd){target="_blank" .btn .btn-success .btn-sm}
 :::
 
 :::{layout="[[10]]"}
