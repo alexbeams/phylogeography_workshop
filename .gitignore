@@ -1,3 +1,6 @@
 .DS_Store
 
 /.quarto/
+
+# To ignore quarto generated files folder
+*_files/
