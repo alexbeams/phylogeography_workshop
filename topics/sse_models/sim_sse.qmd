@@ -1,6 +1,6 @@
 # Simulating and fitting State-dependent speciation and extinction (SSE) models
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(diversitree)
 set.seed(117)
 ```
