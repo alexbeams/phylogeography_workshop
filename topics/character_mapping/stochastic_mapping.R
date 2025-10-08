@@ -5,10 +5,10 @@
 ## This code simulates stochastic character mappings on a fixed phylogenetic tree.
 ## In the real world, we would be given a phylogeny with tip data (diets of finches, geographic location
 ##  of influenza, etc.). The goal would be to estimate quantities like the number of changes, the timing
-##  of changes, whether one trait is ancestral to the rest, and so on. This would involve fitting models 
+##  of changes, whether one trait is ancestral to the rest, and so on. This would involve fitting models
 ##  to estimate the stochastic rate matrix describing discrete state changes, as well as the root states.
 
-## In this code, we are going to start by exploring how we would interpret estimates. This involves simulating 
+## In this code, we are going to start by exploring how we would interpret estimates. This involves simulating
 ##  character mappings on the phylogeny using the true values of the Markov chain model, and our goal is
 ##  to see if we can count the number of state changes, describe timing of changes, etc.
 
@@ -31,7 +31,7 @@ nsim = 1000
 # Create a tree: (could modify this to load in a tree as well)
 tree <- pbtree(n=50, scale=1)
 
-# Specify a transition rate matrix for two states (A and B). 
+# Specify a transition rate matrix for two states (A and B).
 ## In practice, we would want to estimate this from data. Let's pretend we've done that step,
 ##  and this can be taken as known without error:
 Q <- matrix(c(-1,1,
@@ -74,7 +74,7 @@ transitions_BA <- sapply(transitions, function(x) x[2,1])
 
 
 
-### plot an example character mapped tree, and histograms of number of mutations 
+### plot an example character mapped tree, and histograms of number of mutations
 sim = sims[[1]]
 #  overall, and by type
 par(mfrow=c(2,2))
@@ -94,7 +94,7 @@ hist(transitions_BA)
 
 # 1. Try changing the initial condition at the root (Pi, also called the "root prior") to see how results change
 # 2. Look at the logL values in the sims. What do you think that describes?
-# 	In particular, do you think the reported logL is 
+# 	In particular, do you think the reported logL is
 #		P(tip data | Q),
 #		or
 #		P(tip data, character mapping | Q)?

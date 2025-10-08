@@ -5,11 +5,11 @@ library(expm) # matrix exponential
 
 # This code simulates output from the ace function. We
 # will first try to grasp how the model behaves before we
-# we try fitting it to data. 
+# we try fitting it to data.
 
-# Ancestral character estimation methods can be based on a 
+# Ancestral character estimation methods can be based on a
 # variety of approaches, but we will consider Markov chains
-# superimposed on phylogenies. In the accompanying code to 
+# superimposed on phylogenies. In the accompanying code to
 # this we will learn how to fit these models using Maximum
 # Likelihood, but for now we focus on simulating Markov chains
 # on trees to understand how the models work.
@@ -27,20 +27,20 @@ tiplabels(pch=21,bg=x)
 fit <- ace(x, tree, type='discrete', model='ARD')
 
 # Exercise 1
-#	Navigate through the ace help pages to determine whether Qij 
+#	Navigate through the ace help pages to determine whether Qij
 #	corresponds to the transition rate from state i-> j or from
 #	state j -> i. Based on your answer, does the Master equation
 #	for the Markov process use column or row vectors?
 #	Then, define a generator matrix, Q, in terms
 #	of the rates estimated just above (replacing the following line):
 
-Q <- matrix(c(-1,1,1,-1),ncol=2) 
+Q <- matrix(c(-1,1,1,-1),ncol=2)
 Q <- Q/10
 
 getP <- function(t,Q){
 	P <- expm(Q*t)
 	return(P)
-} 
+}
 
 # Now, we will start at the root of the tree and simulate states
 # at the internal nodes and at the tips of the tree. (The ape
@@ -57,9 +57,9 @@ state_colors <- c('blue','red') #for plotting
 
 
 # Let's assign a condition at the root; could be probabilities
-# generally, but let's say it starts in the first state with 
+# generally, but let's say it starts in the first state with
 # certainty for now:
-pi_root <- c(1,0) 
+pi_root <- c(1,0)
 
 # Let's start with the root state:
 root <- length(tree$tip.label) + 1
@@ -69,7 +69,7 @@ states_vec[root] <- sample(states, 1, prob = pi_root)
 plot(tree)
 tip_states <- states_vec[tree$tip.label]
 tiplabels(pch=21, bg=state_colors[tip_states], cex=2)
-node_states <- states_vec[paste0("node", 1:tree$Nnode)] 
+node_states <- states_vec[paste0("node", 1:tree$Nnode)]
 nodelabels(pch=21, bg=state_colors[node_states], cex=2)
 
 
@@ -80,7 +80,7 @@ preorder <- rev(postorder(tree))  # parent before children
 # The list of all of the edges of the tree is located in tree$edge:
 edges <- tree$edge
 
-# Each row is an edge. The first column represents the parent, the 
+# Each row is an edge. The first column represents the parent, the
 # second represents the descendant.
 
 colnames(edges) <- c('parent','descendant')
@@ -101,7 +101,7 @@ for(i in 1:nrow(edges)){
 	prob = getP(edges$lengths[i],Q) %*% parent_state
 	next_state <- sample(c(1,2), size=1, prob=c(prob))
 	new_parent <- edges[i, 'descendant']
-	edges[i,'nextstate'] <- next_state	
+	edges[i,'nextstate'] <- next_state
 	edges[edges$parent==new_parent, 'parentstate'] <- next_state
 }
 
@@ -113,7 +113,7 @@ states_vec[edges$descendant] <- edges$nextstate
 plot(tree)
 tip_states <- states_vec[tree$tip.label]
 tiplabels(pch=21, bg=state_colors[tip_states], cex=2)
-node_states <- states_vec[paste0("node", 1:tree$Nnode)] 
+node_states <- states_vec[paste0("node", 1:tree$Nnode)]
 nodelabels(pch=21, bg=state_colors[node_states], cex=2)
 
 # Exercises
@@ -121,20 +121,20 @@ nodelabels(pch=21, bg=state_colors[node_states], cex=2)
 #	that you specify, and use ace to estimate it. Scale this up
 #	for a large number of tip state configurations to see how the
 #	distribution of Maximum Likelihood estimates for the Markov
-#	model rates compare with the true values you supplied. 
+#	model rates compare with the true values you supplied.
 #	Are there particular combinations of branch lengths and rates
 #	that make it difficult to estimate model parameters?
 
-# 2. (Hard) Modify the code above to condition on a particular 
+# 2. (Hard) Modify the code above to condition on a particular
 #	tip state configuration. This way, we can observe distributions
 #	of evolutionary scenarios consistent with a particular set
-#	of observations. 
+#	of observations.
 
-# 3. In a fitted ace object, there is an elemet called lik.anc which 
-#	records the probability of ancestral states at each node of the 
+# 3. In a fitted ace object, there is an elemet called lik.anc which
+#	records the probability of ancestral states at each node of the
 #	tree. Plot a dataset of your choice with pie charts displaying
-#	the ancestral state probabilities associated with models that 
-#	you fit using ace. Navigate through the help pages (?ace) to 
+#	the ancestral state probabilities associated with models that
+#	you fit using ace. Navigate through the help pages (?ace) to
 #	specify a few different versions of models that impose constraints
 #	on the Markov generator, Q. How sensitive are ancestral state
 #	probabilities to your modeling choices?

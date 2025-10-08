@@ -9,7 +9,7 @@ even a simple analysis that uses ace in R to estimate ancestral locations from t
 
 
 ## Alternatively, you can choose a dataset (influenza H5N1, influenza H3N2, or MERS coronavirus) to analyze with MTBD models
- 
+
 ## Size of datasets
 
 influenza H5N1 and H3N2 are fairly small, and should be able to run on your laptop if you select a simple model. The MERS dataset is probably worth running on the remote server because of its size.

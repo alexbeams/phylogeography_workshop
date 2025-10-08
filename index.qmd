@@ -1,7 +1,7 @@
 ---
 title: MAGPIE PhylogeogRaphy Workshop (with BEAST 2)
 description: |
-  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.   
+  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.
 
   <center>[Register](https://docs.google.com/forms/d/e/1FAIpQLSeOv8vuo_HdsrBvmoONwcjoCHNAPPXnRvYSXVJmDQBSgpsrJw/viewform?usp=dialog){.btn .btn-outline-primary}</center>
 
@@ -10,12 +10,12 @@ title-block-banner: true
 anchor-sections: false
 ---
 
-Welcome to the PhylogeogRaphy workshop (with BEAST2)! 
+Welcome to the PhylogeogRaphy workshop (with BEAST2)!
 
 
 Sessions are split into roughly two-hour chunks that align with typical start/end times of classes, and are meant to be as self-contained as possible -- so, feel free to come and go as necessary! All materials will posted here for you to catch up on content if desired.
 
-Participants should bring their own laptops for hands-on exercises.  
+Participants should bring their own laptops for hands-on exercises.
 
 For specific requirements, see the Requirements for workshop page.<br><br>
 
@@ -136,8 +136,4 @@ Can repeat for more days and sessions...
 ![](img/duck_coffee.png){fig-alt="front logo"}
 -->
 
-<br>
-<center>Hosted by:</center>
-<br>
-
-<center>![](img/magpieLogo/lightBackground/transparentcircle_darktext.png){fig-alt="host logo" width="35%"}</center>
+{{< include _footer.html >}}

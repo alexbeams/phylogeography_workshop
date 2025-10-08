@@ -3,12 +3,12 @@ project:
   output-dir: docs
 
 website:
-  title: "Template Workshop"
+  title: "PhylogeogRaphy Workshop"
   favicon: img/favicon.ico
   repo-url: https://github.com/alexbeams/phylogeography_workshop
   site-url: example.com
   navbar:
-    logo: img/coffee_can.png
+    # logo: img/coffee_can.png
     title: false
     left:
       - text: "Home"

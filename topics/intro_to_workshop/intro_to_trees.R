@@ -20,7 +20,7 @@ names(primates)
 
 primates$Mouse
 
-#It's a sequence of the numbers 1--4. 
+#It's a sequence of the numbers 1--4.
 #Typing primates into the console indicates that the states are a,c,g,t:
 
 primates
@@ -44,12 +44,12 @@ head(primdat)
 
 sum(primdat$Mouse != primdat$Human)
 
-#128 sites differ; there are 
+#128 sites differ; there are
 
 dim(primdat)[1]
 
 #total sites.
-#I will load these into a matrix, where the i,j entry 
+#I will load these into a matrix, where the i,j entry
 #tells me how many sites differ between species i and species j.
 #This matrix will obviously be symmetric, and the diagonal will be zero.
 #So, I can just fill in the upper diagonal:
@@ -72,11 +72,11 @@ seq_diff_matrix
 #So already, it is abundantly clear that Humans, Chimps, and Gorillas
 #are are pretty similar.
 
-#Then if we invoke 
+#Then if we invoke
 heatmap(seq_diff_matrix)
 #
 
-#This looks a little funny. I'm going to fill in the rest of the matrix 
+#This looks a little funny. I'm going to fill in the rest of the matrix
 #to see if this plots a little better
 
 seq_diff_matrix[lower.tri(seq_diff_matrix)] <- t(seq_diff_matrix)[lower.tri(t(seq_diff_matrix))]
@@ -88,7 +88,7 @@ seq_diff_matrix == t(seq_diff_matrix)
 heatmap(seq_diff_matrix, symm=T)
 
 #Now it's a little more apparent that some groups are more closely related
-#to each other than others. 
+#to each other than others.
 
 #It even makes a nice little dendogram tree!
 
@@ -97,7 +97,7 @@ heatmap(seq_diff_matrix, symm=T)
 #the ancestors implied by the internal nodes of the tree should have their own sequences. In constructing
 #a phylogeny, we should really be taking account of the fact that the location of nucleotide differences
 #is important, not just the raw number of differences. Nothing we have done so far made use of the idea that
-#ancestors should have similar sequences to their descendants. 
+#ancestors should have similar sequences to their descendants.
 
 
 
@@ -113,7 +113,7 @@ tree <- pratchet(primates, trace=0) |> acctran(primates) |> makeNodeLabel()
 anc.pars <- anc_pars(tree, primates)
 
 # Investigate why this didn't work right away
-# Or use ancestral.pars 
+# Or use ancestral.pars
 # plotAnc(data=anc.pars, tree=tree, i=17)
 
 #Let's look at the evolution of site 17 in the sequences:
@@ -155,7 +155,7 @@ plot(m1,m2,xlab='Nucleotide differences',ylab='Patristic distances (parsimony)')
 #This is the motivation for the final tree construction method we will consider here -- the so-called
 #Likelihood methods. The likelihood methods all use Markov chains to describe rates of change in
 #nucleotides over time. These models depend on parameters, and can be subsumed into Likelihood-based
-#methods. 
+#methods.
 
 #Because our focus for this workshop is discrete phylogeography, we will not consider methods making use
 #of continuous data at the tips of trees. It is possible to formulate diffusion models and stochastic
@@ -164,7 +164,7 @@ plot(m1,m2,xlab='Nucleotide differences',ylab='Patristic distances (parsimony)')
 #ancestral character estimation for a continuous trait once a phylogeny has been obtained.
 
 #Discrete-state Markov models, as well as the Brownian motion models for trait evolution all fall under
-#the category of Likelihood methods for ancestral character estimation, because it is possible to fit 
+#the category of Likelihood methods for ancestral character estimation, because it is possible to fit
 #these models to data using techniques from statistics that employ likelihood functions.
 
 #We will estiamte parameters of a discrete-state Markov chain
@@ -199,7 +199,7 @@ plot(c1,c2,xlab='Markov model distances', ylab='Parsimony tree distances')
 #Markov model for nucleotide changes are pretty tightly correlated, but not identical.
 
 #Exercises.
-## 1. 
+## 1.
 #Use the nni function on the original parsimony tree to obtain all of the trees that are one
 #nearest-neighbor interchange away from the parsimony tree. Fit Markov models to each tree and
 #calculate the likelihood for each tree under the optimized parameters of the Markov model.
@@ -207,7 +207,7 @@ plot(c1,c2,xlab='Markov model distances', ylab='Parsimony tree distances')
 #the Markov model structure and the primate data?
 
 ## 2.
-#Load in a different set of sequences from the workshop and try to construct a parsimony tree. 
-#Use a nucleotide substitution model of your choice (HKY, F81, etc.) to fit a Markov model 
+#Load in a different set of sequences from the workshop and try to construct a parsimony tree.
+#Use a nucleotide substitution model of your choice (HKY, F81, etc.) to fit a Markov model
 #describing sequence evolution on the parsimony tree. How much do branch lengths change after
 #fitting the Markov model?
