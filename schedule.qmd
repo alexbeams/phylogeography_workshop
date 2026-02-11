@@ -1,7 +1,7 @@
 ---
 title: MAGPIE PhylogeogRaphy Workshop (with BEAST 2)
 description: |
-  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.   
+  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.
 
   <center>[Register](https://docs.google.com/forms/d/e/1FAIpQLSeOv8vuo_HdsrBvmoONwcjoCHNAPPXnRvYSXVJmDQBSgpsrJw/viewform?usp=dialog){.btn .btn-outline-primary}</center>
 
@@ -10,11 +10,11 @@ title-block-banner: true
 anchor-sections: false
 ---
 
-# Day 1 
+# Day 1
 
-0930 - 1030: **[lecture]** introduction to workshop and phylogenetic trees 
+0930 - 1030: **[lecture]** introduction to workshop and phylogenetic trees
 
-1030 - 1130: R demos (Intro to trees in R and Simulating nucleotide substitution models) 
+1030 - 1130: R demos (Intro to trees in R and Simulating nucleotide substitution models)
 
 1130 - 1230: **[lecture]** introduction to ancestral character estimation (ace in R)
 
@@ -22,47 +22,47 @@ anchor-sections: false
 
 1330 - 1430: R demo: ancestral character estimation in R
 
-1430 - 1530: **[live coding session]** Introduction to stochastic character mapping -- simulating event times 
+1430 - 1530: **[live coding session]** Introduction to stochastic character mapping -- simulating event times
 
-1530 - 1630: R demos (simulating stochastic character mapping; fitting models with stochastic character mapping) 
+1530 - 1630: R demos (simulating stochastic character mapping; fitting models with stochastic character mapping)
 
-# Day 2 
+# Day 2
 
 0930 - 1030: **[lecture]** Review of ancestral character estimation and stochastic character mapping
 
-1030 - 1130: **[live coding session]** Birth death models 
+1030 - 1130: **[live coding session]** Birth death models
 
-1130 - 1230: **[lecture]** Intro to state-dependent speciation and extinction (SSE) models 
+1130 - 1230: **[lecture]** Intro to state-dependent speciation and extinction (SSE) models
 
 1230 - 1330: lunch
 
-1330 - 1430: **[mix of live coding and demo session]** simulating state-dependent speciation and extinction (SSE) models 
+1330 - 1430: **[mix of live coding and demo session]** simulating state-dependent speciation and extinction (SSE) models
 
-1430 - 1530: **[mix of live coding and demo session]** fitting state-dependent speciation and extinction (SSE) models 
+1430 - 1530: **[mix of live coding and demo session]** fitting state-dependent speciation and extinction (SSE) models
 
 1530 - 1600: **[live coding and demo session]** ancestral state reconstruction with SSE models
 
 1600 - 1630: End of day review
- 
+
 # Day 3
 
 0930 - 1030: **[lecture]** Bayesian discrete trait analysis
- 
-1030 - 1130: **[live coding session]** setting up basic BEAST2 runs 
+
+1030 - 1130: **[live coding session]** setting up basic BEAST2 runs
 
 1130 - 1230: **[live coding session]** setting up a BEAST2 run on a remote server
 
 1230 - 1330: lunch
 
 1330 - 1430: **[lecture]** multi-type birth death (MTBD) models
- 
+
 1430 - 1530: **[live coding session]** setting up a MTBD BEAST2 run
 
 1530 - 1630: Analyze BEAST2 output
 
 # Day 4
 
-0930 - 1030: **[live demo session]** Examine BEAST2 server run 
+0930 - 1030: **[live demo session]** Examine BEAST2 server run
 
 1030 - 1130: **[lecture]** Bayesian stochastic search variable selection
 
@@ -71,7 +71,7 @@ anchor-sections: false
 1230 - 1330: lunch
 
 1330 - 1430: **[lecture]** SAASI
- 
+
 1430 - 1530: **[live demo sesssion]** comparing discrete trait analysis and phylodynamics
 
 1530 - 1630: Recap, conclusions and closing

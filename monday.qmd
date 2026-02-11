@@ -1,7 +1,7 @@
 ---
 title: MAGPIE PhylogeogRaphy Workshop (with BEAST 2)
 description: |
-  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.   
+  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.
 
   <center>[Register](https://docs.google.com/forms/d/e/1FAIpQLSeOv8vuo_HdsrBvmoONwcjoCHNAPPXnRvYSXVJmDQBSgpsrJw/viewform?usp=dialog){.btn .btn-outline-primary}</center>
 
@@ -10,7 +10,7 @@ title-block-banner: true
 anchor-sections: false
 ---
 
-Welcome to Day one! 
+Welcome to Day one!
 
 After an introduction to this week's workshop, we will gain some experience working with phylogenetic trees in R before moving on to learn about ancestral character estimation and stochastic character mapping.
 
@@ -45,6 +45,7 @@ Practical session in R
 :::
 :::
 :::
+[<i class="bi bi-rocket"></i> Open raw Rmd source](https://raw.githubusercontent.com/alexbeams/phylogeography_workshop/main/topics/intro_to_workshop/intro_to_trees.qmd){target="_blank" .btn .btn-success .btn-sm}
 :::
 
 :::{layout="[[10]]"}
@@ -140,8 +141,4 @@ Can repeat for more days and sessions...
 ![](img/duck_coffee.png){fig-alt="front logo"}
 -->
 
-<br>
-<center>Hosted by:</center>
-<br>
-
-<center>![](img/magpieLogo/lightBackground/transparentcircle_darktext.png){fig-alt="host logo" width="35%"}</center>
+{{< include _footer.html >}}

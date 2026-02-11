@@ -38,11 +38,11 @@ loglik <- make.bisse(tree, tree$tip.state)
 # What are the MLEs?
 mles <- find.mle(loglik, pars)
 
-# these are the parmeter values that this infers: 
+# these are the parmeter values that this infers:
 mlepars <- mles$par
 
-# Let's visualize the likelihood surface one parameter at a time 
-#	(holding the other parameter at the MLE; not exactly profile 
+# Let's visualize the likelihood surface one parameter at a time
+#	(holding the other parameter at the MLE; not exactly profile
 #	likelihoods, but pretty close):
 
 loglik_lambda0 <- function(lambda0) loglik(c(lambda0,mlepars[-1]))
@@ -87,7 +87,7 @@ plot(qvals,loglik_q10_vals)
 abline(v=pars['q10'],col='red')
 
 # So, varying each parameter while holding the others at the values used
-#	to produce the simulated BiSSE tree indicate MLEs may be a good 
+#	to produce the simulated BiSSE tree indicate MLEs may be a good
 #	approach to estimating parameters.
 
 # The MLE differs from the "true" values used to produce the simulation, but
@@ -96,9 +96,9 @@ abline(v=pars['q10'],col='red')
 # Of course, the profile likelihoods don't show how correlated some of these
 #	parameters are with each other. We might as well use MCMC to do this:
 
-# This will take quite a lot longer than our birth-death model with 
+# This will take quite a lot longer than our birth-death model with
 #	just 2 parameters:
-#mcmc_fit <- mcmc(loglik, pars, nsteps = 1000, w=1) 
+#mcmc_fit <- mcmc(loglik, pars, nsteps = 1000, w=1)
 
 
 # let's use an ensemble MCMC sampler:
@@ -128,9 +128,9 @@ mcmc_inits <- matrix(nrow=nwalkers, ncol=6)
 for(i in 1:nwalkers) mcmc_inits[i,] <- jitter(log(mlepars))
 
 # run the ensemble MCMC:
-mcmc_fit <- MCMCEnsemble(loglik_transformed, 
-	inits=mcmc_inits, 
-	max.iter=nwalkers*nsteps, 
+mcmc_fit <- MCMCEnsemble(loglik_transformed,
+	inits=mcmc_inits,
+	max.iter=nwalkers*nsteps,
 	n.walkers = nwalkers)
 
 # Now, let's try to visualize the profile log-likelihoods (including
@@ -139,22 +139,22 @@ mcmc_fit <- MCMCEnsemble(loglik_transformed,
 par(mfrow=c(3,2))
 
 plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,1],xlab=bquote(lambda[0]))
-#lines(log(lambdavals), loglik_lambda0_vals, col='red') 
+#lines(log(lambdavals), loglik_lambda0_vals, col='red')
 
 plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,2],xlab=bquote(lambda[1]))
-#lines(log(lambdavals), loglik_lambda1_vals, col='red') 
+#lines(log(lambdavals), loglik_lambda1_vals, col='red')
 
 plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,3],xlab=bquote(mu[0]))
-#lines(log(muvals), loglik_mu0_vals, col='red') 
+#lines(log(muvals), loglik_mu0_vals, col='red')
 
 plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,4],xlab=bquote(mu[1]))
-#lines(log(muvals), loglik_mu1_vals, col='red') 
+#lines(log(muvals), loglik_mu1_vals, col='red')
 
 plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,5],xlab=bquote(q[0~1]))
-#lines(log(qvals), loglik_q01_vals, col='red') 
+#lines(log(qvals), loglik_q01_vals, col='red')
 
 plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,6],xlab=bquote(q[1~0]))
-#lines(log(qvals), loglik_q10_vals, col='red') 
+#lines(log(qvals), loglik_q10_vals, col='red')
 
 # In the vicinity of the MLE, the MCMC results should closely match
 #	the profile likelihood curves (but far away from the MLE there
@@ -178,19 +178,19 @@ plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,6],xlab=bquote(q[1~0]))
 # Exercise 2. Increase the number of taxa in your tree. How does your ability
 #	to estimate parameters change? Does it become easier to estimate migration
 #	rates, or death rates? Using 200 taxa should be doable, but see how high
-#	you can go before computations get bogged down. Be sure to describe 
-#	bias as well as precision of estimates. 
+#	you can go before computations get bogged down. Be sure to describe
+#	bias as well as precision of estimates.
 
 # Exercise 3. You may notice that the "data" (putting it in quotes b/c we simulated it)
 #	contain more information about one of the migration rates than the other. Which
 #	migration rate is it, and why do you think it might be easier to estimate
 #	it with greater precision than the other one? It might be helpful to plot
-#	the tree. 
+#	the tree.
 
 #plot(history.from.sim.discrete(tree, states=c(0,1)),
 #                tree, col=c('0'='black','1'='red'))
 
-# Exercise 4. Set migrations to be the same order of magnitude as the 
+# Exercise 4. Set migrations to be the same order of magnitude as the
 #	the diversification rates and repat the analysis. Does it always
 #	become easier to estimate q_ij?
 
@@ -202,17 +202,17 @@ plot(mcmc_fit$log.p ~ mcmc_fit$samples[,,6],xlab=bquote(q[1~0]))
 #	estimate extinction rates? Carry out an analysis to confirm or refute your
 #	hypothesis.
 
-# Exercise 7. Are there are any situations where it is difficult to estimate 
-#	diversification rates? Comment on bias and variance. 
+# Exercise 7. Are there are any situations where it is difficult to estimate
+#	diversification rates? Comment on bias and variance.
 
 # Exercise 8. Naively, one might think that having larger differences between
-#	parameters (lambda0 vs lambda1, for example) would make estimation easier. 
+#	parameters (lambda0 vs lambda1, for example) would make estimation easier.
 #	Why is that not necessarily the case with BiSSE models?
 #	Think back to aeons ago when we simulated these models under different
 #	parameter combinations...
 
 # Exercise 9. Try setting a constraint in the log-likelihood function that mu0=mu1.
-#	Does this help estimate the other parameters? Does it make it easier to 
+#	Does this help estimate the other parameters? Does it make it easier to
 #	estimate the overall exctinction rate (mu)?
 
 # Hint: it works like this: loglik_constrained <- constrain(loglik, mu0 ~ mu1)

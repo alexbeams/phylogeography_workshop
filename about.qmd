@@ -6,7 +6,7 @@ anchor-sections: false
 
 <br>
 
-This workshop is organized and hosted by **[MAGPIE](https://www.sfu.ca/magpie.html)**.  
+This workshop is organized and hosted by **[MAGPIE](https://www.sfu.ca/magpie.html)**.
 It is focused toward our graduate students, but anybody with interests in mathematical biology, evolutionary biology, infectious diseases, and statistics is welcome to join!
 
 These pages are written by [Alex Beams](https://www.sfu.ca/~abeams/)
@@ -20,16 +20,16 @@ Thank you [Lars Berling](https://github.com/Lars-B) for this website template!
 
 ![](img/koc_profile.png){.instructor-img}
 
-**Alex Beams**  
-Short bio paragraph: background, expertise, and current role.  
+**Alex Beams**
+Short bio paragraph: background, expertise, and current role.
 Optional links: [Personal Website](https://example.com), [GitHub](https://github.com).
 
 <br>
 
 ![](img/koc_profile2.png){.instructor-img}
 
-**Instructor Two**  
-Short bio paragraph: background, teaching areas, and research focus.  
+**Instructor Two**
+Short bio paragraph: background, teaching areas, and research focus.
 Optional links: [Personal Website](https://example.com).
 
 :::

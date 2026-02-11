@@ -1,20 +1,20 @@
 rm(list=ls())
 
-# By the end of this set of exercises and examples, we will code up a 
+# By the end of this set of exercises and examples, we will code up a
 #	Metropolis-Hastings algorithm to carry out our own MCMC.
 
 # We will start by introducing some basic Monte Carlo techniques.
 
 # 1. Monte Carlo sampling to approximate Pi
-# 2. Monte Carlo Integration 
+# 2. Monte Carlo Integration
 # 3. Importance sampling
 # 4. Metropolis-Hastings and MCMC
 
 ###############
-# Example 1: Monte Carlo sampling to approximate Pi 
+# Example 1: Monte Carlo sampling to approximate Pi
 ###############
 
-# From calculus, we know how to evaluate integrals using 
+# From calculus, we know how to evaluate integrals using
 # antiderivatives. You might also be familiar with numerical
 # quadrature techniques like the trapezoid rule and Simpson's
 # rule that approximate areas under curves with shapes that have
@@ -28,20 +28,20 @@ rm(list=ls())
 
 # Suppose there is a square dart board with a circle inscribed. My dart
 # throws are random, so when I launch a dart at the board it lands randomly
-# someplace in the square. Sometimes darts will land inside the circle, 
-# sometimes they will land outside. 
+# someplace in the square. Sometimes darts will land inside the circle,
+# sometimes they will land outside.
 
-# If I've chosen my square so that it is 1 meter x 1 meter, then the 
+# If I've chosen my square so that it is 1 meter x 1 meter, then the
 # inscribed circle will have a diamter of 1 meter. Like this:
 
 drawDartboard <- function(){
 	# Square with Inscribed Circle in R
 	# Set up the plot
-	plot(c(-1.2, 1.2), c(-1.2, 1.2), 
-	     type = "n", 
-	     asp = 1, 
-	     xlab = "", 
-	     ylab = "", 
+	plot(c(-1.2, 1.2), c(-1.2, 1.2),
+	     type = "n",
+	     asp = 1,
+	     xlab = "",
+	     ylab = "",
 	     main = "Square with Inscribed Circle")
 
 	# Define square side length
@@ -66,14 +66,14 @@ drawDartboard <- function(){
 	grid(col = "lightgray", lty = "dotted")
 
 	# Add legend
-	legend("topright", 
-	       legend = c("Square", "Inscribed Circle"), 
-	       col = c("blue", "red"), 
+	legend("topright",
+	       legend = c("Square", "Inscribed Circle"),
+	       col = c("blue", "red"),
 	       lwd = 2)
 
 	# Optional: Add center point
 	points(0, 0, pch = 19, col = "black", cex = 0.8)
-} 
+}
 
 
 # Now, I'm going to throw darts at this target. Because they land randomly,
@@ -84,15 +84,15 @@ throwDarts <- function(ndarts){
 	# randomly choose (x,y) coordinates independently:
 	x <- runif(ndarts,min=-0.5, max=0.5)
 	y <- runif(ndarts,min=-0.5, max=0.5)
-	
-	# re-draw the dartboard:	
+
+	# re-draw the dartboard:
 	drawDartboard()
-	
+
 	# add the hit locations to the dartboard:
 	points(x,y, pch=4)
 
 	return(list(x=x,y=y))
-} 
+}
 
 # Play around with the throwDarts function for different values of ndarts.
 # How does this help us evaluate pi? Remember that Area(circle) = pi * radius^2,
@@ -102,7 +102,7 @@ throwDarts <- function(ndarts){
 
 # Another way of saying this is that pi = Area(circle)/Area(rectangle).
 
-# So what? Well, the darts give us a way to calculate the ratio of areas. 
+# So what? Well, the darts give us a way to calculate the ratio of areas.
 # Convince yourself that (number of darts inside circle)/(total darts thrown)
 # is equal to this ratio of areas.
 
@@ -118,10 +118,10 @@ countDartsInside <- function(ndarts){
 	x = darts$x
 	y = darts$y
 	r = sqrt(x^2 + y^2)
-	
+
 	numinside = sum(r < 0.5)
 	return(numinside/ndarts)
-} 
+}
 
 # The area of the circle is pi/4, the area of the square is 1
 
@@ -129,10 +129,10 @@ countDartsInside <- function(ndarts){
 
 
 calculatePi <- function(ndarts){
-	
+
 	ratio = countDartsInside(ndarts)
 	pi_approx = 4 * ratio
-	
+
 	return(pi_approx)
 }
 
@@ -142,12 +142,12 @@ calculatePi <- function(ndarts){
 # or outside the circle?
 
 # Question: how many darts do you need to throw to approximate pi
-# to three significant figures? 
+# to three significant figures?
 
 # It seems like this approximation is doing.. ok. Against quadrature
 # methods, this will not be nearly as computationally efficient. However,
 # it is easy and straightforward to use, and generalizes well to more
-# complicated tasks when quadrature methods are not tractable. 
+# complicated tasks when quadrature methods are not tractable.
 
 ##################
 # Exercise 2: Using Monte Carlo to calculate definite integrals
@@ -167,7 +167,7 @@ g <- function(x) x^2
 h <- function(x) 1/sqrt(2*pi) * exp(-x^2/2)
 
 # antiderivatives of these functions (should have +C):
-bigf <-function(x) -cos(x) 
+bigf <-function(x) -cos(x)
 G <- function(x) x^3/3
 H <- function(x) pnorm(x,mean=0,sd=1)
 
@@ -185,15 +185,15 @@ plot(xvals, sapply(xvals, f), type='l',xlab='x',ylab='f(x) = sin(x)')
 plot(xvals, sapply(xvals, g), type='l',xlab='x',ylab='g(x) = x^2')
 plot(xvals, sapply(xvals, h), type='l',xlab='x',ylab='h(x) = gaussian')
 
-# We could inscribe these shapes within rectangles (like with the dartboard 
-# example), but the annoying difficulty with that is that our functions 
-# have different heights. So, we would need to customize our dartboard 
+# We could inscribe these shapes within rectangles (like with the dartboard
+# example), but the annoying difficulty with that is that our functions
+# have different heights. So, we would need to customize our dartboard
 # in each case. We don't want to do that. Instead, we want to modify our method
 # to accomodate any function whatsoever, particularly as we might not always
 # be able to "draw" the function conveniently (if it is a function of 1000's of
 # variables, for example).
 
-# Instead, we can go back to calculus. At some point in calculus, you were 
+# Instead, we can go back to calculus. At some point in calculus, you were
 # taught "The Mean Value Theorem for Integrals". You may not remember it,
 # but I 1000% guarantee that it was taught to you if you took calculus.
 
@@ -204,14 +204,14 @@ plot(xvals, sapply(xvals, h), type='l',xlab='x',ylab='h(x) = gaussian')
 # What this means is: each of these curves might go up or down along the
 # interval from a to b, but it has an "average" height \bar{f}.
 
-# This average is calculating by evaluating the area under the curve, 
+# This average is calculating by evaluating the area under the curve,
 # and then dividing that by the width of your integration interval.
 
-# If f(x) is a constant function, then \int_a^b f dx = (b-a) * f, 
+# If f(x) is a constant function, then \int_a^b f dx = (b-a) * f,
 # and \bar{f} = f. Or: if you have a rectangle (the area) and divide
-# that area by the width, you get the height. 
+# that area by the width, you get the height.
 
-# What does this have to do with Monte Carlo integration? Here's how: we 
+# What does this have to do with Monte Carlo integration? Here's how: we
 # are going to re-write the Mean Value Theorem for Integrals:
 
 # \bar{f} = \frac{1}{b-a} \int_a^b f(x) dx
@@ -220,11 +220,11 @@ plot(xvals, sapply(xvals, h), type='l',xlab='x',ylab='h(x) = gaussian')
 
 # If we could evaluate \bar{f} somehow, then multiplying by (b-a) would
 # give us our integral. We can't evaluate \bar{f} exactly, but we can
-# certainly approximate it. 
+# certainly approximate it.
 
 # All we have to do is this: randomly choose x-coordinates between
 # a and b, evaluate f(x) at each of those points, and then average those
-# values. This will give us a Monte Carlo approximation to the average 
+# values. This will give us a Monte Carlo approximation to the average
 # value of f(x):
 
 ndarts <- 50000
@@ -235,7 +235,7 @@ gbar_approx <- mean( g(xrands) )
 hbar_approx <- mean( h(xrands) )
 
 # Once we have our approximations to the average values of the functions
-# (i.e. approximations to the heights), we just multiply those by the 
+# (i.e. approximations to the heights), we just multiply those by the
 # widths on the x-axis (b-a) to get our approximation to the integral (i.e.
 # the area under the curve):
 
@@ -244,28 +244,28 @@ integral_g <- gbar_approx * (b-a)
 integral_h <- hbar_approx * (b-a)
 
 # Experiment with different values of ndarts to see how the approximations
-# change. 
+# change.
 
 # Exercise:
 # Modify the code above to evaluate integrals of the multivariate function
-# f(x,y) = sin(x) * cos(y) 
+# f(x,y) = sin(x) * cos(y)
 
 
 #######################
 ## Importance sampling
 #######################
 
-# The mathematician in you might be annoyed at the crudeness of these 
-# approximations. After all, standard numerical quadrature approaches 
+# The mathematician in you might be annoyed at the crudeness of these
+# approximations. After all, standard numerical quadrature approaches
 # that we learn about in calculus are far more accurate. However, I hope
 # you can appreciate the simplicity of this approach. Quadrature methods
 # often need to be tailored for particular situations to work optimally.
 # The code above can be used with very minor modification to evaluate any
 # integral whatsoever.
 
-# This does have one rather extreme drawback, however. Let's return to the 
+# This does have one rather extreme drawback, however. Let's return to the
 # Gaussian example in the previous section. Suppose instead I had asked
-# you to calculate the definite integral with a=5, b=infinity. 
+# you to calculate the definite integral with a=5, b=infinity.
 
 # Let's plot this just to see what the trouble might be:
 
@@ -273,14 +273,14 @@ plot(xvals, sapply(xvals, h), xlab='x', ylab='Gaussian',
 	type='l')
 points(x=5, y=0,col='red')
 
-# There are some challenges here. I probably can't use runif anymore 
-# because it requires a maximum value that is finite. 
+# There are some challenges here. I probably can't use runif anymore
+# because it requires a maximum value that is finite.
 
 # Now, you might be saying to yourself, "Well, R has the ability to simulate
 # variables from a standard normal distribuion, and our h(x) is just the PDF
 # of a standard normal distribution. So, I could just simulate a large
 # number of standard normal variates, and evaluate the fraction that
-# are larger than 5. 
+# are larger than 5.
 
 # "Okay," I reply. "Let's do that."
 
@@ -301,7 +301,7 @@ sum(tailsample > 5)/length(tailsample)
 tailsample <- rnorm(1e6)
 sum(tailsample > 5)/length(tailsample)
 
-# I'm seeing that I usually get 0 or 1 value larger than 5, so that our 
+# I'm seeing that I usually get 0 or 1 value larger than 5, so that our
 # Monte Carlo approximation to the tail probability is either 0 or 1e-6.
 
 # The problem is that we are simulating rare events. We need a workaround.
@@ -328,14 +328,14 @@ w <- function(x) dexp(x-5, rate=1/10)
 getimportanceest <- function(ndarts){
 	importance_sample <- 5 + rexp(ndarts, rate=1/10)
 
-	ratios <- sapply(importance_sample[importance_sample>5], 
-			function(x){h(x)/w(x)} ) 
+	ratios <- sapply(importance_sample[importance_sample>5],
+			function(x){h(x)/w(x)} )
 
 	return(mean(ratios))
 }
 
 # Exercise: What happens if you change the shift in w(x) to be something
-# different from 5?  
+# different from 5?
 
 
 ################################
@@ -346,7 +346,7 @@ getimportanceest <- function(ndarts){
 # Mostly we sampled from the uniform distribution, but the importance sampling exmaple
 # also relied on us being able to sample from the exponential distribution.
 
-# What if we can't sample from a distribution directly using a built-in R function? 
+# What if we can't sample from a distribution directly using a built-in R function?
 # This is basically the problem that Markov Chain Monte Carlo, and the Metropolis-
 # Hastings algorithm are designed to solve.
 
@@ -386,7 +386,7 @@ f <- function(x) dnorm(x,mean=0)
 # We have most of the ingredients we need; what remains is how to propose updates.
 # The MH algorithm is very flexible, in the sense that we can update parameters however
 # we like: we can sample y ~ w(x), where w(x) is any distribution whatsoever (or almost so).
-# The catch is: some choices of w(x) result in a Markov chain that converges to the 
+# The catch is: some choices of w(x) result in a Markov chain that converges to the
 # stationary distribution more rapidly than others.
 
 # For this first example, we will set w(x) to a uniform distribution centered at the
@@ -399,9 +399,9 @@ w <- function(x, delta) runif(1, min=x-delta, max=x+delta)
 
 # initialize state (and allocate into a vector):
 ninits <- 100000 # how long to run
-xk <- rep(0, length=ninits) 
+xk <- rep(0, length=ninits)
 
-# to illustrate the method, let's make the initial value 
+# to illustrate the method, let's make the initial value
 # different from zero (in practice, it's good for the initial
 # value to not be in the tails of f(x)):
 
@@ -410,13 +410,13 @@ xk[1] <- 20
 
 for(i in 1:ninits){
 	y <- w(xk[i],1)
-	
+
 	# Calculate the "acceptance ratio":
 	alpha <- f(y)/f(xk[i])
-	
+
 	# alpha > 1 means we always accept y; alpha < 1 means we only sometimes do:
 	u <- runif(1)
-	if(alpha > u){xk[i+1] <- y}else{xk[i+1]=xk[i]}	
+	if(alpha > u){xk[i+1] <- y}else{xk[i+1]=xk[i]}
 }
 
 par(mfrow=c(2,1))
@@ -429,29 +429,29 @@ legend('topright',legend=c('f(x) (true)'),col='red',lty=1)
 # a clear transient period toward the start of the simulation. MCMC practitioners usually
 # discard the early portion of their MCMC runs as a "burn-in" period. The histogram in the second
 # row obviously has a tail that is much larger than it should be, by virtue of the bad
-# initial guess. 
+# initial guess.
 
 # However, it is a nice feature of MCMC that in teh long run it will wander to the
 # current distribution.
 
-# The steps of the Metropolis-Hastings algorithm are very similar to importance 
+# The steps of the Metropolis-Hastings algorithm are very similar to importance
 # sampling. We have near-total freedom to choose the proposal distribution, in much the
 # same way that we have near-total freedom to choose the sampling distribution in
 # importance sampling.
 
 # One key difference is that, usually in Metropolis-Hastings, we center the proposal
-# distribution on the current value, x_k, which can change each iteration. 
+# distribution on the current value, x_k, which can change each iteration.
 # Above, we did this by proposing values uniformly form [x_k - delta, x_k + delta].
 
 ## Might need to edit this section:
 
 # Also, instead of sampling a large number of samples from the proposal distribution w(x),
-# and then calculating the average of the ratios f/w, we just sample one value from the 
+# and then calculating the average of the ratios f/w, we just sample one value from the
 # distribution w(y|x)f(x) and compare it to w(x|y)f(y)
 
 # In the algorithm above, w(x|y) and w(x|y) cancel in the acceptance ratio because our
 # uniform distribution is symmetric. Most proposal distribution in practice will have
-# this property, but not all. 
+# this property, but not all.
 
 
 # Exercises:
@@ -468,5 +468,5 @@ legend('topright',legend=c('f(x) (true)'),col='red',lty=1)
 #	assume they both have unit variance). This is called a "mixture" distribution.
 #	See how the MH algorithm performs for p=1/2,
 #	and modify your proposal distribution to see if you can ever approximate the full
-#	distribution (rather than just one of the mixture components).  
+#	distribution (rather than just one of the mixture components).
 
