@@ -1,183 +1,187 @@
-# Fitting and simulating Markov models on trees using ancestral character estimation (ace)
+# Fitting Markov models on trees using the ancestral character estimation (ace) function in R
 
 ```{r, message=FALSE, warning=FALSE}
 # rm(list=ls())
 
 library(ape)
 library(expm) # matrix exponential
+library(ggtree)
+library(ggplot2)
+library(dplyr)
+library(cowplot)
+library(scatterpie)
 ```
-
-This code simulates output from the ace function. We will first try to grasp how the model behaves before we try fitting it to data.
 
 Ancestral character estimation methods can be based on a
 variety of approaches, but we will consider Markov chains
 superimposed on phylogenies. In the accompanying code to
 this we will learn how to fit these models using Maximum
-Likelihood, but for now we focus on simulating Markov chains
-on trees to understand how the models work.
+Likelihood.
 
+## Evolution in the Spike protein of Seasonal Coronavirus NL63
 
-First, let's simulate a tree and some tip states:
+Our working example will be this Seasonal Coronavirus NL63 phylogeny obtained from NextStrain: [https://nextstrain.org/seasonal-cov/nl63](https://nextstrain.org/seasonal-cov/nl63)
 
-```{r}
-tree <- rcoal(10)
-x <- sample(c(0,1), size=10, replace=T)
+In the left-hand panel on the webpage at NextStrain, you can see the option to Color in the phylogeny according to a variety of characteristics, including "Genotype". If you select Genotype and then select "Spike" as the gene, and then examine position 100, you will see something fascinating: the phylogeny displays clear evidence of mutations from the amino acid S (Glycine) to P (Aspartic acid), and vice versa. The phylogeny on NextStrain colors in the internal edges of their phylogeny to display where the mutations may have occurred. Our goal is to try to replicate this using the ace function in R.
 
-plot(tree)
-tiplabels(pch=21,bg=x)
+As a side note: Seasonal Coronavirus NL63 is fascinating because it uses the same ACE2 receptor to enter cells as SARS-CoV-2. In both viruses, the Spike protein on the virus is a little gizmo that helps the viruses bind to ACE2 and enter cells during infection. You have probably experienced NL63 infection multiple times in your life up to this point -- usually in the form of a cold, or completely asymptomatic.
 
-
-fit <- ace(x, tree, type='discrete', model='ARD')
-```
-
-# Exercise 1
-Navigate through the ace help pages to determine whether Qij
-	corresponds to the transition rate from state i-> j or from
-	state j -> i. Based on your answer, does the Master equation
-	for the Markov process use column or row vectors?
-	Then, define a generator matrix, Q, in terms
-	of the rates estimated just above (replacing the following line):
+Let's see how these amino acids in the Spike protein evolved over time! First, let's read in the tree and plot it. I have manually provided tip data below to reproduce what we see on NextStrain.
 
 ```{r}
-Q <- matrix(c(-1,1,1,-1),ncol=2)
-# can scale rates up or down:
-Q <- Q/1
+tree <- read.tree('coronavirus_nl63/nextstrain_seasonal-cov_nl63_timetree.nwk')
 
-getP <- function(t,Q){
-	P <- expm(Q*t)
-	return(P)
-}
+# Root the tree (not the most technically appropriate way to do this, but good enough for our illustrative purposes):
+tree <- root(tree, node=Ntip(tree)+1 )
+
+# Make the tree fully bifurcating:
+tree <- multi2di(tree)
+
+tree$edge.length[tree$edge.length < 0] <- .01
+tree$edge.length[tree$edge.length == 0] <- .01
+
+
+# Some of these tips have an amino acid change in the gene for the Spike protein. From Nextstrain, we can 
+# see that it is these ones:
+
+Stips <- tree$tip.label
+Ntips <- setdiff(extract.clade(tree, 402)$tip.label, extract.clade(tree, 473)$tip.label)
+Stips <- setdiff(tree$tip.label, Ntips)
+
+x <- rep(0, Ntip(tree))
+names(x) <- tree$tip.label
+x[Stips] <- "S"
+x[Ntips] <- "P"
+
+p <- ggtree(tree) + ggtitle('Seasonal Coronavirus NL63') +
+	theme(plot.title=element_text(hjust=0.5, size=18, face="bold"))
+
+p <- p %<+% data.frame(label=tree$tip.label, aminoacid = as.factor(x))
+
+p + geom_tippoint(aes(col=aminoacid))
 ```
 
-Now, we will start at the root of the tree and simulate states
-at the internal nodes and at the tips of the tree. (The ape
-package does not have a function to easily do this for us, but
-it is good exercise to practice it ourselves).
+What do we think the evolutionary history was? There are a few possibilities I can readily envision:
 
-First, let's create a vector to store all of the states we simulate:
+Hypothesis 1: The original NL63 virus had amino acid S, and then mutated into P in the bottom clade, and then there was a back-mutation from P to S.
+
+Hypothesis 2: Originally the amino acid was P, and there have been two mutations from P to S -- one of these was long ago (and produced the large clade on top), and one of the mutations was more recent (the small blue clade nested within the larger red "P" clade).
+
+Hypothesis 3: The original amino acid was S, but there have been no back-mutations from P to S; rather, there have been at least four instances of mutation from S to P in the bottom clade.
+
+You can probably come up with additional hypotheses besides these. At this stage what do you think is the most likely scenario?
+
+## Ancestral Character Estimation: the ace function in R
+
+To determine what the most likely evolutionary scenario was, we can use a mathematical model that describes change in the trait over time using a Markov chain with two states (corresponding to P and S). There are two versions of this model:
+
+-Model 1: the rate of changing from P to S equals the rate of change from S to P (equal rates model, "ER")
+
+-Model 2: the rate from P to S can be different from the rate from S to P (all rates different model, "ARD")
+
+Let's fit both of these models to the data using ace:
 
 ```{r}
-states_vec <- rep(NA,(tree$Nnode + length(tree$tip.label)))
-names(states_vec) <- c(tree$tip.label, paste0("node", 1:tree$Nnode))
+fit1 <- ace(x, tree, type='discrete', model='ER')
+
+fit2 <- ace(x, tree, type='discrete', model='ARD')
 ```
 
-Let's just work with binary states for now:
+The type='discrete' argument tells ace that our data at the tips (x) correspond to states of a discrete state-space Markov chain. The ace function can handle continuous data as well, but we will not make use of this. 
+
+We can examine the parameter estimates in each case:
 
 ```{r}
-states <- c(1, 2)
-state_colors <- c('blue','red') #for plotting
+fit1
 ```
 
-Let's assign a condition at the root; could be probabilities
-generally, but let's say it starts in the first state with
-certainty for now:
+The output above tells us what the structure of our Markov model is (Rate index matrix), as well as the value of the objective function (Log-likelihood) at the Maximum Likelihood paramter estimate (Parameter estimates). There is only one parameter estimated because we used an "equal rates" model. The estimate for the rate is a pretty small number, which makes perfect sense -- while there is some evidence for a back mutation (from P to S), or possibly for $\sim 4$ mutations from S to P, there seems to be a fairly small number of mutations overall. The rate estimate we are getting seems to make sense.
+
+The last bit of the output is particularly salient for our question we began with: it tell us the "Scaled likelihoods at the root", and assigns a higher value to S than to P. This means that, under this model, the ancestral virus most likely had the amino acid S rather than the amino acid P. This already tells us that, at least to the extent we think our Markov model is reasonable, the data seem more consistent with Hypotheses 1 or 3 than Hypothesis 2. 
+
+Okay, so far so good - but maybe I think the equal rates model is unreasonable to begin with. After all, it is a little bit striking that there is a huge clade in the phylogeny with no evidence of mutation from S to P whatsoever, but there does seem to be clear evidence of back-mutation from P to S. Maybe the rate of mutation from P to S is much faster than the rate from S to P. This is what our second model allows for. Let's see how those estimates turned out:
 
 ```{r}
-pi_root <- c(1,0)
+fit2
 ```
 
-Let's start with the root state:
+Oh my! That is rather striking! In this model we are estimating two rates (S to P, and P to S). The Maximum Likelihood Estimate (MLE) says that the rate from S to P equals zero. Nada. Zilch. The rate of change from P to S is 0.0036, which is quite a lot larger than the rate we estimated in Model 1. The Scaled likelihoods at the root say that the ancestor had amino acid P with certainty. So, if we think Model 2 is a reasonable model, then Hypothesis 2 is the best explanation for the evolutionary history. Under the model, the best explanation for the data is that the original virus had amino acid P, and there have been two mutations from P to S down to the present day. 
+
+In response to an estimated rate equal to zero, my knee-jerk reaction is to look at the standard errors ("std-err") in the parameter estimates. Sometimes, numerical issues might result in weird behavior near the boundary of parameter space (rates are always non-negative, so zero is such a boundary in our case). The estimate for rate 1 has a standard error of 0.0017. If there had been some kind of numerical strangeness, we might see NA and a warning pop up. That didn't happen here, so the MLE of 0.0000 for rate 1 appears to be genuine. It is also worth noting that the scaled likelihoods at the root are calculated under the MLE, and do not necessarily account for uncertainty in the MLE (as quantified by the standard errors). So, while our best estimate for the evolutionary history has P as the overall ancestor, a nonzero estimate for rate 1 might allow for a small possibility that the ancestral virus had S. That is, in the same way that we have a confidence set for our rate parameters, there is an implied confidence set of evolutionary histories, some of which have S at the root of the tree -- but the scaled likelihoods at the root do not reflect this.
+
+
+## Displaying evolutionary histories with our fitted models
+
+So far, all we have done is fit our models and interpret the parameter estimates. However, we can do a little bit more than this. Similar to NextStrain, we can annotate our tree with our estimated models to indicate what the ancestral states may have been. This is, after all, the point of ancestral state inference/ancestral character estimation.
+
+The scaled likelihoods a the root that we see in the printout from fit1 and fit2 are built up from likelihoods at all of the internal nodes desending from the root. These are tucked away in the fitted model output ("lik.anc"):
 
 ```{r}
-root <- length(tree$tip.label) + 1
-states_vec[root] <- sample(states, 1, prob = pi_root)
+head(fit1$lik.anc)
+
 ```
-Let's plot this as we go:
+
+This is a datarame with the scaled likelihoods of the two states for each node. The tree has 400 tips, so the nodes are numbered 401 through 799 (a bifurcating tree with N tips has N-1 internal nodes). Each row in the dataframe above is one of the nodes, and the values in the columns are the relative likelihoods that it resides in state P or state S under the MLE. We can use this data to plot estimated states at the internal nodes.
+
 
 ```{r}
-plot(tree)
-tip_states <- states_vec[tree$tip.label]
-tiplabels(pch=21, bg=state_colors[tip_states], cex=2)
-node_states <- states_vec[paste0("node", 1:tree$Nnode)]
-nodelabels(pch=21, bg=state_colors[node_states], cex=2)
+# Let's add in node labels for the tree:
+tree$node.label <- (Ntip(tree)+1):(Ntip(tree) + tree$Nnode)
+
+# what were the most likely node states?
+nodestates1 <- c('P','S')[apply(fit1$lik.anc, 1, function(x) which(x==max(x)) )]
+
+treedat1 <- data.frame(label=tree$tip.label, aminoacid = as.factor(x))
+nodedat1 <- data.frame(label=as.character((Ntip(tree)+1):(Ntip(tree)+tree$Nnode)), aminoacid=nodestates1)
+
+treedat1 <- rbind(treedat1, nodedat1)
+
+p1 <- ggtree(tree) + ggtitle('ER model') +
+	theme(plot.title=element_text(hjust=0.5, size=18, face="bold"))
+
+p1 <- p1 %<+% treedat1
+
+p1 <- p1 + geom_tippoint(aes(col=aminoacid)) + geom_nodepoint(aes(col=aminoacid))  + 
+	theme(legend.position='none')
+
+# Now, the all-rates different model:
+
+# what were the most likely node states?
+nodestates2 <- c('P','S')[apply(fit2$lik.anc, 1, function(x) which(x==max(x)) )]
+
+treedat2 <- data.frame(label=tree$tip.label, aminoacid = as.factor(x))
+nodedat2 <- data.frame(label=as.character((Ntip(tree)+1):(Ntip(tree)+tree$Nnode)), aminoacid=nodestates2)
+
+treedat2 <- rbind(treedat2, nodedat2)
+
+p2 <- ggtree(tree) + ggtitle('ARD model') +
+	theme(plot.title=element_text(hjust=0.5, size=18, face="bold"))
+
+p2 <- p2 %<+% treedat2
+
+p2 <- p2 + geom_tippoint(aes(col=aminoacid)) + geom_nodepoint(aes(col=aminoacid)) 
+
+legend <- get_legend(p2 + theme(legend.box.margin=margin(0,0,0,12)))
+plot_grid(p1,p2+theme(legend.position='none'),legend, nrow=1, rel_widths=c(1,1,.3))
+
 ```
 
-We will do a preorder traversal, which starts at the root
-and descends down the tree to the tips:
+Aside from the differences at the root of the tree, the two models appear to mostly agree with each other in terms of the ancestral states of most of the other ancestors. However, the similarity in ancestral reconstructions belies the very different interpretations of the evolutionary histories between the models. 
 
-```{r}
-preorder <- rev(postorder(tree))  # parent before children
-```
-
-The list of all of the edges of the tree is located in `tree$edge`:
-
-```{r}
-edges <- tree$edge
-```
-
-Each row is an edge. The first column represents the parent, the
-second represents the descendant.
-
-```{r}
-colnames(edges) <- c('parent','descendant')
-edges <- as.data.frame(edges) # to use the handy $ command for columns
-```
-
-The entry in `tree$edge.length` is a vector of lengths for each of
-the edges; it corresponds to the same edges in `tree$edge`:
-
-```{r}
-edge.lengths <- tree$edge.length
-```
+- In the ER model, mutations are possible in both directions under the MLE
+- In the ARD model, mutations from S to P never occur under the MLE 
+- The ARD model makes the prediction that, given enough time, every virus we sample will have the amino acid S, and P will go extinct.
 
 
-We start with the initial state at the root and use the Markov
-chain to sample subsequent states:
+**All of these conclusions are conditional on the Markov models we are using.** Remember: junk in = junk out. There are some potential pitfalls of these models that we should articulate now:
 
-```{r}
-edges$parentstate <- states_vec[edges$parent]
-edges$nextstate <- NA
-edges$lengths <- edge.lengths
+- Either of these amino acids could carry a fitness benefit that could lead to increased numbers of infections by one lineage or the other. We are not modeling this effect
 
-for(i in 1:nrow(edges)){
-	parent_state <- if(edges[i,'parentstate']==1){c(1,0)}else{c(0,1)}
-	prob = getP(edges$lengths[i],Q) %*% parent_state
-	next_state <- sample(c(1,2), size=1, prob=c(prob))
-	new_parent <- edges[i, 'descendant']
-	edges[i,'nextstate'] <- next_state
-	edges[edges$parent==new_parent, 'parentstate'] <- next_state
-}
-```
+- The models are assuming that rates are constant in time. This may not be a reasonable assumption to make.
 
-Now fill in states_vec:
+- Can you think of any other criticisms?
 
-```{r}
-states_vec[edges$parent] <- edges$parentstate
-states_vec[edges$descendant] <- edges$nextstate
-```
 
-Let's plot this:
-
-```{r}
-plot(tree)
-tip_states <- states_vec[tree$tip.label]
-tiplabels(pch=21, bg=state_colors[tip_states], cex=2)
-node_states <- states_vec[paste0("node", 1:tree$Nnode)]
-nodelabels(pch=21, bg=state_colors[node_states], cex=2)
-```
-
-# Exercises
-## 1.
-Simulate some tip states on a tree using a Markov model
-	that you specify, and use ace to estimate it. Scale this up
-	for a large number of tip state configurations to see how the
-	distribution of Maximum Likelihood estimates for the Markov
-	model rates compare with the true values you supplied.
-	Are there particular combinations of branch lengths and rates
-	that make it difficult to estimate model parameters?
-
-## 2. (Hard, or maybe impossible)
-Modify the code above to condition on a particular
-	tip state configuration. This way, we can observe distributions
-	of evolutionary scenarios consistent with a particular set
-	of observations.
-
-## 3.
-In a fitted ace object, there is an element called lik.anc which
-	records the probability of ancestral states at each node of the
-	tree. Plot a dataset of your choice with pie charts displaying
-	the ancestral state probabilities associated with models that
-	you fit using ace. Navigate through the help pages (?ace) to
-	specify a few different versions of models that impose constraints
-	on the Markov generator, Q. How sensitive are ancestral state
-	probabilities to your modeling choices?
+These criticisms aside, from the methodological point of view there is another thing we have not done: we have not obtained an estimate for when mutations actually occurred. Our estimates of ancestral states should inform the timing and number of mutations, but more work is needed to do so.
+ 
+In the next section (stochastic character mapping), we will do both of these things.

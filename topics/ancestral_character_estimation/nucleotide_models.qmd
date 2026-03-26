@@ -1,6 +1,9 @@
 # Simulating nucleotide substitution models
 ## A refresher on continuous time discrete state Markov chains
 
+First, let's load in some packages we will need -- ape, for working with phylogenetic trees, 
+and expm, which calculates matrix exponentials (useful for solving differential equations).
+
 ```{r}
 rm(list=ls())
 library(ape)
@@ -9,14 +12,25 @@ library(expm) # matrix exponential
 
 # 1. Basic Markov chains
 
+To reconstruct phylogenetic trees from DNA sequence data, we commonly use continuous-time 
+discrete-state Markov chains to model changes in nucleotides over time. In the simplest case, we consider
+the evolution of a particular site in a genome independent of all the rest. This page is focused on the mathematics
+of Markov chains. By understanding how these stochastic processes work, we will be in a better position to understand
+the underlying assumptions of many methods in statistical phylogenetics.
+
 Let's begin by considering a simple 2-state Markov chain
-defined in continuous time.
+defined in continuous time. A site in a DNA sequence is usually modeled with four sites (A, C, T, G). We will 
+start with a 2-state Markov chain to learn the basics in the simplest possible case. Extending to four states
+is not conceptually different, but becomes mathematically much more cumbersome. 
 
-The vector P has entries that sum to one, and the components
+Let's begin! We consider a vector, $P$, with two entries that sum to one. The components of $P$
 are the probability the state resides in one state or the
-other at a particular time.
+other at a particular time. The process is simple: if the system is in state 1, it can transition to state 2 
+at rate $q_{12}$. If the system is in state 2, it can transition to state 1 at rate $q_{21}$. Easy! But how do we
+translate this into a formal mathematical statement? We use differential equations!
 
-Probabilities evolve over time according to the Kolmogorov equation
+The probability the chain is one state or the other changes over time according to the ordinary differential equations
+(sometimes called the Kolmogorov equations) 
 
 \begin{align*}
  dP_1/dt &= - q_{12} P_1 + q_{21} P_2,\\
@@ -36,49 +50,63 @@ help pages in the coming days to ensure that $Q_{ij}$ represents the
 state change that you think it does...
 
 We can solve these differential equations by hand, using the fact
-that $P_1 + P_2 = 1$
+that $P_1 + P_2 = 1$:
 
 \begin{align*}
-dP_1/dt &= -q_{12}(P_1) + q_{21}  (1-P_1)
-	&= - (q_{12} + q_{21})  P_1 + q_{21}
+dP_1/dt &= -q_{12}(P_1) + q_{21}  (1-P_1), \\
+	&= - (q_{12} + q_{21})  P_1 + q_{21}.
 \end{align*}
 
-rearrange to:
+This rearranges to:
 \begin{align*}
-dP_1/dt + (q_{12}+q_{21})  P_1 = q_{21}
+dP_1/dt + (q_{12}+q_{21})  P_1 = q_{21}.
 \end{align*}
 
 A standard approach to solving this type of equation is to use an
-integrating factor $e^{(q_{12}+q_{21})t}$
-
+integrating factor, in this case of the form $e^{(q_{12}+q_{21})t}$, which gets multiplied
+on both sides of the equation:
 \begin{align*}
-d/dt (P_1  e^{(q_{12}+q_{21})t}) = q_{21}  e^{(q_{12}+q_{21})t}
+e^{(q_{12}+q_{21})t} (dP_1/dt + (q_{12}+q_{21})  P_1 ) = e^{(q_{12}+q_{21})t} q_{21}.
 \end{align*}
 
-We can integrate this up once:
-\begin{align*}
-P_1  e^{(q_{12}+q_{21})t} = \frac{q_{21}}{q_{12}+q_{21}}  e^{(q_{12}+q_{21})t} + C
-\end{align*}
-We can now isolate P_1:
+From Calculus, we can readily recognize that the left-hand-side of this equation looks like the result of a "product-rule" 
+operation. We can rewrite as a derivative:
 
 \begin{align*}
-P_1 =  \frac{q_{21}}{q_{12}+q_{21}}  + C e^{-(q_{12}+q_{21})t}
+d/dt (P_1  e^{(q_{12}+q_{21})t}) = q_{21}  e^{(q_{12}+q_{21})t}.
 \end{align*}
 
-We use initial conditions to determine C. Set $P_{1,0} = P_1(0)$:
+This is why we multiplied both sides by the integrating factor -- we're just using differentation rules from Calculus to 
+solve the problem. We now have an equation that we can integrate on both sides of the = sign.
+
+Integrating this up once gives 
+\begin{align*}
+P_1  e^{(q_{12}+q_{21})t} = \frac{q_{21}}{q_{12}+q_{21}}  e^{(q_{12}+q_{21})t} + C,
+\end{align*}
+where $C$ is a constant of integration we need to determine eventually. We can now isolate P_1:
+
+\begin{align*}
+P_1 =  \frac{q_{21}}{q_{12}+q_{21}}  + C e^{-(q_{12}+q_{21})t}.
+\end{align*}
+
+We still have to determine $C$. We use initial conditions to do so. Set $P_{1,0} = P_1(0)$:
 
 \begin{align*}
 P_{1,0} &= \frac{q_{21}}{q_{12}+q_{21}}  + C e^{-(q_{12}+q_{21})0} ,\\
-P_{1,0} &= \frac{q_{21}}{q_{12}+q_{21}}  + C
+&= \frac{q_{21}}{q_{12}+q_{21}}  + C,
 \end{align*}
+so that $C = P_{1,0} - \frac{q_{21}}{q_{12}+q_{21}}$. We get to decide on $P_{1,0}$, which is the probability that the system starts in
+state 1 at time 0.
+
 
 So now we know that
 \begin{align*}
-P1 &=  \frac{q_{21}}{q_{12}+q_{21}}  + (P_{1,0} - \frac{q_{21}}{q_{12}+q_{21}})  e^{-(q_{12}+q_{21})t}
-P1 &= P_{1,0}  e^{-(q_{12}+q_{21})t} + \frac{q_{21}}{q_{12}+q_{21}}  (1-e^{-(q_{12}+q_{21})t})
+P1 &=  \frac{q_{21}}{q_{12}+q_{21}}  + (P_{1,0} - \frac{q_{21}}{q_{12}+q_{21}})  e^{-(q_{12}+q_{21})t},\\
+ &= P_{1,0}  e^{-(q_{12}+q_{21})t} + \frac{q_{21}}{q_{12}+q_{21}}  (1-e^{-(q_{12}+q_{21})t})
 \end{align*}
+
 Notice that this has a term corresponding to the initial condition that
-is dominant for t \approx 0, and in the long run P1 \to \frac{q_{21}}{q_{12}+q_{21}}
+is dominant for $t \approx 0$, and in the long run, as $t \to \infty$,  $P_1 \to \frac{q_{21}}{q_{12}+q_{21}}$.
 
 We can also find $P_2$, using the fact that $P_2 = 1-P1$:
 \begin{align*}
@@ -88,7 +116,7 @@ P_2 &= \frac{q_{12}+q_{21}}{q_{12}+q_{21}} - \frac{q_{21}}{q_{12}+q_{21}} + \fra
  &= \frac{q_{12}}{q_{12}+q_{21}} + (\frac{-q_{12}}{q_{12}+q_{21}} + P_{2,0})e^{-(q_{12}+q_{21})t},\\
  &= \frac{q_{12}}{q_{12}+q_{21}}(1-e^{-(q_{12}+q_{21})t}) + P_{2,0}e^{-(q_{12}+q_{21})t}.
 \end{align*}
-So now, we have our solutions for the Markov chain probabilities over time:
+So now, we have our solutions for the Markov chain probabilities over time, which we can define in a handy R function:
 
 ```{r}
 P <- function(t, P0, q12,q21){
@@ -104,7 +132,17 @@ P <- function(t, P0, q12,q21){
 ```
 
 # Exercises:
-## 1.
+## 1. 
+Use the function above to plot the probability that the system begins in state 1
+	and transitions to state 2 as a function of time. The initial condition in this
+	case can be specified by setting ```P0 <- c(1,0)```.
+	You will have to decide
+	on values of $q_{12}$ and $q_{21}$. What do you notice if you make $q_{12}$ 
+	large? Does a state transition from state 1 to 2 happen faster, or slower? 
+	Does the probability of a state transition from state 1 to state 2 depend on $q_{21}$ at all?	
+
+
+## 2.
 Write down a 4-state Markov model corresponding to A, C, T, and G
 	in DNA. Evaluate the transition probabilities as above (hint:
 	the matrix exponential can be calculated in R using
@@ -112,7 +150,7 @@ Write down a 4-state Markov model corresponding to A, C, T, and G
 	to assume whatever constraints on parameters you like (or none
 	at all).
 
-## 2.
+## 3.
 The Jukes-Cantor model is the simplest nucleotide substitution model.
 	By assumption, the equilibrium probabilities of each nucleotide
 	are equal, and the transition rates between states are likewise
@@ -121,7 +159,7 @@ The Jukes-Cantor model is the simplest nucleotide substitution model.
 	(Hint: how many parameters will your generator have
 	if all transitions between states occur at equal rates?)
 
-## 3.
+## 4.
 The K80 (Kimura, 1980) model elaborates on the Jukes-Cantor model by
 	allowing substitutions within pyrimidines (C,T) and within purines
 	(A, G) to occur at a different rate than "transversions" between

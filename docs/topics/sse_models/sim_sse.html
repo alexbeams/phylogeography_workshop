@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>sim_sse – Template Workshop</title>
+<title>sim_sse – PhylogeogRaphy Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -117,8 +117,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo light-content">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo dark-content">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -179,11 +177,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="simulating-and-fitting-state-dependent-speciation-and-extinction-sse-models" class="level1">
 <h1>Simulating and fitting State-dependent speciation and extinction (SSE) models</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(diversitree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: ape</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">117</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(diversitree)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">117</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>State-dependent speciation and extion (SSE) models are the subject of this set of exercises. The workhorse of these methods are the various flavors of birth-death models for generating trees.</p>
 </section>
@@ -192,20 +187,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>So now, we are able to simulate trees using the birth-death process, and we learned earlier this week how to simulate trait evolution on a given tree. Now, we want to explore what happens if the tree generation process interacts with the traits. To do this, we will simulate Binary State Speciation and Extinction (BiSSE) models. We will start by simulating BiSSE models, then try fitting them (very similar to the basic birth-death model fitting).</p>
 <p>BiSSE has 5 parameters: birth/diversification rates (lambda0, lambda1) corresponding to the two values of the trait (0 and 1); two death/extinction rates (mu0, mu1), and rates of the stochastic rate matrix, Q, (q01 and q10).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda0=</span><span class="fl">0.1</span>, </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda1=</span><span class="fl">0.2</span>, </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mu0=</span><span class="fl">0.03</span>, </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mu1=</span><span class="fl">0.03</span>, </span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">q01=</span><span class="fl">0.01</span>, </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">q10=</span><span class="fl">0.01</span>) </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">tree.bisse</span>(pars, <span class="at">max.taxa=</span><span class="dv">50</span>, <span class="at">x0=</span><span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda0=</span><span class="fl">0.1</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda1=</span><span class="fl">0.2</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mu0=</span><span class="fl">0.03</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mu1=</span><span class="fl">0.03</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">q01=</span><span class="fl">0.01</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">q10=</span><span class="fl">0.01</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">tree.bisse</span>(pars, <span class="at">max.taxa=</span><span class="dv">50</span>, <span class="at">x0=</span><span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>State change information is available in <code>tree$node.state</code>, <code>tree$tip.state</code>, and <code>tree$edge.state</code>, but for plotting it is convenient to invoke the following:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">history.from.sim.discrete</span>(tree, <span class="at">states=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)),</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    tree, <span class="at">col=</span><span class="fu">c</span>(<span class="st">'0'</span><span class="ot">=</span><span class="st">'black'</span>,<span class="st">'1'</span><span class="ot">=</span><span class="st">'red'</span>)) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">history.from.sim.discrete</span>(tree, <span class="at">states=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)),</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    tree, <span class="at">col=</span><span class="fu">c</span>(<span class="st">'0'</span><span class="ot">=</span><span class="st">'black'</span>,<span class="st">'1'</span><span class="ot">=</span><span class="st">'red'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -216,44 +211,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>The <code>history.from.sim.discrete</code> function accepts a tree produced by tree.bisse or tree.musse, and the states. The help pages indicate that the states should be 0 and 1 for BiSSE models. The history.from.sim.discrete object includes values for <code>tip.state</code>, <code>node.state</code>, <code>history</code>, <code>discrete</code>, and <code>states</code>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(<span class="fu">history.from.sim.discrete</span>(tree, <span class="at">states=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(<span class="fu">history.from.sim.discrete</span>(tree, <span class="at">states=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "tip.state"  "node.state" "history"    "discrete"   "states"    </code></pre>
 </div>
 </div>
 <p>I’m going to write a function to simulate and plot from parameter values I supply:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>plotbissesim <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda0=</span><span class="dv">1</span>,</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda1=</span><span class="dv">1</span>,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mu0=</span><span class="dv">0</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mu1=</span><span class="dv">0</span>,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">q01=</span><span class="dv">1</span>,</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">q10=</span><span class="dv">1</span>,</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">maxtaxa=</span><span class="dv">50</span>,</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x0=</span><span class="dv">0</span>){</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">lambda0=</span>lambda0, </span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">lambda1=</span>lambda1, </span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">mu0=</span>mu0, </span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">mu1=</span>mu1, </span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">q01=</span>q01, </span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">q10=</span>q10) </span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    tree <span class="ot">&lt;-</span> <span class="fu">tree.bisse</span>(pars, <span class="at">max.taxa=</span>maxtaxa, <span class="at">x0=</span>x0)</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(<span class="fu">history.from.sim.discrete</span>(tree, <span class="at">states=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)),</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>        tree, <span class="at">col=</span><span class="fu">c</span>(<span class="st">'0'</span><span class="ot">=</span><span class="st">'black'</span>,<span class="st">'1'</span><span class="ot">=</span><span class="st">'red'</span>)) </span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">legend</span>(<span class="st">"topleft"</span>, </span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>           <span class="at">legend=</span><span class="fu">c</span>(<span class="st">"state 0"</span>,<span class="st">"state 1"</span>), </span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>           <span class="at">col=</span><span class="fu">c</span>(<span class="st">"black"</span>,<span class="st">"red"</span>), </span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>           <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>, </span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>           <span class="at">bty=</span><span class="st">"n"</span>, <span class="at">cex=</span><span class="fl">0.8</span>)</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plotbissesim <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda0=</span><span class="dv">1</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda1=</span><span class="dv">1</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mu0=</span><span class="dv">0</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mu1=</span><span class="dv">0</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">q01=</span><span class="dv">1</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">q10=</span><span class="dv">1</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">maxtaxa=</span><span class="dv">50</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x0=</span><span class="dv">0</span>){</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">lambda0=</span>lambda0,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">lambda1=</span>lambda1,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">mu0=</span>mu0,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">mu1=</span>mu1,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">q01=</span>q01,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">q10=</span>q10)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    tree <span class="ot">&lt;-</span> <span class="fu">tree.bisse</span>(pars, <span class="at">max.taxa=</span>maxtaxa, <span class="at">x0=</span>x0)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(<span class="fu">history.from.sim.discrete</span>(tree, <span class="at">states=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)),</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        tree, <span class="at">col=</span><span class="fu">c</span>(<span class="st">'0'</span><span class="ot">=</span><span class="st">'black'</span>,<span class="st">'1'</span><span class="ot">=</span><span class="st">'red'</span>))</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">legend</span>(<span class="st">"topleft"</span>,</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>           <span class="at">legend=</span><span class="fu">c</span>(<span class="st">"state 0"</span>,<span class="st">"state 1"</span>),</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>           <span class="at">col=</span><span class="fu">c</span>(<span class="st">"black"</span>,<span class="st">"red"</span>),</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>           <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>,</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>           <span class="at">bty=</span><span class="st">"n"</span>, <span class="at">cex=</span><span class="fl">0.8</span>)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Because I supplied defualt values, this will just run:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotbissesim</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotbissesim</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -264,7 +259,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Or, I can tweak parameters (as many at a time as I want):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotbissesim</span>(<span class="at">lambda0=</span><span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotbissesim</span>(<span class="at">lambda0=</span><span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -274,7 +269,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotbissesim</span>(<span class="at">lambda0=</span><span class="fl">0.1</span>,<span class="at">lambda1=</span><span class="dv">1</span>,<span class="at">q01=</span>.<span class="dv">1</span>,<span class="at">q10=</span><span class="dv">1</span>,<span class="at">x0=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotbissesim</span>(<span class="at">lambda0=</span><span class="fl">0.1</span>,<span class="at">lambda1=</span><span class="dv">1</span>,<span class="at">q01=</span>.<span class="dv">1</span>,<span class="at">q10=</span><span class="dv">1</span>,<span class="at">x0=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -307,21 +302,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="section-4">5.</h2>
 <p>Try to simulate multi-state models using tree.musse. This example comes from the help page for ?tree.musse. Modify this to include 4 states with equal rates of movement between all of the states.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="do">## A 3-state example where movement is only allowed between neighbouring</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="do">## states (1 &lt;-&gt; 2 &lt;-&gt; 3), and where speciation and extinction rates</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="do">## increase moving from 1 -&gt; 2 -&gt; 3:</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">c</span>(.<span class="dv">1</span>,  .<span class="dv">15</span>,  .<span class="dv">2</span>,  <span class="co"># lambda 1, 2, 3</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>          .<span class="dv">03</span>, .<span class="dv">045</span>, .<span class="dv">06</span>, <span class="co"># mu 1, 2, 3</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>          .<span class="dv">05</span>, <span class="dv">0</span>,         <span class="co"># q12, q13</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>          .<span class="dv">05</span>, .<span class="dv">05</span>,       <span class="co"># q21, q23</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>          <span class="dv">0</span>,   .<span class="dv">05</span>)       <span class="co"># q31, q32</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>phy <span class="ot">&lt;-</span> <span class="fu">tree.musse</span>(pars, <span class="dv">30</span>, <span class="at">x0=</span><span class="dv">1</span>, <span class="at">include.extinct=</span><span class="cn">TRUE</span>)</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">history.from.sim.discrete</span>(phy, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(h, phy, <span class="at">cex=</span>.<span class="dv">7</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="do">## A 3-state example where movement is only allowed between neighbouring</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="do">## states (1 &lt;-&gt; 2 &lt;-&gt; 3), and where speciation and extinction rates</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="do">## increase moving from 1 -&gt; 2 -&gt; 3:</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">c</span>(.<span class="dv">1</span>,  .<span class="dv">15</span>,  .<span class="dv">2</span>,  <span class="co"># lambda 1, 2, 3</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>          .<span class="dv">03</span>, .<span class="dv">045</span>, .<span class="dv">06</span>, <span class="co"># mu 1, 2, 3</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>          .<span class="dv">05</span>, <span class="dv">0</span>,         <span class="co"># q12, q13</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>          .<span class="dv">05</span>, .<span class="dv">05</span>,       <span class="co"># q21, q23</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>          <span class="dv">0</span>,   .<span class="dv">05</span>)       <span class="co"># q31, q32</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>phy <span class="ot">&lt;-</span> <span class="fu">tree.musse</span>(pars, <span class="dv">30</span>, <span class="at">x0=</span><span class="dv">1</span>, <span class="at">include.extinct=</span><span class="cn">TRUE</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">history.from.sim.discrete</span>(phy, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(h, phy, <span class="at">cex=</span>.<span class="dv">7</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -347,27 +342,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="example-benchmarking-from-simulations">Example: Benchmarking from simulations</h2>
 <p>Simulate a BiSSE tree:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">lambda0=</span><span class="dv">1</span>,</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">lambda1=</span><span class="dv">5</span>,</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">mu0=</span><span class="fl">0.8</span>,</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">mu1=</span><span class="fl">0.8</span>,</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">q01=</span><span class="fl">0.1</span>,</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">q10=</span><span class="fl">0.12</span>)</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">117</span>)</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">tree.bisse</span>(pars, <span class="at">max.taxa=</span><span class="dv">50</span>, <span class="at">x0=</span><span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">lambda0=</span><span class="dv">1</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">lambda1=</span><span class="dv">5</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">mu0=</span><span class="fl">0.8</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">mu1=</span><span class="fl">0.8</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">q01=</span><span class="fl">0.1</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">q10=</span><span class="fl">0.12</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">117</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">tree.bisse</span>(pars, <span class="at">max.taxa=</span><span class="dv">50</span>, <span class="at">x0=</span><span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The make.bisse function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>loglik <span class="ot">&lt;-</span> <span class="fu">make.bisse</span>(tree, tree<span class="sc">$</span>tip.state)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>loglik <span class="ot">&lt;-</span> <span class="fu">make.bisse</span>(tree, tree<span class="sc">$</span>tip.state)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>What are the MLEs?</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mles <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglik, pars)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># these are the parmeter values that this infers: </span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mlepars <span class="ot">&lt;-</span> mles<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>mles <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglik, pars)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># these are the parmeter values that this infers:</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mlepars <span class="ot">&lt;-</span> mles<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     lambda0      lambda1          mu0          mu1          q01          q10 
 5.170918e-01 3.708414e+00 3.894023e-09 8.022539e-01 3.424501e-01 5.801057e-02 </code></pre>
@@ -375,46 +370,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Let’s visualize the likelihood surface one parameter at a time (holding the other parameter at the MLE; not exactly profile likelihoods, but pretty close):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>loglik_lambda0 <span class="ot">&lt;-</span> <span class="cf">function</span>(lambda0) <span class="fu">loglik</span>(<span class="fu">c</span>(lambda0,mlepars[<span class="sc">-</span><span class="dv">1</span>]))</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>loglik_lambda1 <span class="ot">&lt;-</span> <span class="cf">function</span>(lambda1) <span class="fu">loglik</span>(<span class="fu">c</span>(mlepars[<span class="dv">1</span>],lambda1,mlepars[<span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>]))</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>loglik_mu0 <span class="ot">&lt;-</span> <span class="cf">function</span>(mu0) <span class="fu">loglik</span>(<span class="fu">c</span>(mlepars[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>],mu0,mlepars[<span class="dv">4</span><span class="sc">:</span><span class="dv">6</span>]))</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>loglik_mu1 <span class="ot">&lt;-</span> <span class="cf">function</span>(mu1) <span class="fu">loglik</span>(<span class="fu">c</span>(mlepars[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>],mu1,mlepars[<span class="dv">5</span><span class="sc">:</span><span class="dv">6</span>]))</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>loglik_q01 <span class="ot">&lt;-</span> <span class="cf">function</span>(q01) <span class="fu">loglik</span>(<span class="fu">c</span>(mlepars[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>],q01,mlepars[<span class="dv">6</span>]))</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>loglik_q10 <span class="ot">&lt;-</span> <span class="cf">function</span>(q10) <span class="fu">loglik</span>(<span class="fu">c</span>(mlepars[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>],q10))</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>lambdavals <span class="ot">&lt;-</span> <span class="fu">exp</span>( <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">5</span>,<span class="dv">2</span>,<span class="at">length=</span><span class="dv">50</span>))</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>muvals <span class="ot">&lt;-</span> <span class="fu">exp</span>( <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">9</span>,<span class="dv">2</span>,<span class="at">length=</span><span class="dv">50</span>))</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>qvals <span class="ot">&lt;-</span> <span class="fu">exp</span>( <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">9</span>,<span class="dv">2</span>, <span class="at">length=</span><span class="dv">50</span>) )</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>loglik_lambda0_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(lambdavals, loglik_lambda0)</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>loglik_lambda1_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(lambdavals, loglik_lambda1)</span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>loglik_mu0_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(muvals, loglik_mu0)</span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>loglik_mu1_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(muvals, loglik_mu1)</span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>loglik_q01_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(qvals, loglik_q01)</span>
-<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>loglik_q10_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(qvals, loglik_q10)</span>
-<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">2</span>))</span>
-<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lambdavals,loglik_lambda0_vals)</span>
-<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>pars[<span class="st">'lambda0'</span>],<span class="at">col=</span><span class="st">'red'</span>)</span>
-<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lambdavals,loglik_lambda1_vals)</span>
-<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>pars[<span class="st">'lambda1'</span>],<span class="at">col=</span><span class="st">'red'</span>)</span>
-<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(muvals,loglik_mu0_vals)</span>
-<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>pars[<span class="st">'mu0'</span>],<span class="at">col=</span><span class="st">'red'</span>)</span>
-<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(muvals,loglik_mu1_vals)</span>
-<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>pars[<span class="st">'mu1'</span>],<span class="at">col=</span><span class="st">'red'</span>)</span>
-<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(qvals,loglik_q01_vals)</span>
-<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>pars[<span class="st">'q01'</span>],<span class="at">col=</span><span class="st">'red'</span>)</span>
-<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(qvals,loglik_q10_vals)</span>
-<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>pars[<span class="st">'q10'</span>],<span class="at">col=</span><span class="st">'red'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>loglik_lambda0 <span class="ot">&lt;-</span> <span class="cf">function</span>(lambda0) <span class="fu">loglik</span>(<span class="fu">c</span>(lambda0,mlepars[<span class="sc">-</span><span class="dv">1</span>]))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>loglik_lambda1 <span class="ot">&lt;-</span> <span class="cf">function</span>(lambda1) <span class="fu">loglik</span>(<span class="fu">c</span>(mlepars[<span class="dv">1</span>],lambda1,mlepars[<span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>]))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>loglik_mu0 <span class="ot">&lt;-</span> <span class="cf">function</span>(mu0) <span class="fu">loglik</span>(<span class="fu">c</span>(mlepars[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>],mu0,mlepars[<span class="dv">4</span><span class="sc">:</span><span class="dv">6</span>]))</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>loglik_mu1 <span class="ot">&lt;-</span> <span class="cf">function</span>(mu1) <span class="fu">loglik</span>(<span class="fu">c</span>(mlepars[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>],mu1,mlepars[<span class="dv">5</span><span class="sc">:</span><span class="dv">6</span>]))</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>loglik_q01 <span class="ot">&lt;-</span> <span class="cf">function</span>(q01) <span class="fu">loglik</span>(<span class="fu">c</span>(mlepars[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>],q01,mlepars[<span class="dv">6</span>]))</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>loglik_q10 <span class="ot">&lt;-</span> <span class="cf">function</span>(q10) <span class="fu">loglik</span>(<span class="fu">c</span>(mlepars[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>],q10))</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>lambdavals <span class="ot">&lt;-</span> <span class="fu">exp</span>( <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">5</span>,<span class="dv">2</span>,<span class="at">length=</span><span class="dv">50</span>))</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>muvals <span class="ot">&lt;-</span> <span class="fu">exp</span>( <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">9</span>,<span class="dv">2</span>,<span class="at">length=</span><span class="dv">50</span>))</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>qvals <span class="ot">&lt;-</span> <span class="fu">exp</span>( <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">9</span>,<span class="dv">2</span>, <span class="at">length=</span><span class="dv">50</span>) )</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>loglik_lambda0_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(lambdavals, loglik_lambda0)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>loglik_lambda1_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(lambdavals, loglik_lambda1)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>loglik_mu0_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(muvals, loglik_mu0)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>loglik_mu1_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(muvals, loglik_mu1)</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>loglik_q01_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(qvals, loglik_q01)</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>loglik_q10_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(qvals, loglik_q10)</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">2</span>))</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lambdavals,loglik_lambda0_vals)</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>pars[<span class="st">'lambda0'</span>],<span class="at">col=</span><span class="st">'red'</span>)</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lambdavals,loglik_lambda1_vals)</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>pars[<span class="st">'lambda1'</span>],<span class="at">col=</span><span class="st">'red'</span>)</span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(muvals,loglik_mu0_vals)</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>pars[<span class="st">'mu0'</span>],<span class="at">col=</span><span class="st">'red'</span>)</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(muvals,loglik_mu1_vals)</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>pars[<span class="st">'mu1'</span>],<span class="at">col=</span><span class="st">'red'</span>)</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(qvals,loglik_q01_vals)</span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>pars[<span class="st">'q01'</span>],<span class="at">col=</span><span class="st">'red'</span>)</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(qvals,loglik_q10_vals)</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>pars[<span class="st">'q10'</span>],<span class="at">col=</span><span class="st">'red'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -428,7 +423,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Of course, these approximations of profile likelihoods don’t show how correlated some of these parameters are with each other. We might as well use MCMC to do this:</p>
 <p>This will take quite a lot longer than our birth-death model with just 2 parameters:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>mcmc_fit <span class="ot">&lt;-</span> <span class="fu">mcmc</span>(loglik, pars, <span class="at">nsteps =</span> <span class="dv">1000</span>, <span class="at">w=</span><span class="dv">1</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>mcmc_fit <span class="ot">&lt;-</span> <span class="fu">mcmc</span>(loglik, pars, <span class="at">nsteps =</span> <span class="dv">1000</span>, <span class="at">w=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Looking at the different plots of the MCMC output, are you able to say which parameters that are more difficult to estimate than others?</p>
 </section>
@@ -447,8 +442,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="section-7">3.</h2>
 <p>You may notice that the “data” (putting it in quotes b/c we simulated it) contain more information about one of the migration rates than the other. Which migration rate is it, and why do you think it might be easier to estimate it with greater precision than the other one? It might be helpful to plot the tree.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">history.from.sim.discrete</span>(tree, <span class="at">states=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)),</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                tree, <span class="at">col=</span><span class="fu">c</span>(<span class="st">'0'</span><span class="ot">=</span><span class="st">'black'</span>,<span class="st">'1'</span><span class="ot">=</span><span class="st">'red'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">history.from.sim.discrete</span>(tree, <span class="at">states=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)),</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                tree, <span class="at">col=</span><span class="fu">c</span>(<span class="st">'0'</span><span class="ot">=</span><span class="st">'black'</span>,<span class="st">'1'</span><span class="ot">=</span><span class="st">'red'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -490,61 +485,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Let’s use an ensemble MCMC sampler from the package <code>mcmcensemble</code>. This implements an ensemble MCMC method that is well-suited to problems where paramters exhibit high correlation. If you’re interested, check out this paper:</p>
 <p><strong>Goodman J, Weare J. Ensemble samplers with affine invariance. Communications in applied mathematics and computational science. 2010 Jan 31;5(1):65-80.</strong></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mcmcensemble)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mcmcensemble)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The make.bisse function will throw errors if we try to plug in negative parameters:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">loglik</span>(<span class="sc">-</span>pars)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">loglik</span>(<span class="sc">-</span>pars)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>For an MCMC routine that isn’t included in diversitree, we need to ensure that we can do an unrestricted search in parameter space.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>loglik_transformed <span class="ot">&lt;-</span> <span class="cf">function</span>(pars){</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> <span class="fu">exp</span>(pars)</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    loglik <span class="ot">&lt;-</span> <span class="fu">loglik</span>(pars)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(loglik)</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="fu">loglik_transformed</span>(<span class="fu">log</span>(pars))</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co"># This looks ok.</span></span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="fu">loglik_transformed</span>(<span class="sc">-</span><span class="fu">log</span>(pars))</span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculates a value without error. Good to go.</span></span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>nwalkers <span class="ot">&lt;-</span> <span class="dv">100</span> <span class="co">#ensemble size</span></span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>nsteps <span class="ot">&lt;-</span> <span class="dv">50</span> <span class="co">#number of times to update entire nsemble</span></span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize the ensemble:</span></span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>mcmc_inits <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow=</span>nwalkers, <span class="at">ncol=</span><span class="dv">6</span>)</span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nwalkers) mcmc_inits[i,] <span class="ot">&lt;-</span> <span class="fu">jitter</span>(<span class="fu">log</span>(mlepars))</span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a><span class="co"># run the ensemble MCMC:</span></span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>mcmc_fit <span class="ot">&lt;-</span> <span class="fu">MCMCEnsemble</span>(loglik_transformed, </span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">inits=</span>mcmc_inits, </span>
-<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">max.iter=</span>nwalkers<span class="sc">*</span>nsteps, </span>
-<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">n.walkers =</span> nwalkers)</span>
-<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, let's try to visualize the profile log-likelihoods (including</span></span>
-<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a><span class="co">#   the curves we generated earlier):</span></span>
-<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">2</span>))</span>
-<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">1</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(lambda[<span class="dv">0</span>]))</span>
-<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(lambdavals), loglik_lambda0_vals, col='red') </span></span>
-<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">2</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(lambda[<span class="dv">1</span>]))</span>
-<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(lambdavals), loglik_lambda1_vals, col='red') </span></span>
-<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">3</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(mu[<span class="dv">0</span>]))</span>
-<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(muvals), loglik_mu0_vals, col='red') </span></span>
-<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">4</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(mu[<span class="dv">1</span>]))</span>
-<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(muvals), loglik_mu1_vals, col='red') </span></span>
-<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">5</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(q[<span class="dv">0</span><span class="sc">~</span><span class="dv">1</span>]))</span>
-<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(qvals), loglik_q01_vals, col='red') </span></span>
-<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">6</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(q[<span class="dv">1</span><span class="sc">~</span><span class="dv">0</span>]))</span>
-<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(qvals), loglik_q10_vals, col='red') </span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>loglik_transformed <span class="ot">&lt;-</span> <span class="cf">function</span>(pars){</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> <span class="fu">exp</span>(pars)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    loglik <span class="ot">&lt;-</span> <span class="fu">loglik</span>(pars)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(loglik)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="fu">loglik_transformed</span>(<span class="fu">log</span>(pars))</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co"># This looks ok.</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="fu">loglik_transformed</span>(<span class="sc">-</span><span class="fu">log</span>(pars))</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculates a value without error. Good to go.</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>nwalkers <span class="ot">&lt;-</span> <span class="dv">100</span> <span class="co">#ensemble size</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>nsteps <span class="ot">&lt;-</span> <span class="dv">50</span> <span class="co">#number of times to update entire nsemble</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize the ensemble:</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>mcmc_inits <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow=</span>nwalkers, <span class="at">ncol=</span><span class="dv">6</span>)</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nwalkers) mcmc_inits[i,] <span class="ot">&lt;-</span> <span class="fu">jitter</span>(<span class="fu">log</span>(mlepars))</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="co"># run the ensemble MCMC:</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>mcmc_fit <span class="ot">&lt;-</span> <span class="fu">MCMCEnsemble</span>(loglik_transformed,</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">inits=</span>mcmc_inits,</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">max.iter=</span>nwalkers<span class="sc">*</span>nsteps,</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">n.walkers =</span> nwalkers)</span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, let's try to visualize the profile log-likelihoods (including</span></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a><span class="co">#   the curves we generated earlier):</span></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">2</span>))</span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">1</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(lambda[<span class="dv">0</span>]))</span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(lambdavals), loglik_lambda0_vals, col='red')</span></span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">2</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(lambda[<span class="dv">1</span>]))</span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(lambdavals), loglik_lambda1_vals, col='red')</span></span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">3</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(mu[<span class="dv">0</span>]))</span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(muvals), loglik_mu0_vals, col='red')</span></span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">4</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(mu[<span class="dv">1</span>]))</span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(muvals), loglik_mu1_vals, col='red')</span></span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">5</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(q[<span class="dv">0</span><span class="sc">~</span><span class="dv">1</span>]))</span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(qvals), loglik_q01_vals, col='red')</span></span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">6</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(q[<span class="dv">1</span><span class="sc">~</span><span class="dv">0</span>]))</span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(qvals), loglik_q10_vals, col='red')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>In the vicinity of the MLE, the MCMC results should closely match the profile likelihood curves (but far away from the MLE there is no reason why they should be similar). (Why?)</p>
 <p>Looking at the different plots, are you able to say which parameters that are more difficult to estimate than others?</p>

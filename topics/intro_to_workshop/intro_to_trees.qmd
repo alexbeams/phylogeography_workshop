@@ -1,28 +1,37 @@
 # Intro to trees in R
 
-This is basically following the vignette Ancestral.html for phangorn
-The original vignette is written by Klaus Schliep (klaus.schliep@gmail.com)
+This page is basically following the vignette Ancestral.html for the phangorn package in R.
+
+The original vignette is written by Klaus Schliep (klaus.schliep@gmail.com).
 
 I'm annotating it a bit more for our purposes.
+
+First, let's install some of the packages we will need:
 
 ```{r, warning=FALSE, message=FALSE}
 library(phangorn)
 library(phytools)
 library(ape)
+```
 
+
+Next, let's load in some data. We will read in an example dataset from the phangorn package in R,
+which contains genetic sequence information about a number of different species.
+
+```{r}
 #Let's load in some primate data:
 fdir <- system.file("extdata/trees", package = "phangorn")
 primates <- read.phyDat(file.path(fdir, "primates.dna"),
                         format = "interleaved")
 ```
 
-Let's examine this.
+Let's examine this data file - what does it contain?
 
 ```{r}
 names(primates)
 ```
 
-This shows us there are 14 sequences. Let's look at Mouse:
+This shows us there are 14 sequences corresponding to 14 different species. Let's look at Mouse:
 
 ```{r}
 primates$Mouse
@@ -41,7 +50,11 @@ So the Mouse sequence is really
 c('a','c','t','g')[primates$Mouse]
 ```
 
-Let's turn this into an R data frame to visualize the sequence alignment:
+The letters "a", "c", "t", and "g" correspond to the different nucleotides in deoxyribonucleic acid (DNA). If you've never
+heard of DNA, say hello to the bugs (the ones living there under the rock with you).
+
+Let's turn this species data into an R data frame to visualize the sequence alignment. Columns correspond to species, and rows
+correspond to a position in the DNA sequence:
 
 ```{r}
 primdat <- as.data.frame(primates)
@@ -53,8 +66,12 @@ Let's look at the the beginning of the multiple sequence alignment:
 head(primdat)
 ```
 
-The sequences appear to be mostly similar. Let's look at each pair in the data
-and find the number of differences in the sequences.
+The sequences appear to be mostly similar. If we had included bugs or plants in the data, there might
+be more obvious differences. The fact that the sequences are rather similar among these species indicates
+that they share ancestry somewhat recently (at least in the grand scheme of life on Earth as we know it). 
+
+Let's look at each pair of species in the data
+and find the number of differences in their sequences.
 
 For example, if we wanted to see how many sites differ between Mouse and Human, we could
 do this:
@@ -63,19 +80,20 @@ do this:
 sum(primdat$Mouse != primdat$Human)
 ```
 
-128 sites differ; there are
+128 sites differ between these species; there are
 
 ```{r}
 dim(primdat)[1]
 ```
 
-total sites.
+total sites in each sequence.
 
-I will load these into a matrix, where the i,j entry
-tells me how many sites differ between species i and species j.
-#This matrix will obviously be symmetric, and the diagonal will be zero.
+We will load these into a matrix, where the i,j entry
+tells us how many sites differ between species i and species j.
 
-So, I can just fill in the upper diagonal:
+This matrix will obviously be symmetric, and the diagonal will be zero. S
+So, we can can just fill in the upper diagonal of the matrix to get the information we need, 
+and then use symmetry to fill in the lower half:
 
 ```{r}
 seq_diff_matrix <- matrix(nrow=14,ncol=14)
@@ -84,58 +102,48 @@ rownames(seq_diff_matrix) <- names(primates)
 
 diag(seq_diff_matrix) <- 0
 
-#I will swallow my pride and write a nested for loop:
+#I will swallow my pride and write a nested for loop (real R pros use the apply family of functions):
 for(i in 1:14){
 	for(j in i:14){
 		seq_diff_matrix[i,j] <- sum( primdat[,i] != primdat[,j] )
 	}
 }
 
-seq_diff_matrix
+seq_diff_matrix[lower.tri(seq_diff_matrix)] <- t(seq_diff_matrix)[lower.tri(t(seq_diff_matrix))]
+
+#check to make sure I did this right -- is the matrix equal to its transpose? (i.e. is it symmetric?)
+seq_diff_matrix == t(seq_diff_matrix)
+
+#Yes it is -- now plot!
+heatmap(seq_diff_matrix, symm=T)
+
 ```
 
 So already, it is abundantly clear that Humans, Chimps, and Gorillas
-are are pretty similar.
+are are pretty similar in terms of their DNA sequences. There is also a group
+in the middle (BarbMacq, Crab-E.Mac, Jpn Macaq, and Rhesus Mac) that look pretty similar to each other.
 
-Then if we invoke
+The heatmap function even makes a nice little dendogram tree on the margins!
 
-```{r}
-heatmap(seq_diff_matrix)
-```
+We have made a tree, but there are some potential drawbacks with this. The tree should reflect the evolutionary history of these organisms.
 
-This looks a little funny. I'm going to fill in the rest of the matrix
-to see if this plots a little better
+That means the internal nodes of the tree should have their own sequences because they correspond to ancestral organisms 
+with their own DNA sequences. In constructing
+a phylogenetic tree, we should be taking account of the fact that closely related things have shared ancestry, and the ancestor will look
+similar to its recent descendants. 
 
-```{r}
-seq_diff_matrix[lower.tri(seq_diff_matrix)] <- t(seq_diff_matrix)[lower.tri(t(seq_diff_matrix))]
-
-#check to make sure I did this right
-seq_diff_matrix == t(seq_diff_matrix)
-
-#Yes -- now plot again
-heatmap(seq_diff_matrix, symm=T)
-```
-
-Now it's a little more apparent that some groups are more closely related
-to each other than others.
-
-It even makes a nice little dendogram tree!
-
-We have made a tree, but there are some potential drawbacks with this. Many evolutionary biologists
-originally held the view that if the tree reflects evolutionary history of these organisms, that
-the ancestors implied by the internal nodes of the tree should have their own sequences. In constructing
-a phylogeny, we should really be taking account of the fact that the location of nucleotide differences
-is important, not just the raw number of differences. Nothing we have done so far made use of the idea that
-ancestors should have similar sequences to their descendants.
-
-
+In this tree we have produced so far, we have only looked at raw differences between pairs of sequences. We have
+not explicitly made use of the idea of "common descent" from ancestors. The idea of similarity due to common descent means that 
+the location of nucleotide differences in the sequences will matter. Internal nodes of our phylogenetic tree should correspond to ancestors
+of present-day organisms. These ancestors will have nucleotide sequences of their own, and these should be similar to the sequences in the
+descendants. We have not accounted for this.
 
 This is why the method of Parsimony was originally developed. Instead of looking at pairwise differences
 between sequences, we try to determine what the evolutionary history would have been, under the
 assumption that evolution is "parsimonious" -- the number of nucleotide changes from the root of the tree
-to the leaves should be minimized.
+to the leaves should be minimized. 
 
-Let's calculate a tree using this criterion:
+Let's calculate a tree using Parsimony:
 
 
 ```{r}
@@ -146,16 +154,19 @@ anc.pars <- anc_pars(tree, primates)
 
 #Let's look at the evolution of site 17 in the sequences:
 plotAnc(anc.pars, 17)
-title("MPR")
+title("Maximum Parsimony Reconstruction")
 ```
 
+The Parsimony reconstruction method provides us with a way to estimate what ancestral sequences might
+have looked like. Already, we can see that species that are closely related tend to have the same sequence,
+and so do their ancestors (at least in the recent past).
 
 We can calculate pairwise distances between the species once again, but this time using
 the branch lengths in the tree.
 The distance between two species corresponds to the sum of the branch lengths along the
-unique path connecting te two species through their most recent common ancestor.
+unique path connecting the two species through their most recent common ancestor.
 Because we are dealing with trees (a special type of graph), there is always a unique path
-connecting two leaves.
+connecting two leaves (so that the notion of "distance" is well defined).
 
 ```{r}
 parsmny_dist_mat <- cophenetic(tree)
@@ -185,28 +196,33 @@ plot(m1,m2,xlab='Nucleotide differences',ylab='Patristic distances (parsimony)')
 
 Clearly these things are correlated - but they are not identical.
 
-There are some drawbacks for parsimony as well. The first major drawback is that the criterion
-to minimize the number of nucleotide changes tends to produce trees with branch lengths that ...
+Parsimony reconstructions of trees are more biologically grounded than dendograms build from pairwise 
+differences, but we can do even better. 
+
+The criterion
+to minimize the number of nucleotide changes in parsimony ignores back-substitutions that can undo nucleotide changes.
+Even though such events may be rare in the grand scheme of things, over long timescales they can occur. 
+Ignoring this can lead to spurious conclusions. 
 
 This is the motivation for the final tree construction method we will consider here -- the so-called
-Likelihood methods. The likelihood methods all use Markov chains to describe rates of change in
-nucleotides over time. These models depend on parameters, and can be subsumed into Likelihood-based
-methods.
+Likelihood methods that explicitly model nucleotide substitution as a stochastic process (specifically,
+as a continuous-time Markov chain). These models depend on parameters that must be estimated from data. As 
+we will see later, Markov chains that describe changes in nucleotides over time may be adapted to model
+changes in other traits over time (such as location).
 
 Because our focus for this workshop is discrete phylogeography, we will not consider methods making use
 of continuous data at the tips of trees. It is possible to formulate diffusion models and stochastic
-processes such as the Ornstein-Uhlenbeck process to model evoultion of continuous traits from root to leaves.
-These are usually not employed to estimate phylogenetic trees from the outset, but rather to carry out
-ancestral character estimation for a continuous trait once a phylogeny has been obtained.
+processes such as Brownian Motion or the Ornstein-Uhlenbeck process to model evolution of continuous traits from root to leaves. 
+We will not do so here.
 
-Discrete-state Markov models, as well as the Brownian motion models for trait evolution all fall under
-the category of Likelihood methods for ancestral character estimation, because it is possible to fit
-these models to data using techniques from statistics that employ likelihood functions.
+Discrete-state Markov models (as well as the Brownian motion models for trait evolution) fall under
+the category of Likelihood methods for ancestral character estimation. This is because it is possible to fit
+these models to data using standard techniques from statistics that employ likelihood functions.
 
-We will estiamte parameters of a discrete-state Markov chain
+The code snippet below will estimate parameters of a discrete-state Markov chain
 defined on the state space (A,C,G,T) and changing in continuous time.
-We will not estimate the tree topology, but this will adjust the branch
-lengths in thre tree:
+We will not estimate the tree topology. Estimatng parameters of the Markov chain
+will help us determine the branch lengths in the tree that are most consistent with the data (i.e. the sequences).
 
 ```{r}
 fit <- pml(tree, primates)
@@ -218,19 +234,24 @@ anc.ml <- anc_pml(fit)
 
 #Let's look at site 17 in the sequences:
 plotAnc(anc.ml, 17)
-title("ML")
+title("Maximum Likelihood Estimate")
 ```
 
 
 Let's compare the parsimony and ML trees:
 
 ```{r}
-plot(tree)
+par(mfrow=c(1,2))
+
+plot(tree, main='Parsimony tree')
+
+plot(anc.ml$tree, main='Maximum likelihood tree')
 ```
 
-```{r}
-plot(anc.ml$tree)
-```
+The tree topologies (=genealogical relationship) are the same, but the branch lengths are a bit different. Notice, 
+in particular, that the ancestors in the Mouse-Bovine-Tarsier-Lemur clade of the maximum likelihood phylogeny are concentrated
+together more closely in time than in the parsimony tree.
+
 
 Let's calculate pairwise distances in this tree:
 ```{r}
@@ -239,21 +260,30 @@ mldists <- cophenetic(anc.ml$tree)
 c1 <- mldists[upper.tri(mldists)]
 c2 <- parsmny_dist_mat[upper.tri(parsmny_dist_mat)]
 
-plot(c1,c2,xlab='Markov model distances', ylab='Parsimony tree distances')
+plot(c1,c2,xlab='Maximum likelihood distances', ylab='Parsimony tree distances')
 ```
 
 So the distances between species in the parsimony and Maximum Likelihood tree using the
-Markov model for nucleotide changes are pretty tightly correlated, but not identical.
+Markov model for nucleotide changes are pretty tightly correlated, but not identical. Hypothesis: the 
+pairwise differences below the diagonal-ish spread of points in the right-hand side of the plot correspond to locations in sequences
+that experienced a back-mutation (so they are actually separated from each other by a longer period of time than their
+sequences would otherwise suggest).
 
 # Exercises.
 
-## 1.
+## 1. Statistical phylogenetics, in a nutshell
 
+The code example above treats the tree topology (i.e. the geneaology of the organisms) as fixed, and estimates parameters of the Markov chain (which
+modifies the branch lengths). In the reconstruction of a Maximum likelihood phylogeny, we would need to evaluate the likelihoods of different
+tree topologies as well as branch lengths in order to produce an estimate of the phylogenetic tree. Surprisingly, tree topology can be treated like
+a paramter -- all we would need to do is optimize our likelihood function over the space of phylogenetic trees. 
+ 
 Use the nni function on the original parsimony tree to obtain all of the trees that are one
 nearest-neighbor interchange away from the parsimony tree. Fit Markov models to each tree and
-calculate the likelihood for each tree under the optimized parameters of the Markov model.
+calculate the likelihood for each tree under the optimized parameters of the Markov model. Then, compare the likelihoods
+of the different tree topologies.
 Based off of this, do you think it might be possible to estimate the most likely tree, given
-the Markov model structure and the primate data?
+the Markov model structure and the sequence data?
 
 ## 2.
 

@@ -2,35 +2,35 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>example.com/topics/intro_to_workshop/intro_to_trees.html</loc>
-    <lastmod>2025-09-29T13:37:06.455Z</lastmod>
+    <lastmod>2026-03-25T20:08:48.152Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/sse_models/asr_bisse.html</loc>
-    <lastmod>2025-09-23T22:15:11.340Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.672Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/sse_models/fit_bd.html</loc>
-    <lastmod>2025-09-30T19:03:35.164Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.672Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/intro_to_phylodynamics/mers.html</loc>
-    <lastmod>2025-10-02T08:35:15.571Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.657Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/mcmc_intro.html</loc>
-    <lastmod>2025-09-29T13:55:31.619Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.668Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/ancestral_character_estimation/nucleotide_models.html</loc>
-    <lastmod>2025-09-24T22:37:20.612Z</lastmod>
+    <lastmod>2026-03-25T20:35:49.739Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/character_mapping/waiting_times_simulation.html</loc>
-    <lastmod>2025-09-29T13:42:11.124Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.657Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/character_mapping/stochastic_mapping.html</loc>
-    <lastmod>2025-09-29T23:51:51.623Z</lastmod>
+    <lastmod>2026-03-26T23:43:16.810Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/bayesian_discrete_trait_analysis/H5N1_tutorial.html</loc>
@@ -38,31 +38,31 @@
   </url>
   <url>
     <loc>example.com/schedule.html</loc>
-    <lastmod>2025-10-02T06:17:13.741Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.648Z</lastmod>
   </url>
   <url>
     <loc>example.com/thursday.html</loc>
-    <lastmod>2025-10-02T08:36:07.488Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.648Z</lastmod>
   </url>
   <url>
     <loc>example.com/monday.html</loc>
-    <lastmod>2025-09-30T15:49:19.504Z</lastmod>
+    <lastmod>2026-03-26T23:18:00.581Z</lastmod>
   </url>
   <url>
     <loc>example.com/index.html</loc>
-    <lastmod>2025-10-02T05:59:55.716Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.647Z</lastmod>
   </url>
   <url>
     <loc>example.com/friday.html</loc>
-    <lastmod>2025-09-23T22:15:11.325Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.646Z</lastmod>
   </url>
   <url>
     <loc>example.com/wednesday.html</loc>
-    <lastmod>2025-10-01T04:03:20.986Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.675Z</lastmod>
   </url>
   <url>
     <loc>example.com/thursday_preview.html</loc>
-    <lastmod>2025-09-23T22:15:11.337Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.648Z</lastmod>
   </url>
   <url>
     <loc>example.com/about.html</loc>
@@ -70,11 +70,11 @@
   </url>
   <url>
     <loc>example.com/friday_preview.html</loc>
-    <lastmod>2025-09-23T22:15:11.325Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.647Z</lastmod>
   </url>
   <url>
     <loc>example.com/wednesday_preview.html</loc>
-    <lastmod>2025-09-23T22:15:11.340Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.675Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/bayesian_discrete_trait_analysis/remote_runs.html</loc>
@@ -82,11 +82,11 @@
   </url>
   <url>
     <loc>example.com/topics/requirements.html</loc>
-    <lastmod>2025-09-23T22:15:11.339Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.669Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/character_mapping/fit_stochastic_mapping.html</loc>
-    <lastmod>2025-09-23T22:15:11.338Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.656Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/ancestral_character_estimation/ace_sims_edit.html</loc>
@@ -94,22 +94,30 @@
   </url>
   <url>
     <loc>example.com/topics/ancestral_character_estimation/ace_sims.html</loc>
-    <lastmod>2025-09-23T22:15:11.338Z</lastmod>
+    <lastmod>2026-03-26T23:18:53.965Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/intro_to_phylodynamics/mtbd.html</loc>
-    <lastmod>2025-10-02T06:48:52.476Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.657Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/intro_to_phylodynamics/multi_type_birth_death.html</loc>
-    <lastmod>2025-09-23T22:15:11.338Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.660Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/sse_models/sim_sse.html</loc>
-    <lastmod>2025-09-30T19:51:44.674Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.674Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/sse_models/fit_bisse.html</loc>
-    <lastmod>2025-09-30T19:27:30.169Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.673Z</lastmod>
+  </url>
+  <url>
+    <loc>example.com/beast2/intro/beast_intro.html</loc>
+    <lastmod>2025-09-23T16:13:41.945Z</lastmod>
+  </url>
+  <url>
+    <loc>example.com/index_old.html</loc>
+    <lastmod>2025-09-23T20:54:53.752Z</lastmod>
   </url>
 </urlset>

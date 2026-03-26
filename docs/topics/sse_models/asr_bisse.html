@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>asr_bisse – Template Workshop</title>
+<title>asr_bisse – PhylogeogRaphy Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -117,8 +117,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo light-content">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo dark-content">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -200,7 +198,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">history.from.sim.discrete</span>(tree, <span class="at">states=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)),</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    tree, <span class="at">col=</span><span class="fu">c</span>(<span class="st">'0'</span><span class="ot">=</span><span class="st">'black'</span>,<span class="st">'1'</span><span class="ot">=</span><span class="st">'red'</span>)) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    tree, <span class="at">col=</span><span class="fu">c</span>(<span class="st">'0'</span><span class="ot">=</span><span class="st">'black'</span>,<span class="st">'1'</span><span class="ot">=</span><span class="st">'red'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The make.bisse function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu))</p>
 <div class="cell">
@@ -212,7 +210,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>mlesc <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglikc, pars[<span class="sc">-</span><span class="dv">2</span>])</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># these are the parmeter values that this infers: </span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># these are the parmeter values that this infers:</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>mlepars <span class="ot">&lt;-</span> mles<span class="sc">$</span>par</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># We use the "marginal" reconstruction, which should be similar</span></span>
@@ -221,7 +219,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree, <span class="at">show.tip.label=</span>F)</span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="fu">nodelabels</span>(<span class="at">pie=</span><span class="fu">t</span>(asr_marginal), <span class="at">piecol=</span><span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"red"</span>), <span class="at">cex=</span><span class="fl">0.7</span>)</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>tip_matrix <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span><span class="sc">-</span>tree<span class="sc">$</span>tip.state, tree<span class="sc">$</span>tip.state)  <span class="co"># Convert to probabilities </span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>tip_matrix <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span><span class="sc">-</span>tree<span class="sc">$</span>tip.state, tree<span class="sc">$</span>tip.state)  <span class="co"># Convert to probabilities</span></span>
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="fu">tiplabels</span>(<span class="at">pie=</span>tip_matrix, <span class="at">piecol=</span><span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"red"</span>), <span class="at">cex=</span><span class="fl">0.7</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>

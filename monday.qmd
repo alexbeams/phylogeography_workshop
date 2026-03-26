@@ -75,7 +75,7 @@ Slides
 
 :::{.card .mb-3}
 :::{.card-body}
-[1330--1430: Simulating and fitting Markov models with ace](topics/ancestral_character_estimation/ace_sims.qmd){.card-title .stretched-link}
+[1330--1430: Fitting Markov models with ace in R](topics/ancestral_character_estimation/ace_sims.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Practical session in R

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>ace_sims – Template Workshop</title>
+<title>ace_sims – PhylogeogRaphy Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -105,6 +105,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../../css/styles.css">
 </head>
@@ -117,8 +146,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo light-content">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo dark-content">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -176,40 +203,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="fitting-and-simulating-markov-models-on-trees-using-ancestral-character-estimation-ace" class="level1">
-<h1>Fitting and simulating Markov models on trees using ancestral character estimation (ace)</h1>
+<section id="fitting-markov-models-on-trees-using-the-ancestral-character-estimation-ace-function-in-r" class="level1">
+<h1>Fitting Markov models on trees using the ancestral character estimation (ace) function in R</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># rm(list=ls())</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(expm) <span class="co"># matrix exponential</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: Matrix</code></pre>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(expm) <span class="co"># matrix exponential</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggtree)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cowplot)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scatterpie)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'expm'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:Matrix':
-
-    expm</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:ape':
-
-    balance</code></pre>
-</div>
-</div>
-<p>This code simulates output from the ace function. We will first try to grasp how the model behaves before we we try fitting it to data.</p>
-<p>Ancestral character estimation methods can be based on a variety of approaches, but we will consider Markov chains superimposed on phylogenies. In the accompanying code to this we will learn how to fit these models using Maximum Likelihood, but for now we focus on simulating Markov chains on trees to understand how the models work.</p>
-<p>First, let’s simulate a tree and some tip states:</p>
+<p>Ancestral character estimation methods can be based on a variety of approaches, but we will consider Markov chains superimposed on phylogenies. In the accompanying code to this we will learn how to fit these models using Maximum Likelihood.</p>
+<section id="evolution-in-the-spike-protein-of-seasonal-coronavirus-nl63" class="level2">
+<h2 class="anchored" data-anchor-id="evolution-in-the-spike-protein-of-seasonal-coronavirus-nl63">Evolution in the Spike protein of Seasonal Coronavirus NL63</h2>
+<p>Our working example will be this Seasonal Coronavirus NL63 phylogeny obtained from NextStrain: <a href="https://nextstrain.org/seasonal-cov/nl63">https://nextstrain.org/seasonal-cov/nl63</a></p>
+<p>In the left-hand panel on the webpage at NextStrain, you can see the option to Color in the phylogeny according to a variety of characteristics, including “Genotype”. If you select Genotype and then select “Spike” as the gene, and then examine position 100, you will see something fascinating: the phylogeny displays clear evidence of mutations from the amino acid S (Glycine) to P (Aspartic acid), and vice versa. The phylogeny on NextStrain colors in the internal edges of their phylogeny to display where the mutations may have occurred. Our goal is to try to replicate this using the ace function in R.</p>
+<p>As a side note: Seasonal Coronavirus NL63 is fascinating because it uses the same ACE2 receptor to enter cells as SARS-CoV-2. In both viruses, the Spike protein on the virus is a little gizmo that helps the viruses bind to ACE2 and enter cells during infection. You have probably experienced NL63 infection multiple times in your life up to this point – usually in the form of a cold, or completely asymptomatic.</p>
+<p>Let’s see how these amino acids in the Spike protein evolved over time! First, let’s read in the tree and plot it. I have manually provided tip data below to reproduce what we see on NextStrain.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">rcoal</span>(<span class="dv">10</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">size=</span><span class="dv">10</span>, <span class="at">replace=</span>T)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tiplabels</span>(<span class="at">pch=</span><span class="dv">21</span>,<span class="at">bg=</span>x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">read.tree</span>(<span class="st">'coronavirus_nl63/nextstrain_seasonal-cov_nl63_timetree.nwk'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Root the tree (not the most technically appropriate way to do this, but good enough for our illustrative purposes):</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">root</span>(tree, <span class="at">node=</span><span class="fu">Ntip</span>(tree)<span class="sc">+</span><span class="dv">1</span> )</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Make the tree fully bifurcating:</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">multi2di</span>(tree)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>tree<span class="sc">$</span>edge.length[tree<span class="sc">$</span>edge.length <span class="sc">&lt;</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> .<span class="dv">01</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>tree<span class="sc">$</span>edge.length[tree<span class="sc">$</span>edge.length <span class="sc">==</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> .<span class="dv">01</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Some of these tips have an amino acid change in the gene for the Spike protein. From Nextstrain, we can </span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># see that it is these ones:</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>Stips <span class="ot">&lt;-</span> tree<span class="sc">$</span>tip.label</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>Ntips <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">extract.clade</span>(tree, <span class="dv">402</span>)<span class="sc">$</span>tip.label, <span class="fu">extract.clade</span>(tree, <span class="dv">473</span>)<span class="sc">$</span>tip.label)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>Stips <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(tree<span class="sc">$</span>tip.label, Ntips)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">Ntip</span>(tree))</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(x) <span class="ot">&lt;-</span> tree<span class="sc">$</span>tip.label</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>x[Stips] <span class="ot">&lt;-</span> <span class="st">"S"</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>x[Ntips] <span class="ot">&lt;-</span> <span class="st">"P"</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggtree</span>(tree) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">'Seasonal Coronavirus NL63'</span>) <span class="sc">+</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>, <span class="at">size=</span><span class="dv">18</span>, <span class="at">face=</span><span class="st">"bold"</span>))</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">%&lt;+%</span> <span class="fu">data.frame</span>(<span class="at">label=</span>tree<span class="sc">$</span>tip.label, <span class="at">aminoacid =</span> <span class="fu">as.factor</span>(x))</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_tippoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -217,130 +261,159 @@ Attaching package: 'expm'</code></pre>
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ARD'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in sqrt(diag(solve(h))): NaNs produced</code></pre>
 </div>
-</div>
+<p>What do we think the evolutionary history was? There are a few possibilities I can readily envision:</p>
+<p>Hypothesis 1: The original NL63 virus had amino acid S, and then mutated into P in the bottom clade, and then there was a back-mutation from P to S.</p>
+<p>Hypothesis 2: Originally the amino acid was P, and there have been two mutations from P to S – one of these was long ago (and produced the large clade on top), and one of the mutations was more recent (the small blue clade nested within the larger red “P” clade).</p>
+<p>Hypothesis 3: The original amino acid was S, but there have been no back-mutations from P to S; rather, there have been at least four instances of mutation from S to P in the bottom clade.</p>
+<p>You can probably come up with additional hypotheses besides these. At this stage what do you think is the most likely scenario?</p>
 </section>
-<section id="exercise-1" class="level1">
-<h1>Exercise 1</h1>
-<p>Navigate through the ace help pages to determine whether Qij corresponds to the transition rate from state i-&gt; j or from state j -&gt; i. Based on your answer, does the Master equation for the Markov process use column or row vectors? Then, define a generator matrix, Q, in terms of the rates estimated just above (replacing the following line):</p>
+<section id="ancestral-character-estimation-the-ace-function-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="ancestral-character-estimation-the-ace-function-in-r">Ancestral Character Estimation: the ace function in R</h2>
+<p>To determine what the most likely evolutionary scenario was, we can use a mathematical model that describes change in the trait over time using a Markov chain with two states (corresponding to P and S). There are two versions of this model:</p>
+<p>-Model 1: the rate of changing from P to S equals the rate of change from S to P (equal rates model, “ER”)</p>
+<p>-Model 2: the rate from P to S can be different from the rate from S to P (all rates different model, “ARD”)</p>
+<p>Let’s fit both of these models to the data using ace:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>),<span class="at">ncol=</span><span class="dv">2</span>) </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># can scale rates up or down:</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>Q <span class="ot">&lt;-</span> Q<span class="sc">/</span><span class="dv">1</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>getP <span class="ot">&lt;-</span> <span class="cf">function</span>(t,Q){</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    P <span class="ot">&lt;-</span> <span class="fu">expm</span>(Q<span class="sc">*</span>t)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(P)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ER'</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ARD'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Now, we will start at the root of the tree and simulate states at the internal nodes and at the tips of the tree. (The ape package does not have a function to easily do this for us, but it is good exercise to practice it ourselves).</p>
-<p>First, let’s create a vector to store all of the states we simulate:</p>
+<p>The type=‘discrete’ argument tells ace that our data at the tips (x) correspond to states of a discrete state-space Markov chain. The ace function can handle continuous data as well, but we will not make use of this.</p>
+<p>We can examine the parameter estimates in each case:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>states_vec <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>,(tree<span class="sc">$</span>Nnode <span class="sc">+</span> <span class="fu">length</span>(tree<span class="sc">$</span>tip.label)))</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(states_vec) <span class="ot">&lt;-</span> <span class="fu">c</span>(tree<span class="sc">$</span>tip.label, <span class="fu">paste0</span>(<span class="st">"node"</span>, <span class="dv">1</span><span class="sc">:</span>tree<span class="sc">$</span>Nnode))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fit1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Ancestral Character Estimation
+
+Call: ace(x = x, phy = tree, type = "discrete", model = "ER")
+
+    Log-likelihood: -11.89298 
+
+Rate index matrix:
+  P S
+P . 1
+S 1 .
+
+Parameter estimates:
+ rate index estimate std-err
+          1    9e-04   5e-04
+
+Scaled likelihoods at the root (type '...$lik.anc' to get them for all nodes):
+        P         S 
+0.2746174 0.7253826 </code></pre>
 </div>
-<p>Let’s just work with binary states for now:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>state_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'blue'</span>,<span class="st">'red'</span>) <span class="co">#for plotting</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Let’s assign a condition at the root; could be probabilities generally, but let’s say it starts in the first state with certainty for now:</p>
+<p>The output above tells us what the structure of our Markov model is (Rate index matrix), as well as the value of the objective function (Log-likelihood) at the Maximum Likelihood paramter estimate (Parameter estimates). There is only one parameter estimated because we used an “equal rates” model. The estimate for the rate is a pretty small number, which makes perfect sense – while there is some evidence for a back mutation (from P to S), or possibly for <span class="math inline">\(\sim 4\)</span> mutations from S to P, there seems to be a fairly small number of mutations overall. The rate estimate we are getting seems to make sense.</p>
+<p>The last bit of the output is particularly salient for our question we began with: it tell us the “Scaled likelihoods at the root”, and assigns a higher value to S than to P. This means that, under this model, the ancestral virus most likely had the amino acid S rather than the amino acid P. This already tells us that, at least to the extent we think our Markov model is reasonable, the data seem more consistent with Hypotheses 1 or 3 than Hypothesis 2.</p>
+<p>Okay, so far so good - but maybe I think the equal rates model is unreasonable to begin with. After all, it is a little bit striking that there is a huge clade in the phylogeny with no evidence of mutation from S to P whatsoever, but there does seem to be clear evidence of back-mutation from P to S. Maybe the rate of mutation from P to S is much faster than the rate from S to P. This is what our second model allows for. Let’s see how those estimates turned out:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pi_root <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Ancestral Character Estimation
+
+Call: ace(x = x, phy = tree, type = "discrete", model = "ARD")
+
+    Log-likelihood: -10.28796 
+
+Rate index matrix:
+  P S
+P . 2
+S 1 .
+
+Parameter estimates:
+ rate index estimate std-err
+          1   0.0000  0.0017
+          2   0.0036  0.0033
+
+Scaled likelihoods at the root (type '...$lik.anc' to get them for all nodes):
+P S 
+1 0 </code></pre>
 </div>
-<p>Let’s start with the root state:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>root <span class="ot">&lt;-</span> <span class="fu">length</span>(tree<span class="sc">$</span>tip.label) <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>states_vec[root] <span class="ot">&lt;-</span> <span class="fu">sample</span>(states, <span class="dv">1</span>, <span class="at">prob =</span> pi_root)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Let’s plot this as we go:</p>
+<p>Oh my! That is rather striking! In this model we are estimating two rates (S to P, and P to S). The Maximum Likelihood Estimate (MLE) says that the rate from S to P equals zero. Nada. Zilch. The rate of change from P to S is 0.0036, which is quite a lot larger than the rate we estimated in Model 1. The Scaled likelihoods at the root say that the ancestor had amino acid P with certainty. So, if we think Model 2 is a reasonable model, then Hypothesis 2 is the best explanation for the evolutionary history. Under the model, the best explanation for the data is that the original virus had amino acid P, and there have been two mutations from P to S down to the present day.</p>
+<p>In response to an estimated rate equal to zero, my knee-jerk reaction is to look at the standard errors (“std-err”) in the parameter estimates. Sometimes, numerical issues might result in weird behavior near the boundary of parameter space (rates are always non-negative, so zero is such a boundary in our case). The estimate for rate 1 has a standard error of 0.0017. If there had been some kind of numerical strangeness, we might see NA and a warning pop up. That didn’t happen here, so the MLE of 0.0000 for rate 1 appears to be genuine. It is also worth noting that the scaled likelihoods at the root are calculated under the MLE, and do not necessarily account for uncertainty in the MLE (as quantified by the standard errors). So, while our best estimate for the evolutionary history has P as the overall ancestor, a nonzero estimate for rate 1 might allow for a small possibility that the ancestral virus had S. That is, in the same way that we have a confidence set for our rate parameters, there is an implied confidence set of evolutionary histories, some of which have S at the root of the tree – but the scaled likelihoods at the root do not reflect this.</p>
+</section>
+<section id="displaying-evolutionary-histories-with-our-fitted-models" class="level2">
+<h2 class="anchored" data-anchor-id="displaying-evolutionary-histories-with-our-fitted-models">Displaying evolutionary histories with our fitted models</h2>
+<p>So far, all we have done is fit our models and interpret the parameter estimates. However, we can do a little bit more than this. Similar to NextStrain, we can annotate our tree with our estimated models to indicate what the ancestral states may have been. This is, after all, the point of ancestral state inference/ancestral character estimation.</p>
+<p>The scaled likelihoods a the root that we see in the printout from fit1 and fit2 are built up from likelihoods at all of the internal nodes desending from the root. These are tucked away in the fitted model output (“lik.anc”):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>tip_states <span class="ot">&lt;-</span> states_vec[tree<span class="sc">$</span>tip.label]</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tiplabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[tip_states], <span class="at">cex=</span><span class="dv">2</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>node_states <span class="ot">&lt;-</span> states_vec[<span class="fu">paste0</span>(<span class="st">"node"</span>, <span class="dv">1</span><span class="sc">:</span>tree<span class="sc">$</span>Nnode)] </span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">nodelabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[node_states], <span class="at">cex=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fit1<span class="sc">$</span>lik.anc)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            P            S
+401 0.2746174 7.253826e-01
+402 0.9810853 1.891467e-02
+403 0.9998225 1.775022e-04
+404 1.0000000 1.477098e-10
+405 1.0000000 1.701022e-13
+406 1.0000000 1.212072e-11</code></pre>
+</div>
+</div>
+<p>This is a datarame with the scaled likelihoods of the two states for each node. The tree has 400 tips, so the nodes are numbered 401 through 799 (a bifurcating tree with N tips has N-1 internal nodes). Each row in the dataframe above is one of the nodes, and the values in the columns are the relative likelihoods that it resides in state P or state S under the MLE. We can use this data to plot estimated states at the internal nodes.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's add in node labels for the tree:</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>tree<span class="sc">$</span>node.label <span class="ot">&lt;-</span> (<span class="fu">Ntip</span>(tree)<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="fu">Ntip</span>(tree) <span class="sc">+</span> tree<span class="sc">$</span>Nnode)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># what were the most likely node states?</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>nodestates1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'P'</span>,<span class="st">'S'</span>)[<span class="fu">apply</span>(fit1<span class="sc">$</span>lik.anc, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">which</span>(x<span class="sc">==</span><span class="fu">max</span>(x)) )]</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>treedat1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span>tree<span class="sc">$</span>tip.label, <span class="at">aminoacid =</span> <span class="fu">as.factor</span>(x))</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>nodedat1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span><span class="fu">as.character</span>((<span class="fu">Ntip</span>(tree)<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="fu">Ntip</span>(tree)<span class="sc">+</span>tree<span class="sc">$</span>Nnode)), <span class="at">aminoacid=</span>nodestates1)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>treedat1 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(treedat1, nodedat1)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggtree</span>(tree) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">'ER model'</span>) <span class="sc">+</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>, <span class="at">size=</span><span class="dv">18</span>, <span class="at">face=</span><span class="st">"bold"</span>))</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> p1 <span class="sc">%&lt;+%</span> treedat1</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> p1 <span class="sc">+</span> <span class="fu">geom_tippoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid)) <span class="sc">+</span> <span class="fu">geom_nodepoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid))  <span class="sc">+</span> </span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">'none'</span>)</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, the all-rates different model:</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="co"># what were the most likely node states?</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>nodestates2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'P'</span>,<span class="st">'S'</span>)[<span class="fu">apply</span>(fit2<span class="sc">$</span>lik.anc, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">which</span>(x<span class="sc">==</span><span class="fu">max</span>(x)) )]</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>treedat2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span>tree<span class="sc">$</span>tip.label, <span class="at">aminoacid =</span> <span class="fu">as.factor</span>(x))</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>nodedat2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span><span class="fu">as.character</span>((<span class="fu">Ntip</span>(tree)<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="fu">Ntip</span>(tree)<span class="sc">+</span>tree<span class="sc">$</span>Nnode)), <span class="at">aminoacid=</span>nodestates2)</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>treedat2 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(treedat2, nodedat2)</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggtree</span>(tree) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">'ARD model'</span>) <span class="sc">+</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>, <span class="at">size=</span><span class="dv">18</span>, <span class="at">face=</span><span class="st">"bold"</span>))</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> p2 <span class="sc">%&lt;+%</span> treedat2</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> p2 <span class="sc">+</span> <span class="fu">geom_tippoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid)) <span class="sc">+</span> <span class="fu">geom_nodepoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid)) </span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>legend <span class="ot">&lt;-</span> <span class="fu">get_legend</span>(p2 <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.box.margin=</span><span class="fu">margin</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">12</span>)))</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(p1,p2<span class="sc">+</span><span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">'none'</span>),legend, <span class="at">nrow=</span><span class="dv">1</span>, <span class="at">rel_widths=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,.<span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="ace_sims_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="ace_sims_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>We will do a preorder traversal, which starts at the root and descends down the tree to the tips:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>preorder <span class="ot">&lt;-</span> <span class="fu">rev</span>(<span class="fu">postorder</span>(tree))  <span class="co"># parent before children</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>The list of all of the edges of the tree is located in tree$edge:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> tree<span class="sc">$</span>edge</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Each row is an edge. The first column represents the parent, the second represents the descendant.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(edges) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'parent'</span>,<span class="st">'descendant'</span>)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(edges) <span class="co"># to use the handy $ command for columns</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>The entry in</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>tree<span class="sc">$</span>edge.length</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>is a vector of lengths for each of the edges; it corresponds to the same edges in tree$edge:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>edge.lengths <span class="ot">&lt;-</span> tree<span class="sc">$</span>edge.length</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>we start with the initial state at the root and use the Markov chain to sample subsequent states:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>edges<span class="sc">$</span>parentstate <span class="ot">&lt;-</span> states_vec[edges<span class="sc">$</span>parent]</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>edges<span class="sc">$</span>nextstate <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>edges<span class="sc">$</span>lengths <span class="ot">&lt;-</span> edge.lengths</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(edges)){</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    parent_state <span class="ot">&lt;-</span> <span class="cf">if</span>(edges[i,<span class="st">'parentstate'</span>]<span class="sc">==</span><span class="dv">1</span>){<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>)}<span class="cf">else</span>{<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)}</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    prob <span class="ot">=</span> <span class="fu">getP</span>(edges<span class="sc">$</span>lengths[i],Q) <span class="sc">%*%</span> parent_state</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    next_state <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">size=</span><span class="dv">1</span>, <span class="at">prob=</span><span class="fu">c</span>(prob))</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    new_parent <span class="ot">&lt;-</span> edges[i, <span class="st">'descendant'</span>]</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    edges[i,<span class="st">'nextstate'</span>] <span class="ot">&lt;-</span> next_state  </span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    edges[edges<span class="sc">$</span>parent<span class="sc">==</span>new_parent, <span class="st">'parentstate'</span>] <span class="ot">&lt;-</span> next_state</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Now fill in states_vec:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>states_vec[edges<span class="sc">$</span>parent] <span class="ot">&lt;-</span> edges<span class="sc">$</span>parentstate</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>states_vec[edges<span class="sc">$</span>descendant] <span class="ot">&lt;-</span> edges<span class="sc">$</span>nextstate</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Let’s plot this:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>tip_states <span class="ot">&lt;-</span> states_vec[tree<span class="sc">$</span>tip.label]</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tiplabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[tip_states], <span class="at">cex=</span><span class="dv">2</span>)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>node_states <span class="ot">&lt;-</span> states_vec[<span class="fu">paste0</span>(<span class="st">"node"</span>, <span class="dv">1</span><span class="sc">:</span>tree<span class="sc">$</span>Nnode)] </span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">nodelabels</span>(<span class="at">pch=</span><span class="dv">21</span>, <span class="at">bg=</span>state_colors[node_states], <span class="at">cex=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="ace_sims_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="exercises" class="level1">
-<h1>Exercises</h1>
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section">1.</h2>
-<p>Simulate some tip states on a tree using a Markov model that you specify, and use ace to estimate it. Scale this up for a large number of tip state configurations to see how the distribution of Maximum Likelihood estimates for the Markov model rates compare with the true values you supplied. Are there particular combinations of branch lengths and rates that make it difficult to estimate model parameters?</p>
-</section>
-<section id="hard-or-maybe-impossible" class="level2">
-<h2 class="anchored" data-anchor-id="hard-or-maybe-impossible">2. (Hard, or maybe impossible)</h2>
-<p>Modify the code above to condition on a particular tip state configuration. This way, we can observe distributions of evolutionary scenarios consistent with a particular set of observations.</p>
-</section>
-<section id="section-1" class="level2">
-<h2 class="anchored" data-anchor-id="section-1">3.</h2>
-<p>In a fitted ace object, there is an element called lik.anc which records the probability of ancestral states at each node of the tree. Plot a dataset of your choice with pie charts displaying the ancestral state probabilities associated with models that you fit using ace. Navigate through the help pages (?ace) to specify a few different versions of models that impose constraints on the Markov generator, Q. How sensitive are ancestral state probabilities to your modeling choices?</p>
+<p>Aside from the differences at the root of the tree, the two models appear to mostly agree with each other in terms of the ancestral states of most of the other ancestors. However, the similarity in ancestral reconstructions belies the very different interpretations of the evolutionary histories between the models.</p>
+<ul>
+<li>In the ER model, mutations are possible in both directions under the MLE</li>
+<li>In the ARD model, mutations from S to P never occur under the MLE</li>
+<li>The ARD model makes the prediction that, given enough time, every virus we sample will have the amino acid S, and P will go extinct.</li>
+</ul>
+<p><strong>All of these conclusions are conditional on the Markov models we are using.</strong> Remember: junk in = junk out. There are some potential pitfalls of these models that we should articulate now:</p>
+<ul>
+<li><p>Either of these amino acids could carry a fitness benefit that could lead to increased numbers of infections by one lineage or the other. We are not modeling this effect</p></li>
+<li><p>The models are assuming that rates are constant in time. This may not be a reasonable assumption to make.</p></li>
+<li><p>Can you think of any other criticisms?</p></li>
+</ul>
+<p>These criticisms aside, from the methodological point of view there is another thing we have not done: we have not obtained an estimate for when mutations actually occurred. Our estimates of ancestral states should inform the timing and number of mutations, but more work is needed to do so.</p>
+<p>In the next section (stochastic character mapping), we will do both of these things.</p>
 
 
 </section>

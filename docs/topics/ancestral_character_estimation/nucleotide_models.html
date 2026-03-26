@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>nucleotide_models – Template Workshop</title>
+<title>nucleotide_models – PhylogeogRaphy Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -146,8 +146,6 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo light-content">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo dark-content">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -209,6 +207,7 @@ window.Quarto = {
 <h1>Simulating nucleotide substitution models</h1>
 <section id="a-refresher-on-continuous-time-discrete-state-markov-chains" class="level2">
 <h2 class="anchored" data-anchor-id="a-refresher-on-continuous-time-discrete-state-markov-chains">A refresher on continuous time discrete state Markov chains</h2>
+<p>First, let’s load in some packages we will need – ape, for working with phylogenetic trees, and expm, which calculates matrix exponentials (useful for solving differential equations).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span>
@@ -235,9 +234,10 @@ Attaching package: 'expm'</code></pre>
 </section>
 <section id="basic-markov-chains" class="level1">
 <h1>1. Basic Markov chains</h1>
-<p>Let’s begin by considering a simple 2-state Markov chain defined in continuous time.</p>
-<p>The vector P has entries that sum to one, and the components are the probability the state resides in one state or the other at a particular time.</p>
-<p>Probabilities evolve over time according to the Kolmogorov equation</p>
+<p>To reconstruct phylogenetic trees from DNA sequence data, we commonly use continuous-time discrete-state Markov chains to model changes in nucleotides over time. In the simplest case, we consider the evolution of a particular site in a genome independent of all the rest. This page is focused on the mathematics of Markov chains. By understanding how these stochastic processes work, we will be in a better position to understand the underlying assumptions of many methods in statistical phylogenetics.</p>
+<p>Let’s begin by considering a simple 2-state Markov chain defined in continuous time. A site in a DNA sequence is usually modeled with four sites (A, C, T, G). We will start with a 2-state Markov chain to learn the basics in the simplest possible case. Extending to four states is not conceptually different, but becomes mathematically much more cumbersome.</p>
+<p>Let’s begin! We consider a vector, <span class="math inline">\(P\)</span>, with two entries that sum to one. The components of <span class="math inline">\(P\)</span> are the probability the state resides in one state or the other at a particular time. The process is simple: if the system is in state 1, it can transition to state 2 at rate <span class="math inline">\(q_{12}\)</span>. If the system is in state 2, it can transition to state 1 at rate <span class="math inline">\(q_{21}\)</span>. Easy! But how do we translate this into a formal mathematical statement? We use differential equations!</p>
+<p>The probability the chain is one state or the other changes over time according to the ordinary differential equations (sometimes called the Kolmogorov equations)</p>
 <p><span class="math display">\[\begin{align*}
 dP_1/dt &amp;= - q_{12} P_1 + q_{21} P_2,\\
 dP_2/dt &amp;= q_{12}P_1 - q_{21} P_2.
@@ -246,40 +246,45 @@ dP_2/dt &amp;= q_{12}P_1 - q_{21} P_2.
     dP/dt = Q P,
 \end{align*}\]</span> where Q is a stochastic rate matrix with columns summing to zero.</p>
 <p>In some cases, the row vector <span class="math inline">\(P^T\)</span> is used instead. In this case, the equation takes the form <span class="math inline">\(dP^T/dt = P^T Q^T\)</span>. Pay attention to the help pages in the coming days to ensure that <span class="math inline">\(Q_{ij}\)</span> represents the state change that you think it does…</p>
-<p>We can solve these differential equations by hand, using the fact that <span class="math inline">\(P_1 + P_2 = 1\)</span></p>
+<p>We can solve these differential equations by hand, using the fact that <span class="math inline">\(P_1 + P_2 = 1\)</span>:</p>
 <p><span class="math display">\[\begin{align*}
-dP_1/dt &amp;= -q_{12}(P_1) + q_{21}  (1-P_1)
-    &amp;= - (q_{12} + q_{21})  P_1 + q_{21}
+dP_1/dt &amp;= -q_{12}(P_1) + q_{21}  (1-P_1), \\
+    &amp;= - (q_{12} + q_{21})  P_1 + q_{21}.
 \end{align*}\]</span></p>
-<p>rearrange to: <span class="math display">\[\begin{align*}
-dP_1/dt + (q_{12}+q_{21})  P_1 = q_{21}
+<p>This rearranges to: <span class="math display">\[\begin{align*}
+dP_1/dt + (q_{12}+q_{21})  P_1 = q_{21}.
 \end{align*}\]</span></p>
-<p>A standard approach to solving this type of equation is to use an integrating factor <span class="math inline">\(e^{(q_{12}+q_{21})t}\)</span></p>
+<p>A standard approach to solving this type of equation is to use an integrating factor, in this case of the form <span class="math inline">\(e^{(q_{12}+q_{21})t}\)</span>, which gets multiplied on both sides of the equation: <span class="math display">\[\begin{align*}
+e^{(q_{12}+q_{21})t} (dP_1/dt + (q_{12}+q_{21})  P_1 ) = e^{(q_{12}+q_{21})t} q_{21}.
+\end{align*}\]</span></p>
+<p>From Calculus, we can readily recognize that the left-hand-side of this equation looks like the result of a “product-rule” operation. We can rewrite as a derivative:</p>
 <p><span class="math display">\[\begin{align*}
-d/dt (P_1  e^{(q_{12}+q_{21})t}) = q_{21}  e^{(q_{12}+q_{21})t}
+d/dt (P_1  e^{(q_{12}+q_{21})t}) = q_{21}  e^{(q_{12}+q_{21})t}.
 \end{align*}\]</span></p>
-<p>We can integrate this up once: <span class="math display">\[\begin{align*}
-P_1  e^{(q_{12}+q_{21})t} = \frac{q_{21}}{q_{12}+q_{21}}  e^{(q_{12}+q_{21})t} + C
-\end{align*}\]</span> We can now isolate P_1:</p>
+<p>This is why we multiplied both sides by the integrating factor – we’re just using differentation rules from Calculus to solve the problem. We now have an equation that we can integrate on both sides of the = sign.</p>
+<p>Integrating this up once gives <span class="math display">\[\begin{align*}
+P_1  e^{(q_{12}+q_{21})t} = \frac{q_{21}}{q_{12}+q_{21}}  e^{(q_{12}+q_{21})t} + C,
+\end{align*}\]</span> where <span class="math inline">\(C\)</span> is a constant of integration we need to determine eventually. We can now isolate P_1:</p>
 <p><span class="math display">\[\begin{align*}
-P_1 =  \frac{q_{21}}{q_{12}+q_{21}}  + C e^{-(q_{12}+q_{21})t}
+P_1 =  \frac{q_{21}}{q_{12}+q_{21}}  + C e^{-(q_{12}+q_{21})t}.
 \end{align*}\]</span></p>
-<p>We use initial conditions to determine C. Set <span class="math inline">\(P_{1,0} = P_1(0)\)</span>:</p>
+<p>We still have to determine <span class="math inline">\(C\)</span>. We use initial conditions to do so. Set <span class="math inline">\(P_{1,0} = P_1(0)\)</span>:</p>
 <p><span class="math display">\[\begin{align*}
 P_{1,0} &amp;= \frac{q_{21}}{q_{12}+q_{21}}  + C e^{-(q_{12}+q_{21})0} ,\\
-P_{1,0} &amp;= \frac{q_{21}}{q_{12}+q_{21}}  + C
-\end{align*}\]</span></p>
+&amp;= \frac{q_{21}}{q_{12}+q_{21}}  + C,
+\end{align*}\]</span> so that <span class="math inline">\(C = P_{1,0} - \frac{q_{21}}{q_{12}+q_{21}}\)</span>. We get to decide on <span class="math inline">\(P_{1,0}\)</span>, which is the probability that the system starts in state 1 at time 0.</p>
 <p>So now we know that <span class="math display">\[\begin{align*}
-P1 &amp;=  \frac{q_{21}}{q_{12}+q_{21}}  + (P_{1,0} - \frac{q_{21}}{q_{12}+q_{21}})  e^{-(q_{12}+q_{21})t}
-P1 &amp;= P_{1,0}  e^{-(q_{12}+q_{21})t} + \frac{q_{21}}{q_{12}+q_{21}}  (1-e^{-(q_{12}+q_{21})t})
-\end{align*}\]</span> Notice that this has a term corresponding to the initial condition that is dominant for t , and in the long run P1 </p>
+P1 &amp;=  \frac{q_{21}}{q_{12}+q_{21}}  + (P_{1,0} - \frac{q_{21}}{q_{12}+q_{21}})  e^{-(q_{12}+q_{21})t},\\
+&amp;= P_{1,0}  e^{-(q_{12}+q_{21})t} + \frac{q_{21}}{q_{12}+q_{21}}  (1-e^{-(q_{12}+q_{21})t})
+\end{align*}\]</span></p>
+<p>Notice that this has a term corresponding to the initial condition that is dominant for <span class="math inline">\(t \approx 0\)</span>, and in the long run, as <span class="math inline">\(t \to \infty\)</span>, <span class="math inline">\(P_1 \to \frac{q_{21}}{q_{12}+q_{21}}\)</span>.</p>
 <p>We can also find <span class="math inline">\(P_2\)</span>, using the fact that <span class="math inline">\(P_2 = 1-P1\)</span>: <span class="math display">\[\begin{align*}
 P_2 &amp;= \frac{q_{12}+q_{21}}{q_{12}+q_{21}} - \frac{q_{21}}{q_{12}+q_{21}} + \frac{q_{21}}{q_{12}+q_{21}}e^{-(q_{12}+q_{21})t} - P_{1,0} e^{-(q_{12}+q_{21})t},\\
 &amp;= \frac{q_{12}}{q_{12}+q_{21}} + (\frac{q_{21}}{q_{12}+q_{21}} - P_{1,0})e^{-(q_{12}+q_{21})t},\\
 &amp;= \frac{q_{12}}{q_{12}+q_{21}} + (\frac{q_{21}}{q_{12}+q_{21}} - 1 + P_{2,0})e^{-(q_{12}+q_{21})t},\\
 &amp;= \frac{q_{12}}{q_{12}+q_{21}} + (\frac{-q_{12}}{q_{12}+q_{21}} + P_{2,0})e^{-(q_{12}+q_{21})t},\\
 &amp;= \frac{q_{12}}{q_{12}+q_{21}}(1-e^{-(q_{12}+q_{21})t}) + P_{2,0}e^{-(q_{12}+q_{21})t}.
-\end{align*}\]</span> So now, we have our solutions for the Markov chain probabilities over time:</p>
+\end{align*}\]</span> So now, we have our solutions for the Markov chain probabilities over time, which we can define in a handy R function:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>P <span class="ot">&lt;-</span> <span class="cf">function</span>(t, P0, q12,q21){</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    P1 <span class="ot">&lt;-</span> <span class="cf">function</span>(t){</span>
@@ -297,14 +302,18 @@ P_2 &amp;= \frac{q_{12}+q_{21}}{q_{12}+q_{21}} - \frac{q_{21}}{q_{12}+q_{21}} + 
 <h1>Exercises:</h1>
 <section id="section" class="level2">
 <h2 class="anchored" data-anchor-id="section">1.</h2>
-<p>Write down a 4-state Markov model corresponding to A, C, T, and G in DNA. Evaluate the transition probabilities as above (hint: the matrix exponential can be calculated in R using the expm function from the package of the same name. Feel free to assume whatever constraints on parameters you like (or none at all).</p>
+<p>Use the function above to plot the probability that the system begins in state 1 and transitions to state 2 as a function of time. The initial condition in this case can be specified by setting <code>P0 &lt;- c(1,0)</code>. You will have to decide on values of <span class="math inline">\(q_{12}\)</span> and <span class="math inline">\(q_{21}\)</span>. What do you notice if you make <span class="math inline">\(q_{12}\)</span> large? Does a state transition from state 1 to 2 happen faster, or slower? Does the probability of a state transition from state 1 to state 2 depend on <span class="math inline">\(q_{21}\)</span> at all?</p>
 </section>
 <section id="section-1" class="level2">
 <h2 class="anchored" data-anchor-id="section-1">2.</h2>
-<p>The Jukes-Cantor model is the simplest nucleotide substitution model. By assumption, the equilibrium probabilities of each nucleotide are equal, and the transition rates between states are likewise all equal. What is the generator for this process? Write a function to describe transition probabilities as a function of time. (Hint: how many parameters will your generator have if all transitions between states occur at equal rates?)</p>
+<p>Write down a 4-state Markov model corresponding to A, C, T, and G in DNA. Evaluate the transition probabilities as above (hint: the matrix exponential can be calculated in R using the expm function from the package of the same name. Feel free to assume whatever constraints on parameters you like (or none at all).</p>
 </section>
 <section id="section-2" class="level2">
 <h2 class="anchored" data-anchor-id="section-2">3.</h2>
+<p>The Jukes-Cantor model is the simplest nucleotide substitution model. By assumption, the equilibrium probabilities of each nucleotide are equal, and the transition rates between states are likewise all equal. What is the generator for this process? Write a function to describe transition probabilities as a function of time. (Hint: how many parameters will your generator have if all transitions between states occur at equal rates?)</p>
+</section>
+<section id="section-3" class="level2">
+<h2 class="anchored" data-anchor-id="section-3">4.</h2>
 <p>The K80 (Kimura, 1980) model elaborates on the Jukes-Cantor model by allowing substitutions within pyrimidines (C,T) and within purines (A, G) to occur at a different rate than “transversions” between pyrimidines and purines. In biology, substitutions between two purines or between two pyrimidines are called “transitions” (but in Markov chains, mathematicians refer to all state changes as transitions – confusing). Assuming that transitions (in the biological sense of the word) occur at the same rate regardless of whether the nucleotides are purines or pyrimidines, and assuming that transversions in either direction occur at the same rate, write the generator for the Markov process and write a function that calculates transition probabilities as a function of time.</p>
 
 

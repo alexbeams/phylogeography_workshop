@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>stochastic_mapping – Template Workshop</title>
+<title>stochastic_mapping – PhylogeogRaphy Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -117,8 +117,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo light-content">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo dark-content">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -178,148 +176,92 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="simulating-stochasting-character-mappings" class="level1">
 <h1>Simulating stochasting character mappings</h1>
-<p>This code simulates stochastic character mappings on a fixed phylogenetic tree. In the real world, we would be given a phylogeny with tip data (diets of finches, geographic location of influenza, etc.). The goal would be to estimate quantities like the number of changes, the timing of changes, whether one trait is ancestral to the rest, and so on. This would involve fitting models to estimate the stochastic rate matrix describing discrete state changes, as well as the root states.</p>
-<p>In this code, we are going to start by exploring how we would interpret estimates. This involves simulating character mappings on the phylogeny using the true values of the Markov chain model, and our goal is to see if we can count the number of state changes, describe timing of changes, etc.</p>
-<p>Once we have a feel for how the model works, we will then try to do the harder task of fitting it to data.</p>
-<p>Clear out the console:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># rm(list=ls())</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># load in the package for stochastic character mapping:</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phytools)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: ape</code></pre>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(expm) <span class="co"># matrix exponential</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggtree)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cowplot)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scatterpie)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phytools)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: maps</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the number of stochastic character mappings to simulate:</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>nsim <span class="ot">=</span> <span class="dv">1000</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a tree: (could modify this to load in a tree as well)</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">pbtree</span>(<span class="at">n=</span><span class="dv">50</span>, <span class="at">scale=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Specify a transition rate matrix for two states (A and B). In practice, we would want to estimate this from data. Let’s pretend we’ve done that step, and this can be taken as known without error:</p>
+<p>Carrying on from our last example of Seasonal Coronavirus NL63, we seek to address the following questions:</p>
+<ul>
+<li><ol type="1">
+<li>How often did the S amino acid mutate into P, and vice versa?</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>Where precisely do we think mutations occurred on the phylogeny?</li>
+</ol></li>
+</ul>
+<p>With ancestral character estimation (ace), we approached answers to these questions. We considered two types of Markov models (equal rates, ER, and all rates different, ARD). The MLEs of the model parameters carry pretty different interpretations, but the ancestral estimates of past ancestors are largely robust. The main difference we saw was concerning the inferred root state of the phylogeny in each model.</p>
+<p>Stochastic character mapping, or character mapping, uses our fitted Markov chain models to annotate phylogenies with mutations along edges. So far, we have just been annotating internal nodes of the phylogenies with their most likely states, given the models and the data (tip data + phylogeny).</p>
+<p>To perform character mapping, we will make use of a suite of functions from the phytools package in R.</p>
+<p>Let’s start by loading in our Coronavirus NL63 phylogeny:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>              <span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>),<span class="dv">2</span>,<span class="dv">2</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(Q) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(Q) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"A"</span>,<span class="st">"B"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>We can scale down Q to have fewer transitions (for illustrative purposes)</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Q <span class="ot">&lt;-</span> Q<span class="sc">/</span><span class="dv">10</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Simulate tip states on the tree using our stochastic rate matrix Q. In practice, this would be observed in data, and in many instances we could assume it is observed without error. For our purposes here, we simulate tip states from the model:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>tip_states <span class="ot">&lt;-</span> <span class="fu">sim.Mk</span>(tree, Q)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>How many of each state do we observe?</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(tip_states)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>tip_states
- A  B 
- 9 41 </code></pre>
-</div>
-</div>
-<p>Simulate stochastic character maps nsim times using the tree, tip states, and our Q matrix: Note: don’t set model=Q, otherwise that just re-estimates Q. Need to specify Q=Q in the make.simmap call.</p>
-<p>We simulate from the root to the tips. We have to specify an initial condition at the root:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>Pi <span class="ot">&lt;-</span> <span class="fu">c</span>(.<span class="dv">5</span>,.<span class="dv">5</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the sims!</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>sims <span class="ot">&lt;-</span> <span class="fu">make.simmap</span>(tree, tip_states, <span class="at">Q=</span>Q, <span class="at">pi=</span>Pi, <span class="at">nsim=</span>nsim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>make.simmap is sampling character histories conditioned on
-the transition matrix
-
-Q =
-     A    B
-A -0.1  0.1
-B  0.1 -0.1
-(specified by the user);
-and (mean) root node prior probabilities
-pi =
-  A   B 
-0.5 0.5 </code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Done.</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Uncomment this to visualize the different character mappings:</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#par(mfrow=c(1,1))</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#for(i in 1:nsim){</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   plot(sims[[i]])</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   Sys.sleep(.0002)</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#}</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's start by summarizing the number of mutations that happen across the whole tree:</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>counts <span class="ot">&lt;-</span> <span class="fu">lapply</span>(sims, countSimmap)</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>numMutations <span class="ot">&lt;-</span> <span class="fu">sapply</span>(counts, <span class="cf">function</span>(x) x<span class="sc">$</span>N)</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>transitions <span class="ot">&lt;-</span> <span class="fu">lapply</span>(counts, <span class="cf">function</span>(x)x<span class="sc">$</span>Tr)</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>transitions_AB <span class="ot">&lt;-</span> <span class="fu">sapply</span>(transitions, <span class="cf">function</span>(x) x[<span class="dv">1</span>,<span class="dv">2</span>])</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>transitions_BA <span class="ot">&lt;-</span> <span class="fu">sapply</span>(transitions, <span class="cf">function</span>(x) x[<span class="dv">2</span>,<span class="dv">1</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Let’s plot an example character mapped tree, and histograms of number of mutations:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">=</span> sims[[<span class="dv">1</span>]]</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  overall, and by type</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="do">## plot the character mapped tree</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>sim<span class="sc">$</span>tip.label <span class="ot">&lt;-</span> <span class="fu">paste</span>(sim<span class="sc">$</span>tip.label, <span class="st">"("</span>, tip_states, <span class="st">")"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plotSimmap</span>(sim, <span class="at">fsize =</span> <span class="fl">0.8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>no colors provided. using the following legend:
-        A         B 
-  "black" "#DF536B" </code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="do">## plottig make.simmap objects messes up margins, let's reset these:</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">1</span>))</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="do">## histogram of total mutations:</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(numMutations)</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="do">## histogram of mutations A -&gt; B</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(transitions_AB)</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="do">## histogram of mutations B -&gt; A</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(transitions_BA)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">read.tree</span>(<span class="st">'coronavirus_nl63/nextstrain_seasonal-cov_nl63_timetree.nwk'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Root the tree (not the most technically appropriate way to do this, but good enough for our illustrative purposes):</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">root</span>(tree, <span class="at">node=</span><span class="fu">Ntip</span>(tree)<span class="sc">+</span><span class="dv">1</span> )</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Make the tree fully bifurcating:</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">multi2di</span>(tree)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>tree<span class="sc">$</span>edge.length[tree<span class="sc">$</span>edge.length <span class="sc">&lt;</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> .<span class="dv">01</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>tree<span class="sc">$</span>edge.length[tree<span class="sc">$</span>edge.length <span class="sc">==</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> .<span class="dv">01</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Some of these tips have an amino acid change in the gene for the Spike protein. From Nextstrain, we can </span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># see that it is these ones:</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>Stips <span class="ot">&lt;-</span> tree<span class="sc">$</span>tip.label</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>Ntips <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">extract.clade</span>(tree, <span class="dv">402</span>)<span class="sc">$</span>tip.label, <span class="fu">extract.clade</span>(tree, <span class="dv">473</span>)<span class="sc">$</span>tip.label)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>Stips <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(tree<span class="sc">$</span>tip.label, Ntips)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">Ntip</span>(tree))</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(x) <span class="ot">&lt;-</span> tree<span class="sc">$</span>tip.label</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>x[Stips] <span class="ot">&lt;-</span> <span class="st">"S"</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>x[Ntips] <span class="ot">&lt;-</span> <span class="st">"P"</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggtree</span>(tree) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">'Seasonal Coronavirus NL63'</span>) <span class="sc">+</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>, <span class="at">size=</span><span class="dv">18</span>, <span class="at">face=</span><span class="st">"bold"</span>))</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">%&lt;+%</span> <span class="fu">data.frame</span>(<span class="at">label=</span>tree<span class="sc">$</span>tip.label, <span class="at">aminoacid =</span> <span class="fu">as.factor</span>(x))</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_tippoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="stochastic_mapping_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stochastic_mapping_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+<p>Stochastic character mapping involves 3 steps:</p>
+<ul>
+<li><ol type="1">
+<li>Fit a Markov model to the phylogeny (we did this using ace already)</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>Sample ancestral state at internal nodes using the scaled likelihoods (calculated in step 1)</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>Use the estimates from the fitted model to simulate changes of state along edges of the phylogeny that are compatible with the node states at the two ends of each edge (similar to how we simulated event times in the previous tutorial)</li>
+</ol></li>
+</ul>
+<p>That’s it. Conceptually, it’s super simple. Computationally, it can be a little bit intense to simulate changes of state along edges that are compatible with node states at either end of the edge.</p>
+<p>The phytools package has a few functions that we will use.</p>
+<p><strong>One of these is fitMk</strong>. This function is similar to ace, except that user may supply a “root prior” (e.g.&nbsp;50% probability that the root is in state S or P, for our example). When we supply a root prior, we are optimizing a different objective function than ace. By default, fitMk uses scaled likelihoods at the root, identical to ace. The second distinction between fitMk and ace is that they use slightly different optimizers to find Maximum Likelihood Estimates (MLEs). Sometimes it can be convenient to try using both functions if one of them encounters numerical problems during optimization. It can also be a good idea to obtain estimates from both methods as a sanity check.</p>
+<p>The other useful function is <strong>simmap</strong>, which simulates a stochastic character mapping on a tree given a Markov model generator matrix. This is the function that actually carries out steps 2-3 above.</p>
+<p>A third function <strong>make.simmap</strong>, does both steps (fitMk and simmap) in one go. Obviously it is not necessary to invoke make.simmap after running ace or fitMk.</p>
+<section id="comparing-fitmk-and-ace" class="level2">
+<h2 class="anchored" data-anchor-id="comparing-fitmk-and-ace">Comparing fitMk and ace</h2>
 </section>
-<section id="exercises" class="level1">
-<h1>Exercises:</h1>
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section">1.</h2>
-<p>Try changing the initial condition at the root (Pi, also called the “root prior”) to see how results change</p>
-</section>
-<section id="section-1" class="level2">
-<h2 class="anchored" data-anchor-id="section-1">2.</h2>
-<p>Look at the logL values in the sims. What do you think that describes? In particular, do you think the reported logL is P(tip data | Q), or P(tip data, character mapping | Q)?</p>
-</section>
-<section id="a." class="level2">
-<h2 class="anchored" data-anchor-id="a.">2.a.</h2>
-<p>Create a new sims list, replacing Q with jitter(Q). What do you notice about the logL values?</p>
-</section>
-</section>
-<section id="b." class="level1">
-<h1>2.b.</h1>
-<p>Create a new sims list, replacing Pi with different values. What do you notice about the logL values in this case?</p>
-<section id="section-2" class="level2">
-<h2 class="anchored" data-anchor-id="section-2">3.</h2>
-<p>In light of the previous questions, can you figure out what the form of the log-likelihood is for make.simmap? (is it actually a likelihood, or is it a conditional likelihood?) That is, do you think the form of the log-likelihood is P(tip data | Q) or P(tip data | Q, Pi) ?</p>
-</section>
-<section id="section-3" class="level2">
-<h2 class="anchored" data-anchor-id="section-3">4.</h2>
-<p>Calculate the log-likelihood of the tip data on the tree under the assumed Q matrix. Compare the log-likelihood reported from ace with the log-likelihood returned by make.simmap. What do you notice?</p>
-</section>
-<section id="section-4" class="level2">
-<h2 class="anchored" data-anchor-id="section-4">5.</h2>
-<p>Do ace and make.simmap use the same log-likelihood? If not, what is the key difference? Use ?ace and ?make.simmap in your investigation.</p>
+<section id="simulate-character-mappings-with-simmap" class="level2">
+<h2 class="anchored" data-anchor-id="simulate-character-mappings-with-simmap">Simulate character mappings with simmap</h2>
 
 
 </section>

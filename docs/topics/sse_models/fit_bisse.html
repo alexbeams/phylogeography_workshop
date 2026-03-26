@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>fit_bisse – Template Workshop</title>
+<title>fit_bisse – PhylogeogRaphy Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -117,8 +117,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo light-content">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo dark-content">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -212,7 +210,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mles <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglik, pars)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># these are the parmeter values that this infers: </span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># these are the parmeter values that this infers:</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>mlepars <span class="ot">&lt;-</span> mles<span class="sc">$</span>par</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Let’s visualize the likelihood surface one parameter at a time (holding the other parameter at the MLE; not exactly profile likelihoods, but pretty close):</p>
@@ -263,7 +261,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Of course, these approximations of profile likelihoods don’t show how correlated some of these parameters are with each other. We might as well use MCMC to do this:</p>
 <p>This will take quite a lot longer than our birth-death model with just 2 parameters:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mcmc_fit <span class="ot">&lt;-</span> <span class="fu">mcmc</span>(loglik, pars, <span class="at">nsteps =</span> <span class="dv">1000</span>, <span class="at">w=</span><span class="dv">1</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mcmc_fit <span class="ot">&lt;-</span> <span class="fu">mcmc</span>(loglik, pars, <span class="at">nsteps =</span> <span class="dv">1000</span>, <span class="at">w=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Let’s use an ensemble MCMC sampler.</p>
 <p>The make.bisse function will throw errors if we try to plug in negative parameters:</p>
@@ -292,9 +290,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nwalkers) mcmc_inits[i,] <span class="ot">&lt;-</span> <span class="fu">jitter</span>(<span class="fu">log</span>(mlepars))</span>
 <span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co"># run the ensemble MCMC:</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>mcmc_fit <span class="ot">&lt;-</span> <span class="fu">MCMCEnsemble</span>(loglik_transformed, </span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">inits=</span>mcmc_inits, </span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">max.iter=</span>nwalkers<span class="sc">*</span>nsteps, </span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>mcmc_fit <span class="ot">&lt;-</span> <span class="fu">MCMCEnsemble</span>(loglik_transformed,</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">inits=</span>mcmc_inits,</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">max.iter=</span>nwalkers<span class="sc">*</span>nsteps,</span>
 <span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">n.walkers =</span> nwalkers)</span>
 <span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, let's try to visualize the profile log-likelihoods (including</span></span>
@@ -303,22 +301,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">2</span>))</span>
 <span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">1</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(lambda[<span class="dv">0</span>]))</span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(lambdavals), loglik_lambda0_vals, col='red') </span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(lambdavals), loglik_lambda0_vals, col='red')</span></span>
 <span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">2</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(lambda[<span class="dv">1</span>]))</span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(lambdavals), loglik_lambda1_vals, col='red') </span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(lambdavals), loglik_lambda1_vals, col='red')</span></span>
 <span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">3</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(mu[<span class="dv">0</span>]))</span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(muvals), loglik_mu0_vals, col='red') </span></span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(muvals), loglik_mu0_vals, col='red')</span></span>
 <span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">4</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(mu[<span class="dv">1</span>]))</span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(muvals), loglik_mu1_vals, col='red') </span></span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(muvals), loglik_mu1_vals, col='red')</span></span>
 <span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">5</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(q[<span class="dv">0</span><span class="sc">~</span><span class="dv">1</span>]))</span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(qvals), loglik_q01_vals, col='red') </span></span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(qvals), loglik_q01_vals, col='red')</span></span>
 <span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mcmc_fit<span class="sc">$</span>log.p <span class="sc">~</span> mcmc_fit<span class="sc">$</span>samples[,,<span class="dv">6</span>],<span class="at">xlab=</span><span class="fu">bquote</span>(q[<span class="dv">1</span><span class="sc">~</span><span class="dv">0</span>]))</span>
-<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(qvals), loglik_q10_vals, col='red') </span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(log(qvals), loglik_q10_vals, col='red')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>In the vicinity of the MLE, the MCMC results should closely match the profile likelihood curves (but far away from the MLE there is no reason why they should be similar). (Why?)</p>
 <p>Looking at the different plots, are you able to say which parameters that are more difficult to estimate than others?</p>

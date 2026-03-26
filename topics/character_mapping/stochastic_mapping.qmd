@@ -1,132 +1,80 @@
 # Simulating stochasting character mappings
 
-This code simulates stochastic character mappings on a fixed phylogenetic tree.
-In the real world, we would be given a phylogeny with tip data (diets of finches, geographic location
- of influenza, etc.). The goal would be to estimate quantities like the number of changes, the timing
- of changes, whether one trait is ancestral to the rest, and so on. This would involve fitting models
- to estimate the stochastic rate matrix describing discrete state changes, as well as the root states.
+```{r, message=FALSE, warning=FALSE}
+# rm(list=ls())
 
-In this code, we are going to start by exploring how we would interpret estimates. This involves simulating
- character mappings on the phylogeny using the true values of the Markov chain model, and our goal is
- to see if we can count the number of state changes, describe timing of changes, etc.
-
-Once we have a feel for how the model works, we will then try to do the harder task of fitting it to data.
-
-Clear out the console:
-
-```{r}
-rm(list=ls())
-
-# load in the package for stochastic character mapping:
+library(ape)
+library(expm) # matrix exponential
+library(ggtree)
+library(ggplot2)
+library(dplyr)
+library(cowplot)
+library(scatterpie)
 library(phytools)
-
-# Set the number of stochastic character mappings to simulate:
-nsim = 1000
-
-# Create a tree: (could modify this to load in a tree as well)
-tree <- pbtree(n=50, scale=1)
 ```
 
-Specify a transition rate matrix for two states (A and B).
-In practice, we would want to estimate this from data. Let's pretend we've done that step,
-and this can be taken as known without error:
+Carrying on from our last example of Seasonal Coronavirus NL63, we seek to address the following questions:
+
+- 1. How often did the S amino acid mutate into P, and vice versa?
+- 2. Where precisely do we think mutations occurred on the phylogeny?
+
+With ancestral character estimation (ace), we approached answers to these questions. We considered two types of Markov models (equal rates, ER, and all rates different, ARD). The MLEs of the model parameters carry pretty different interpretations, but the ancestral estimates of past ancestors are largely robust. The main difference we saw was concerning the inferred root state of the phylogeny in each model.
+
+Stochastic character mapping, or character mapping, uses our fitted Markov chain models to annotate phylogenies with mutations along edges. So far, we have just been annotating internal nodes of the phylogenies with their most likely states, given the models and the data (tip data + phylogeny).
+
+To perform character mapping, we will make use of a suite of functions from the phytools package in R. 
+
+Let's start by loading in our Coronavirus NL63 phylogeny:
 
 ```{r}
-Q <- matrix(c(-1,1,
-              1,-1),2,2)
-rownames(Q) <- colnames(Q) <- c("A","B")
+tree <- read.tree('coronavirus_nl63/nextstrain_seasonal-cov_nl63_timetree.nwk')
+
+# Root the tree (not the most technically appropriate way to do this, but good enough for our illustrative purposes):
+tree <- root(tree, node=Ntip(tree)+1 )
+
+# Make the tree fully bifurcating:
+tree <- multi2di(tree)
+
+tree$edge.length[tree$edge.length < 0] <- .01
+tree$edge.length[tree$edge.length == 0] <- .01
+
+
+# Some of these tips have an amino acid change in the gene for the Spike protein. From Nextstrain, we can 
+# see that it is these ones:
+
+Stips <- tree$tip.label
+Ntips <- setdiff(extract.clade(tree, 402)$tip.label, extract.clade(tree, 473)$tip.label)
+Stips <- setdiff(tree$tip.label, Ntips)
+
+x <- rep(0, Ntip(tree))
+names(x) <- tree$tip.label
+x[Stips] <- "S"
+x[Ntips] <- "P"
+
+p <- ggtree(tree) + ggtitle('Seasonal Coronavirus NL63') +
+	theme(plot.title=element_text(hjust=0.5, size=18, face="bold"))
+
+p <- p %<+% data.frame(label=tree$tip.label, aminoacid = as.factor(x))
+
+p + geom_tippoint(aes(col=aminoacid))
 ```
 
-We can scale down Q to have fewer transitions (for illustrative purposes)
+Stochastic character mapping involves 3 steps:
 
-```{r}
-Q <- Q/10
-```
+- 1. Fit a Markov model to the phylogeny (we did this using ace already)
+- 2. Sample ancestral state at internal nodes using the scaled likelihoods (calculated in step 1)
+- 3. Use the estimates from the fitted model to simulate changes of state along edges of the phylogeny that are compatible with the node states at the two ends of each edge (similar to how we simulated event times in the previous tutorial) 
 
-Simulate tip states on the tree using our stochastic rate matrix Q.
-In practice, this would be observed in data, and in many instances we could assume it is
-observed without error. For our purposes here, we simulate tip states from the model:
+That's it. Conceptually, it's super simple. Computationally, it can be a little bit intense to simulate changes of state along edges that are compatible with node states at either end of the edge.
 
-```{r}
-tip_states <- sim.Mk(tree, Q)
-```
+The phytools package has a few functions that we will use. 
 
-How many of each state do we observe?
+**One of these is fitMk**. This function is similar to ace, except that  user may supply a "root prior" (e.g. 50% probability that the root is in state S or P, for our example). When we supply a root prior, we are optimizing a different objective function than ace. By default, fitMk uses scaled likelihoods at the root, identical to ace. The second distinction between fitMk and ace is that they use slightly different optimizers to find Maximum Likelihood Estimates (MLEs). Sometimes it can be convenient to try using both functions if one of them encounters numerical problems during optimization. It can also be a good idea to obtain estimates from both methods as a sanity check. 
 
-```{r}
-table(tip_states)
-```
+The other useful function is **simmap**, which simulates a stochastic character mapping on a tree given a Markov model generator matrix. This is the function that actually carries out steps 2-3 above.
 
-Simulate stochastic character maps nsim times using the tree, tip states, and our Q matrix:
-Note: don't set model=Q, otherwise that just re-estimates Q. Need to specify Q=Q in the make.simmap call.
+A third function **make.simmap**, does both steps (fitMk and simmap) in one go. Obviously it is not necessary to invoke make.simmap after running ace or fitMk.
 
-We simulate from the root to the tips. We have to specify an initial condition at the root:
+## Comparing fitMk and ace
 
-```{r}
-Pi <- c(.5,.5)
-
-# Run the sims!
-sims <- make.simmap(tree, tip_states, Q=Q, pi=Pi, nsim=nsim)
-
-# Uncomment this to visualize the different character mappings:
-#par(mfrow=c(1,1))
-#for(i in 1:nsim){
-#	plot(sims[[i]])
-#	Sys.sleep(.0002)
-#}
-
-# Let's start by summarizing the number of mutations that happen across the whole tree:
-
-counts <- lapply(sims, countSimmap)
-numMutations <- sapply(counts, function(x) x$N)
-transitions <- lapply(counts, function(x)x$Tr)
-transitions_AB <- sapply(transitions, function(x) x[1,2])
-transitions_BA <- sapply(transitions, function(x) x[2,1])
-```
-
-
-Let's plot an example character mapped tree, and histograms of number of mutations:
-
-```{r}
-sim = sims[[1]]
-#  overall, and by type
-par(mfrow=c(2,2))
-## plot the character mapped tree
-sim$tip.label <- paste(sim$tip.label, "(", tip_states, ")", sep="")
-plotSimmap(sim, fsize = 0.8)
-## plottig make.simmap objects messes up margins, let's reset these:
-par(mar=c(5,4,4,1))
-## histogram of total mutations:
-hist(numMutations)
-## histogram of mutations A -> B
-hist(transitions_AB)
-## histogram of mutations B -> A
-hist(transitions_BA)
-```
-
-# Exercises:
-
-## 1.
-Try changing the initial condition at the root (Pi, also called the "root prior") to see how results change
-
-## 2.
-Look at the logL values in the sims. What do you think that describes? In particular, do you think the reported logL is P(tip data | Q), or P(tip data, character mapping | Q)?
-
-## 2.a.
-Create a new sims list, replacing Q with jitter(Q). What do you notice about the logL values?
-
-# 2.b.
-Create a new sims list, replacing Pi with different values. What do you notice about the logL values in this case?
-
-## 3.
-In light of the previous questions, can you figure out what the form of the log-likelihood is for make.simmap? (is it actually a likelihood, or is it a conditional likelihood?)
-	That is, do you think the form of the log-likelihood is
-	P(tip data | Q) or P(tip data | Q, Pi) ?
-
-## 4.
-Calculate the log-likelihood of the tip data on the tree under the assumed Q matrix. Compare the log-likelihood reported from ace with the log-likelihood returned by make.simmap. What do you notice?
-
-## 5.
-Do ace and make.simmap use the same log-likelihood? If not, what is the key difference? Use ?ace and ?make.simmap in your investigation.
-
-
+## Simulate character mappings with simmap

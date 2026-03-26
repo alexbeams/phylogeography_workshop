@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>fit_stochastic_mapping – Template Workshop</title>
+<title>fit_stochastic_mapping – PhylogeogRaphy Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -117,8 +117,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo light-content">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo dark-content">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -201,7 +199,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>This will run for a while, and you should see traceplots updating in real time until it finishes:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>    fit.mcmc <span class="ot">&lt;-</span> <span class="fu">mcmcMk</span>(sunfish.tree, sunfish_tipdata, </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>    fit.mcmc <span class="ot">&lt;-</span> <span class="fu">mcmcMk</span>(sunfish.tree, sunfish_tipdata,</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">model=</span><span class="st">"ER"</span>, <span class="at">ngen=</span><span class="dv">10000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The dimensions of fit.mcmc will be ngen * (number of parameters in the Mk model + 2), which for this run will be 10000 x 3 because we are only estimating a single parameter</p>
@@ -216,10 +214,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Of note, we can also use base R plotting to accomplish these things as well. Here is a histogram of the parameter values of the entire MCMC run:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(fit.mcmc[,<span class="st">'[pisc,non]'</span>],<span class="at">breaks=</span><span class="dv">100</span>) </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(fit.mcmc[,<span class="st">'[pisc,non]'</span>],<span class="at">breaks=</span><span class="dv">100</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># and the last 80% of the run:</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(fit.mcmc[<span class="fu">c</span>(<span class="dv">2001</span><span class="sc">:</span><span class="dv">10000</span>),<span class="st">'[pisc,non]'</span>],<span class="at">breaks=</span><span class="dv">100</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(fit.mcmc[<span class="fu">c</span>(<span class="dv">2001</span><span class="sc">:</span><span class="dv">10000</span>),<span class="st">'[pisc,non]'</span>],<span class="at">breaks=</span><span class="dv">100</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>I also like to plot profile log- likelihood (logLik~parameters):</p>
 <div class="cell">
@@ -251,7 +249,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p class="heading"></p>
 <p>We can fit a more complicated model with two rates:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fit.mcmc_2rates <span class="ot">&lt;-</span> <span class="fu">mcmcMk</span>(sunfish.tree, sunfish_tipdata, </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fit.mcmc_2rates <span class="ot">&lt;-</span> <span class="fu">mcmcMk</span>(sunfish.tree, sunfish_tipdata,</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">model=</span><span class="st">"ARD"</span>, <span class="at">ngen=</span><span class="dv">10000</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, we have profile log-likelihoods in two parameters:</span></span>
@@ -265,28 +263,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>We can also visualize correlations in parameters:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit.mcmc_2rates[,<span class="st">'[pisc,non]'</span>], </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit.mcmc_2rates[,<span class="st">'[pisc,non]'</span>],</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    fit.mcmc_2rates[,<span class="st">'[non,pisc]'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We’re going to write down a function that accepts the two transition rates and spits out a character mapping (a make.simmap output). We’ll want to estimate the root state probabilities too, but for now we can just set them to something fixed.</p>
 <p>This is just so to make the algorithm below a little easier to read.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>get_simmap <span class="ot">&lt;-</span> <span class="cf">function</span>(q12, q21, tree, tipdata){</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="sc">-</span>q12,q12,</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>              q21,<span class="sc">-</span>q21),<span class="dv">2</span>,<span class="dv">2</span>)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rownames</span>(Q) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(Q) <span class="ot">&lt;-</span> <span class="fu">levels</span>(tipdata) </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rownames</span>(Q) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(Q) <span class="ot">&lt;-</span> <span class="fu">levels</span>(tipdata)</span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># We simulate from the root to the tips. </span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">#   We have to specify an initial condition </span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># We simulate from the root to the tips.</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">#   We have to specify an initial condition</span></span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">#   at the root:</span></span>
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    Pi <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span>
 <span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># let's just simulate 1 character mapping for </span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># let's just simulate 1 character mapping for</span></span>
 <span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">#   each parameter update for now; can</span></span>
 <span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">#   change this later</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    sims <span class="ot">&lt;-</span> <span class="fu">make.simmap</span>(tree, tipdata, <span class="at">Q=</span>Q, <span class="at">pi=</span>Pi, <span class="at">nsim=</span><span class="dv">1</span>)</span>
 <span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(sims)</span>
 <span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -317,9 +315,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">1</span>))</span>
 <span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="do">## histogram of total mutations:</span></span>
 <span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(numMutations)</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="do">## histogram of mutations non -&gt; pisc </span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="do">## histogram of mutations non -&gt; pisc</span></span>
 <span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(transitions_non_pisc)</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="do">## histogram of mutations pisc -&gt; non </span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="do">## histogram of mutations pisc -&gt; non</span></span>
 <span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(transitions_pisc_non)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>

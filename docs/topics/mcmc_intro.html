@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>mcmc_intro – Template Workshop</title>
+<title>mcmc_intro – PhylogeogRaphy Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -146,8 +146,6 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../img/coffee_can.png" alt="" class="navbar-logo light-content">
-    <img src="../img/coffee_can.png" alt="" class="navbar-logo dark-content">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -226,11 +224,11 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>drawDartboard <span class="ot">&lt;-</span> <span class="cf">function</span>(){</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Square with Inscribed Circle in R</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set up the plot</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.2</span>, <span class="fl">1.2</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.2</span>, <span class="fl">1.2</span>), </span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">type =</span> <span class="st">"n"</span>, </span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">asp =</span> <span class="dv">1</span>, </span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">xlab =</span> <span class="st">""</span>, </span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">ylab =</span> <span class="st">""</span>, </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.2</span>, <span class="fl">1.2</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.2</span>, <span class="fl">1.2</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">type =</span> <span class="st">"n"</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">asp =</span> <span class="dv">1</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">xlab =</span> <span class="st">""</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">ylab =</span> <span class="st">""</span>,</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">main =</span> <span class="st">"Square with Inscribed Circle"</span>)</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Define square side length</span></span>
@@ -255,14 +253,14 @@ window.Quarto = {
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grid</span>(<span class="at">col =</span> <span class="st">"lightgray"</span>, <span class="at">lty =</span> <span class="st">"dotted"</span>)</span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add legend</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">legend</span>(<span class="st">"topright"</span>, </span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>           <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Square"</span>, <span class="st">"Inscribed Circle"</span>), </span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>           <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"red"</span>), </span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">legend</span>(<span class="st">"topright"</span>,</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>           <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Square"</span>, <span class="st">"Inscribed Circle"</span>),</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>           <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"red"</span>),</span>
 <span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>           <span class="at">lwd =</span> <span class="dv">2</span>)</span>
 <span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Optional: Add center point</span></span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">points</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">cex =</span> <span class="fl">0.8</span>)</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Now, I’m going to throw darts at this target. Because they land randomly, the (x,y) coordinates of the darts are each uniformly distributed, like this:</p>
 <div class="cell">
@@ -271,15 +269,15 @@ window.Quarto = {
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># randomly choose (x,y) coordinates independently:</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> <span class="fu">runif</span>(ndarts,<span class="at">min=</span><span class="sc">-</span><span class="fl">0.5</span>, <span class="at">max=</span><span class="fl">0.5</span>)</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> <span class="fu">runif</span>(ndarts,<span class="at">min=</span><span class="sc">-</span><span class="fl">0.5</span>, <span class="at">max=</span><span class="fl">0.5</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># re-draw the dartboard:    </span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># re-draw the dartboard:</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">drawDartboard</span>()</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add the hit locations to the dartboard:</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">points</span>(x,y, <span class="at">pch=</span><span class="dv">4</span>)</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">x=</span>x,<span class="at">y=</span>y))</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Play around with the throwDarts function for different values of ndarts. How does this help us evaluate <span class="math inline">\(\pi\)</span>? Remember that Area(circle) = <span class="math inline">\(\pi\)</span> * radius^2, and Area(square) = radius^2 = 1, because we deliberately chose radius=1.</p>
 <p>So, the area of the circle is just <span class="math inline">\(\pi\)</span>/4, and the area of the rectangle is 1.</p>
@@ -294,19 +292,19 @@ window.Quarto = {
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">=</span> darts<span class="sc">$</span>x</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">=</span> darts<span class="sc">$</span>y</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    r <span class="ot">=</span> <span class="fu">sqrt</span>(x<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> y<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    numinside <span class="ot">=</span> <span class="fu">sum</span>(r <span class="sc">&lt;</span> <span class="fl">0.5</span>)</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(numinside<span class="sc">/</span>ndarts)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The area of the circle is <span class="math inline">\(\pi\)</span>/4, the area of the square is 1</p>
 <p>So, 4 x (fraction of darts landing inside) = <span class="math inline">\(\pi\)</span> (approximately)</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>calculatePi <span class="ot">&lt;-</span> <span class="cf">function</span>(ndarts){</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    ratio <span class="ot">=</span> <span class="fu">countDartsInside</span>(ndarts)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    pi_approx <span class="ot">=</span> <span class="dv">4</span> <span class="sc">*</span> ratio</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(pi_approx)</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -334,7 +332,7 @@ window.Quarto = {
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="dv">1</span><span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">2</span><span class="sc">*</span>pi) <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>x<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">2</span>)</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># antiderivatives of these functions (should have +C):</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>bigf <span class="ot">&lt;-</span><span class="cf">function</span>(x) <span class="sc">-</span><span class="fu">cos</span>(x) </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>bigf <span class="ot">&lt;-</span><span class="cf">function</span>(x) <span class="sc">-</span><span class="fu">cos</span>(x)</span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>G <span class="ot">&lt;-</span> <span class="cf">function</span>(x) x<span class="sc">^</span><span class="dv">3</span><span class="sc">/</span><span class="dv">3</span></span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>H <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">pnorm</span>(x,<span class="at">mean=</span><span class="dv">0</span>,<span class="at">sd=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -463,8 +461,8 @@ Pr(Z&gt;5) &amp;= \int_5^\infty h(x) dx ,\\
 <span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>getimportanceest <span class="ot">&lt;-</span> <span class="cf">function</span>(ndarts){</span>
 <span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    importance_sample <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="sc">+</span> <span class="fu">rexp</span>(ndarts, <span class="at">rate=</span><span class="dv">1</span><span class="sc">/</span><span class="dv">10</span>)</span>
 <span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    ratios <span class="ot">&lt;-</span> <span class="fu">sapply</span>(importance_sample[importance_sample<span class="sc">&gt;</span><span class="dv">5</span>], </span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(x){<span class="fu">h</span>(x)<span class="sc">/</span><span class="fu">w</span>(x)} ) </span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    ratios <span class="ot">&lt;-</span> <span class="fu">sapply</span>(importance_sample[importance_sample<span class="sc">&gt;</span><span class="dv">5</span>],</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(x){<span class="fu">h</span>(x)<span class="sc">/</span><span class="fu">w</span>(x)} )</span>
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">mean</span>(ratios))</span>
 <span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -505,7 +503,7 @@ Repeat ad infinitum</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize state (and allocate into a vector):</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>ninits <span class="ot">&lt;-</span> <span class="dv">100000</span> <span class="co"># how long to run</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>xk <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="at">length=</span>ninits) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>xk <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="at">length=</span>ninits)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>To illustrate the method, let’s make the initial value different from zero (in practice, it’s good for the initial value to not be in the tails of <span class="math inline">\(f(x)\)</span>):</p>
 <p>But I will chose a “bad” guess in the tails to illustrate the algorithm’s behavior:</p>
@@ -514,13 +512,13 @@ Repeat ad infinitum</code></pre>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>ninits){</span>
 <span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> <span class="fu">w</span>(xk[i],<span class="dv">1</span>)</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate the "acceptance ratio":</span></span>
 <span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    alpha <span class="ot">&lt;-</span> <span class="fu">f</span>(y)<span class="sc">/</span><span class="fu">f</span>(xk[i])</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># alpha &gt; 1 means we always accept y; alpha &lt; 1 means we only sometimes do:</span></span>
 <span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    u <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">1</span>)</span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(alpha <span class="sc">&gt;</span> u){xk[i<span class="sc">+</span><span class="dv">1</span>] <span class="ot">&lt;-</span> y}<span class="cf">else</span>{xk[i<span class="sc">+</span><span class="dv">1</span>]<span class="ot">=</span>xk[i]}  </span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(alpha <span class="sc">&gt;</span> u){xk[i<span class="sc">+</span><span class="dv">1</span>] <span class="ot">&lt;-</span> y}<span class="cf">else</span>{xk[i<span class="sc">+</span><span class="dv">1</span>]<span class="ot">=</span>xk[i]}</span>
 <span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>))</span>
@@ -544,12 +542,12 @@ Repeat ad infinitum</code></pre>
 ## Might need to edit this section:
 
 Also, instead of sampling a large number of samples from the proposal distribution w(x),
-and then calculating the average of the ratios f/w, we just sample one value from the 
+and then calculating the average of the ratios f/w, we just sample one value from the
 distribution w(y|x)f(x) and compare it to w(x|y)f(y)
 
 In the algorithm above, w(x|y) and w(x|y) cancel in the acceptance ratio because our
 uniform distribution is symmetric. Most proposal distribution in practice will have
-this property, but not all. 
+this property, but not all.
 -->
 </section>
 </section>

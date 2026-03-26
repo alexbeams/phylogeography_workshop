@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>intro_to_trees – Template Workshop</title>
+<title>intro_to_trees – PhylogeogRaphy Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -117,8 +117,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo light-content">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo dark-content">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -178,36 +176,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="intro-to-trees-in-r" class="level1">
 <h1>Intro to trees in R</h1>
-<p>This is basically following the vignette Ancestral.html for phangorn The original vignette is written by Klaus Schliep (klaus.schliep@gmail.com)</p>
+<p>This page is basically following the vignette Ancestral.html for the phangorn package in R.</p>
+<p>The original vignette is written by Klaus Schliep (klaus.schliep@gmail.com).</p>
 <p>I’m annotating it a bit more for our purposes.</p>
+<p>First, let’s install some of the packages we will need:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phangorn)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: ape</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phangorn)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phytools)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phytools)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: maps</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Let's load in some primate data:</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>fdir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"extdata/trees"</span>, <span class="at">package =</span> <span class="st">"phangorn"</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>primates <span class="ot">&lt;-</span> <span class="fu">read.phyDat</span>(<span class="fu">file.path</span>(fdir, <span class="st">"primates.dna"</span>),</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">format =</span> <span class="st">"interleaved"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Let’s examine this.</p>
+<p>Next, let’s load in some data. We will read in an example dataset from the phangorn package in R, which contains genetic sequence information about a number of different species.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(primates)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Let's load in some primate data:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>fdir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"extdata/trees"</span>, <span class="at">package =</span> <span class="st">"phangorn"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>primates <span class="ot">&lt;-</span> <span class="fu">read.phyDat</span>(<span class="fu">file.path</span>(fdir, <span class="st">"primates.dna"</span>),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">format =</span> <span class="st">"interleaved"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Let’s examine this data file - what does it contain?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(primates)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "Mouse"      "Bovine"     "Lemur"      "Tarsier"    "Squir Monk"
  [6] "Jpn Macaq"  "Rhesus Mac" "Crab-E.Mac" "BarbMacaq"  "Gibbon"    
 [11] "Orang"      "Gorilla"    "Chimp"      "Human"     </code></pre>
 </div>
 </div>
-<p>This shows us there are 14 sequences. Let’s look at Mouse:</p>
+<p>This shows us there are 14 sequences corresponding to 14 different species. Let’s look at Mouse:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>primates<span class="sc">$</span>Mouse</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>primates<span class="sc">$</span>Mouse</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  [1] 1 2 2 1 1 1 1 1 1 1 2 1 4 2 2 1 1 1 2 1 2 1 1 2 2 2 2 1 3 2 2 2 4 4 2 3 2
  [38] 1 1 4 3 2 2 1 4 2 1 3 1 1 4 1 4 4 1 4 1 2 4 1 2 4 1 1 1 1 1 2 4 2 1 1 1 4
@@ -219,7 +215,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>It’s a sequence of the numbers 1–4. Typing primates into the console indicates that the states are a,c,g,t:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>primates</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>primates</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>14 sequences with 232 character and 217 different site patterns.
 The states are a c g t </code></pre>
@@ -227,7 +223,7 @@ The states are a c g t </code></pre>
 </div>
 <p>So the Mouse sequence is really</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">'a'</span>,<span class="st">'c'</span>,<span class="st">'t'</span>,<span class="st">'g'</span>)[primates<span class="sc">$</span>Mouse]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">'a'</span>,<span class="st">'c'</span>,<span class="st">'t'</span>,<span class="st">'g'</span>)[primates<span class="sc">$</span>Mouse]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  [1] "a" "c" "c" "a" "a" "a" "a" "a" "a" "a" "c" "a" "g" "c" "c" "a" "a" "a"
  [19] "c" "a" "c" "a" "a" "c" "c" "c" "c" "a" "t" "c" "c" "c" "g" "g" "c" "t"
@@ -244,13 +240,14 @@ The states are a c g t </code></pre>
 [217] "c"</code></pre>
 </div>
 </div>
-<p>Let’s turn this into an R data frame to visualize the sequence alignment:</p>
+<p>The letters “a”, “c”, “t”, and “g” correspond to the different nucleotides in deoxyribonucleic acid (DNA). If you’ve never heard of DNA, say hello to the bugs (the ones living there under the rock with you).</p>
+<p>Let’s turn this species data into an R data frame to visualize the sequence alignment. Columns correspond to species, and rows correspond to a position in the DNA sequence:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>primdat <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(primates)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>primdat <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(primates)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Let’s look at the the beginning of the multiple sequence alignment:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(primdat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(primdat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  Mouse Bovine Lemur Tarsier Squir Monk Jpn Macaq Rhesus Mac Crab-E.Mac
 1     a      a     a       a          a         a          a          a
@@ -268,90 +265,43 @@ The states are a c g t </code></pre>
 6         a      a     a       a     a     a</code></pre>
 </div>
 </div>
-<p>The sequences appear to be mostly similar. Let’s look at each pair in the data and find the number of differences in the sequences.</p>
+<p>The sequences appear to be mostly similar. If we had included bugs or plants in the data, there might be more obvious differences. The fact that the sequences are rather similar among these species indicates that they share ancestry somewhat recently (at least in the grand scheme of life on Earth as we know it).</p>
+<p>Let’s look at each pair of species in the data and find the number of differences in their sequences.</p>
 <p>For example, if we wanted to see how many sites differ between Mouse and Human, we could do this:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(primdat<span class="sc">$</span>Mouse <span class="sc">!=</span> primdat<span class="sc">$</span>Human)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(primdat<span class="sc">$</span>Mouse <span class="sc">!=</span> primdat<span class="sc">$</span>Human)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 128</code></pre>
 </div>
 </div>
-<p>128 sites differ; there are</p>
+<p>128 sites differ between these species; there are</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(primdat)[<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(primdat)[<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 232</code></pre>
 </div>
 </div>
-<p>total sites.</p>
-<p>I will load these into a matrix, where the i,j entry tells me how many sites differ between species i and species j. #This matrix will obviously be symmetric, and the diagonal will be zero.</p>
-<p>So, I can just fill in the upper diagonal:</p>
+<p>total sites in each sequence.</p>
+<p>We will load these into a matrix, where the i,j entry tells us how many sites differ between species i and species j.</p>
+<p>This matrix will obviously be symmetric, and the diagonal will be zero. S So, we can can just fill in the upper diagonal of the matrix to get the information we need, and then use symmetry to fill in the lower half:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>seq_diff_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow=</span><span class="dv">14</span>,<span class="at">ncol=</span><span class="dv">14</span>)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(seq_diff_matrix) <span class="ot">&lt;-</span> <span class="fu">names</span>(primates)</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(seq_diff_matrix) <span class="ot">&lt;-</span> <span class="fu">names</span>(primates)</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(seq_diff_matrix) <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co">#I will swallow my pride and write a nested for loop:</span></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">14</span>){</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(j <span class="cf">in</span> i<span class="sc">:</span><span class="dv">14</span>){</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>        seq_diff_matrix[i,j] <span class="ot">&lt;-</span> <span class="fu">sum</span>( primdat[,i] <span class="sc">!=</span> primdat[,j] )</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>seq_diff_matrix</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>           Mouse Bovine Lemur Tarsier Squir Monk Jpn Macaq Rhesus Mac
-Mouse          0    121   130     132        125       131        137
-Bovine        NA      0   113     119        116       118        119
-Lemur         NA     NA     0     113        118       119        124
-Tarsier       NA     NA    NA       0        133       121        122
-Squir Monk    NA     NA    NA      NA          0       118        121
-Jpn Macaq     NA     NA    NA      NA         NA         0         22
-Rhesus Mac    NA     NA    NA      NA         NA        NA          0
-Crab-E.Mac    NA     NA    NA      NA         NA        NA         NA
-BarbMacaq     NA     NA    NA      NA         NA        NA         NA
-Gibbon        NA     NA    NA      NA         NA        NA         NA
-Orang         NA     NA    NA      NA         NA        NA         NA
-Gorilla       NA     NA    NA      NA         NA        NA         NA
-Chimp         NA     NA    NA      NA         NA        NA         NA
-Human         NA     NA    NA      NA         NA        NA         NA
-           Crab-E.Mac BarbMacaq Gibbon Orang Gorilla Chimp Human
-Mouse             136       122    136   133     123   129   128
-Bovine            122       115    113   109     119   128   124
-Lemur             128       122    130   125     117   139   130
-Tarsier           125       125    131   124     124   135   137
-Squir Monk        116       115    106   110     102   116   115
-Jpn Macaq          42        68    103    95      94   103    94
-Rhesus Mac         52        68     94    94      94   109    94
-Crab-E.Mac          0        66    105   103     111   115   103
-BarbMacaq          NA         0     99    91      99   106   109
-Gibbon             NA        NA      0    93      85    90    84
-Orang              NA        NA     NA     0      70    78    73
-Gorilla            NA        NA     NA    NA       0    62    56
-Chimp              NA        NA     NA    NA      NA     0    52
-Human              NA        NA     NA    NA      NA    NA     0</code></pre>
-</div>
-</div>
-<p>So already, it is abundantly clear that Humans, Chimps, and Gorillas are are pretty similar.</p>
-<p>Then if we invoke</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(seq_diff_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>This looks a little funny. I’m going to fill in the rest of the matrix to see if this plots a little better</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>seq_diff_matrix[<span class="fu">lower.tri</span>(seq_diff_matrix)] <span class="ot">&lt;-</span> <span class="fu">t</span>(seq_diff_matrix)[<span class="fu">lower.tri</span>(<span class="fu">t</span>(seq_diff_matrix))]</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co">#check to make sure I did this right</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>seq_diff_matrix <span class="sc">==</span> <span class="fu">t</span>(seq_diff_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>seq_diff_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow=</span><span class="dv">14</span>,<span class="at">ncol=</span><span class="dv">14</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(seq_diff_matrix) <span class="ot">&lt;-</span> <span class="fu">names</span>(primates)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(seq_diff_matrix) <span class="ot">&lt;-</span> <span class="fu">names</span>(primates)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(seq_diff_matrix) <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">#I will swallow my pride and write a nested for loop (real R pros use the apply family of functions):</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">14</span>){</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(j <span class="cf">in</span> i<span class="sc">:</span><span class="dv">14</span>){</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>        seq_diff_matrix[i,j] <span class="ot">&lt;-</span> <span class="fu">sum</span>( primdat[,i] <span class="sc">!=</span> primdat[,j] )</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>seq_diff_matrix[<span class="fu">lower.tri</span>(seq_diff_matrix)] <span class="ot">&lt;-</span> <span class="fu">t</span>(seq_diff_matrix)[<span class="fu">lower.tri</span>(<span class="fu">t</span>(seq_diff_matrix))]</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="co">#check to make sure I did this right -- is the matrix equal to its transpose? (i.e. is it symmetric?)</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>seq_diff_matrix <span class="sc">==</span> <span class="fu">t</span>(seq_diff_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           Mouse Bovine Lemur Tarsier Squir Monk Jpn Macaq Rhesus Mac
 Mouse       TRUE   TRUE  TRUE    TRUE       TRUE      TRUE       TRUE
@@ -384,8 +334,34 @@ Gorilla          TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
 Chimp            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE
 Human            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Yes -- now plot again</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(seq_diff_matrix, <span class="at">symm=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Yes it is -- now plot!</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(seq_diff_matrix, <span class="at">symm=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>So already, it is abundantly clear that Humans, Chimps, and Gorillas are are pretty similar in terms of their DNA sequences. There is also a group in the middle (BarbMacq, Crab-E.Mac, Jpn Macaq, and Rhesus Mac) that look pretty similar to each other.</p>
+<p>The heatmap function even makes a nice little dendogram tree on the margins!</p>
+<p>We have made a tree, but there are some potential drawbacks with this. The tree should reflect the evolutionary history of these organisms.</p>
+<p>That means the internal nodes of the tree should have their own sequences because they correspond to ancestral organisms with their own DNA sequences. In constructing a phylogenetic tree, we should be taking account of the fact that closely related things have shared ancestry, and the ancestor will look similar to its recent descendants.</p>
+<p>In this tree we have produced so far, we have only looked at raw differences between pairs of sequences. We have not explicitly made use of the idea of “common descent” from ancestors. The idea of similarity due to common descent means that the location of nucleotide differences in the sequences will matter. Internal nodes of our phylogenetic tree should correspond to ancestors of present-day organisms. These ancestors will have nucleotide sequences of their own, and these should be similar to the sequences in the descendants. We have not accounted for this.</p>
+<p>This is why the method of Parsimony was originally developed. Instead of looking at pairwise differences between sequences, we try to determine what the evolutionary history would have been, under the assumption that evolution is “parsimonious” – the number of nucleotide changes from the root of the tree to the leaves should be minimized.</p>
+<p>Let’s calculate a tree using Parsimony:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">pratchet</span>(primates, <span class="at">trace=</span><span class="dv">0</span>) <span class="sc">|&gt;</span> <span class="fu">acctran</span>(primates) <span class="sc">|&gt;</span> <span class="fu">makeNodeLabel</span>()</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">parsimony</span>(tree, primates)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 746</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>anc.pars <span class="ot">&lt;-</span> <span class="fu">anc_pars</span>(tree, primates)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Let's look at the evolution of site 17 in the sequences:</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plotAnc</span>(anc.pars, <span class="dv">17</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="st">"Maximum Parsimony Reconstruction"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -394,38 +370,34 @@ Human            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE</code></pre>
 </div>
 </div>
 </div>
-<p>Now it’s a little more apparent that some groups are more closely related to each other than others.</p>
-<p>It even makes a nice little dendogram tree!</p>
-<p>We have made a tree, but there are some potential drawbacks with this. Many evolutionary biologists originally held the view that if the tree reflects evolutionary history of these organisms, that the ancestors implied by the internal nodes of the tree should have their own sequences. In constructing a phylogeny, we should really be taking account of the fact that the location of nucleotide differences is important, not just the raw number of differences. Nothing we have done so far made use of the idea that ancestors should have similar sequences to their descendants.</p>
-<p>This is why the method of Parsimony was originally developed. Instead of looking at pairwise differences between sequences, we try to determine what the evolutionary history would have been, under the assumption that evolution is “parsimonious” – the number of nucleotide changes from the root of the tree to the leaves should be minimized.</p>
-<p>Let’s calculate a tree using this criterion:</p>
+<p>The Parsimony reconstruction method provides us with a way to estimate what ancestral sequences might have looked like. Already, we can see that species that are closely related tend to have the same sequence, and so do their ancestors (at least in the recent past).</p>
+<p>We can calculate pairwise distances between the species once again, but this time using the branch lengths in the tree. The distance between two species corresponds to the sum of the branch lengths along the unique path connecting the two species through their most recent common ancestor. Because we are dealing with trees (a special type of graph), there is always a unique path connecting two leaves (so that the notion of “distance” is well defined).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">pratchet</span>(primates, <span class="at">trace=</span><span class="dv">0</span>) <span class="sc">|&gt;</span> <span class="fu">acctran</span>(primates) <span class="sc">|&gt;</span> <span class="fu">makeNodeLabel</span>()</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">parsimony</span>(tree, primates)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 746</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>parsmny_dist_mat <span class="ot">&lt;-</span> <span class="fu">cophenetic</span>(tree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>anc.pars <span class="ot">&lt;-</span> <span class="fu">anc_pars</span>(tree, primates)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Let's look at the evolution of site 17 in the sequences:</span></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plotAnc</span>(anc.pars, <span class="dv">17</span>)</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="st">"MPR"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>You can verify that this matrix is symmetric. Let’s visualize this:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(parsmny_dist_mat,<span class="at">symm=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>We can calculate pairwise distances between the species once again, but this time using the branch lengths in the tree. The distance between two species corresponds to the sum of the branch lengths along the unique path connecting te two species through their most recent common ancestor. Because we are dealing with trees (a special type of graph), there is always a unique path connecting two leaves.</p>
+<p>This is slightly different from the pairwise sequence differene matrix. Let’s compare the pairwise distances in both:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>parsmny_dist_mat <span class="ot">&lt;-</span> <span class="fu">cophenetic</span>(tree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>You can verify that this matrix is symmetric. Let’s visualize this:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(parsmny_dist_mat,<span class="at">symm=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> seq_diff_matrix</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> parsmny_dist_mat</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> m1[<span class="fu">rownames</span>(m2),<span class="fu">colnames</span>(m2)]</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> m1[<span class="fu">upper.tri</span>(m1)]</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> m2[<span class="fu">upper.tri</span>(m2)]</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m1,m2,<span class="at">xlab=</span><span class="st">'Nucleotide differences'</span>,<span class="at">ylab=</span><span class="st">'Patristic distances (parsimony)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -434,17 +406,24 @@ Human            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE</code></pre>
 </div>
 </div>
 </div>
-<p>This is slightly different from the pairwise sequence differene matrix. Let’s compare the pairwise distances in both:</p>
+<p>Clearly these things are correlated - but they are not identical.</p>
+<p>Parsimony reconstructions of trees are more biologically grounded than dendograms build from pairwise differences, but we can do even better.</p>
+<p>The criterion to minimize the number of nucleotide changes in parsimony ignores back-substitutions that can undo nucleotide changes. Even though such events may be rare in the grand scheme of things, over long timescales they can occur. Ignoring this can lead to spurious conclusions.</p>
+<p>This is the motivation for the final tree construction method we will consider here – the so-called Likelihood methods that explicitly model nucleotide substitution as a stochastic process (specifically, as a continuous-time Markov chain). These models depend on parameters that must be estimated from data. As we will see later, Markov chains that describe changes in nucleotides over time may be adapted to model changes in other traits over time (such as location).</p>
+<p>Because our focus for this workshop is discrete phylogeography, we will not consider methods making use of continuous data at the tips of trees. It is possible to formulate diffusion models and stochastic processes such as Brownian Motion or the Ornstein-Uhlenbeck process to model evolution of continuous traits from root to leaves. We will not do so here.</p>
+<p>Discrete-state Markov models (as well as the Brownian motion models for trait evolution) fall under the category of Likelihood methods for ancestral character estimation. This is because it is possible to fit these models to data using standard techniques from statistics that employ likelihood functions.</p>
+<p>The code snippet below will estimate parameters of a discrete-state Markov chain defined on the state space (A,C,G,T) and changing in continuous time. We will not estimate the tree topology. Estimatng parameters of the Markov chain will help us determine the branch lengths in the tree that are most consistent with the data (i.e.&nbsp;the sequences).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> seq_diff_matrix</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> parsmny_dist_mat</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> m1[<span class="fu">rownames</span>(m2),<span class="fu">colnames</span>(m2)]</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> m1[<span class="fu">upper.tri</span>(m1)]</span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> m2[<span class="fu">upper.tri</span>(m2)]</span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m1,m2,<span class="at">xlab=</span><span class="st">'Nucleotide differences'</span>,<span class="at">ylab=</span><span class="st">'Patristic distances (parsimony)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">pml</span>(tree, primates)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">optim.pml</span>(fit, <span class="at">model=</span><span class="st">"F81"</span>, <span class="at">control =</span> <span class="fu">pml.control</span>(<span class="at">trace=</span><span class="dv">0</span>))</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="co">#This will give us also the most likely ancestral states:</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>anc.ml <span class="ot">&lt;-</span> <span class="fu">anc_pml</span>(fit)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Let's look at site 17 in the sequences:</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plotAnc</span>(anc.ml, <span class="dv">17</span>)</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="st">"Maximum Likelihood Estimate"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -453,23 +432,13 @@ Human            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE</code></pre>
 </div>
 </div>
 </div>
-<p>Clearly these things are correlated - but they are not identical.</p>
-<p>There are some drawbacks for parsimony as well. The first major drawback is that the criterion to minimize the number of nucleotide changes tends to produce trees with branch lengths that …</p>
-<p>This is the motivation for the final tree construction method we will consider here – the so-called Likelihood methods. The likelihood methods all use Markov chains to describe rates of change in nucleotides over time. These models depend on parameters, and can be subsumed into Likelihood-based methods.</p>
-<p>Because our focus for this workshop is discrete phylogeography, we will not consider methods making use of continuous data at the tips of trees. It is possible to formulate diffusion models and stochastic processes such as the Ornstein-Uhlenbeck process to model evoultion of continuous traits from root to leaves. These are usually not employed to estimate phylogenetic trees from the outset, but rather to carry out ancestral character estimation for a continuous trait once a phylogeny has been obtained.</p>
-<p>Discrete-state Markov models, as well as the Brownian motion models for trait evolution all fall under the category of Likelihood methods for ancestral character estimation, because it is possible to fit these models to data using techniques from statistics that employ likelihood functions.</p>
-<p>We will estiamte parameters of a discrete-state Markov chain defined on the state space (A,C,G,T) and changing in continuous time. We will not estimate the tree topology, but this will adjust the branch lengths in thre tree:</p>
+<p>Let’s compare the parsimony and ML trees:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">pml</span>(tree, primates)</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">optim.pml</span>(fit, <span class="at">model=</span><span class="st">"F81"</span>, <span class="at">control =</span> <span class="fu">pml.control</span>(<span class="at">trace=</span><span class="dv">0</span>))</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="co">#This will give us also the most likely ancestral states:</span></span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>anc.ml <span class="ot">&lt;-</span> <span class="fu">anc_pml</span>(fit)</span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Let's look at site 17 in the sequences:</span></span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plotAnc</span>(anc.ml, <span class="dv">17</span>)</span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="st">"ML"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree, <span class="at">main=</span><span class="st">'Parsimony tree'</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(anc.ml<span class="sc">$</span>tree, <span class="at">main=</span><span class="st">'Maximum likelihood tree'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -478,9 +447,15 @@ Human            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE</code></pre>
 </div>
 </div>
 </div>
-<p>Let’s compare the parsimony and ML trees:</p>
+<p>The tree topologies (=genealogical relationship) are the same, but the branch lengths are a bit different. Notice, in particular, that the ancestors in the Mouse-Bovine-Tarsier-Lemur clade of the maximum likelihood phylogeny are concentrated together more closely in time than in the parsimony tree.</p>
+<p>Let’s calculate pairwise distances in this tree:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>mldists <span class="ot">&lt;-</span> <span class="fu">cophenetic</span>(anc.ml<span class="sc">$</span>tree)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>c1 <span class="ot">&lt;-</span> mldists[<span class="fu">upper.tri</span>(mldists)]</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> parsmny_dist_mat[<span class="fu">upper.tri</span>(parsmny_dist_mat)]</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(c1,c2,<span class="at">xlab=</span><span class="st">'Maximum likelihood distances'</span>, <span class="at">ylab=</span><span class="st">'Parsimony tree distances'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -489,46 +464,21 @@ Human            TRUE      TRUE   TRUE  TRUE    TRUE  TRUE  TRUE</code></pre>
 </div>
 </div>
 </div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(anc.ml<span class="sc">$</span>tree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Let’s calculate pairwise distances in this tree:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>mldists <span class="ot">&lt;-</span> <span class="fu">cophenetic</span>(anc.ml<span class="sc">$</span>tree)</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>c1 <span class="ot">&lt;-</span> mldists[<span class="fu">upper.tri</span>(mldists)]</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> parsmny_dist_mat[<span class="fu">upper.tri</span>(parsmny_dist_mat)]</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(c1,c2,<span class="at">xlab=</span><span class="st">'Markov model distances'</span>, <span class="at">ylab=</span><span class="st">'Parsimony tree distances'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="intro_to_trees_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>So the distances between species in the parsimony and Maximum Likelihood tree using the Markov model for nucleotide changes are pretty tightly correlated, but not identical.</p>
+<p>So the distances between species in the parsimony and Maximum Likelihood tree using the Markov model for nucleotide changes are pretty tightly correlated, but not identical. Hypothesis: the pairwise differences below the diagonal-ish spread of points in the right-hand side of the plot correspond to locations in sequences that experienced a back-mutation (so they are actually separated from each other by a longer period of time than their sequences would otherwise suggest).</p>
 </section>
 <section id="exercises." class="level1">
 <h1>Exercises.</h1>
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section">1.</h2>
-<p>Use the nni function on the original parsimony tree to obtain all of the trees that are one nearest-neighbor interchange away from the parsimony tree. Fit Markov models to each tree and calculate the likelihood for each tree under the optimized parameters of the Markov model. Based off of this, do you think it might be possible to estimate the most likely tree, given the Markov model structure and the primate data?</p>
+<section id="statistical-phylogenetics-in-a-nutshell" class="level2">
+<h2 class="anchored" data-anchor-id="statistical-phylogenetics-in-a-nutshell">1. Statistical phylogenetics, in a nutshell</h2>
+<p>The code example above treats the tree topology (i.e.&nbsp;the geneaology of the organisms) as fixed, and estimates parameters of the Markov chain (which modifies the branch lengths). In the reconstruction of a Maximum likelihood phylogeny, we would need to evaluate the likelihoods of different tree topologies as well as branch lengths in order to produce an estimate of the phylogenetic tree. Surprisingly, tree topology can be treated like a paramter – all we would need to do is optimize our likelihood function over the space of phylogenetic trees.</p>
+<p>Use the nni function on the original parsimony tree to obtain all of the trees that are one nearest-neighbor interchange away from the parsimony tree. Fit Markov models to each tree and calculate the likelihood for each tree under the optimized parameters of the Markov model. Then, compare the likelihoods of the different tree topologies. Based off of this, do you think it might be possible to estimate the most likely tree, given the Markov model structure and the sequence data?</p>
 </section>
-<section id="section-1" class="level2">
-<h2 class="anchored" data-anchor-id="section-1">2.</h2>
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section">2.</h2>
 <p>Load in a different set of sequences from the workshop and try to construct a parsimony tree. Use a nucleotide substitution model of your choice (HKY, F81, etc.) to fit a Markov model describing sequence evolution on the parsimony tree. How much do branch lengths change after fitting the Markov model?</p>
 </section>
-<section id="section-2" class="level2">
-<h2 class="anchored" data-anchor-id="section-2">3.</h2>
+<section id="section-1" class="level2">
+<h2 class="anchored" data-anchor-id="section-1">3.</h2>
 <p>Use the read.tree function to load in a tree that you download from someplace. Try plotting it, and if you can find associated metadata (from Nextstrain, for example) try plotting that on the tree as well. It can be handy to combine the plotTree and tiplabels functions from phytools for this purpose.</p>
 <p>It is optional, but the ggtree package in R also comes in handy for plotting trees and you might consider installing it.</p>
 

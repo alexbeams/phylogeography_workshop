@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>fit_bd – Template Workshop</title>
+<title>fit_bd – PhylogeogRaphy Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -146,8 +146,6 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo light-content">
-    <img src="../../img/coffee_can.png" alt="" class="navbar-logo dark-content">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -212,15 +210,12 @@ window.Quarto = {
 <p>So far, we have been treating the trees as given without asking how they are created (by some biologist, presumably). If the traits we are interested in do not influence diversification, extinction/death, or the probability we observe a particular lineage, then the standard Markov models on trees seem sufficient. In some cases, traits might influence the process creating the phylogenetic relationships we observe, and we would like to detect these effects.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(diversitree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: ape</code></pre>
-</div>
 </div>
 <p>It is for this reason that we start by considering models for tree generation (sometimes called “tree priors” by people who use BEAST, which we will get to later in the week).</p>
 <p>Let’s start by simulating some trees using birth-death models.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">1</span>, <span class="at">mu=</span><span class="dv">0</span>), <span class="at">max.taxa =</span> <span class="dv">50</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">1</span>, <span class="at">mu=</span><span class="dv">0</span>), <span class="at">max.taxa =</span> <span class="dv">50</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -231,6 +226,15 @@ window.Quarto = {
 </div>
 <p>It doesn’t always work if mu&gt;0. Let’s use the lapply function to generate a list of simulated outputs (lapply is like a for loop).</p>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>numtrees <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>treelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>numtrees,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                <span class="cf">function</span>(x) <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">10</span>, <span class="at">mu=</span><span class="dv">5</span>), <span class="at">max.taxa =</span> <span class="dv">50</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>dieoffs <span class="ot">&lt;-</span> <span class="fu">sapply</span>(treelist, is.null)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>numdieoffs <span class="ot">&lt;-</span> <span class="fu">sum</span>(dieoffs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>numtrees <span class="ot">&lt;-</span> <span class="dv">50</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>treelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>numtrees,</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                <span class="cf">function</span>(x) <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">10</span>, <span class="at">mu=</span><span class="dv">5</span>), <span class="at">max.taxa =</span> <span class="dv">50</span>)</span>
@@ -239,20 +243,11 @@ window.Quarto = {
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>dieoffs <span class="ot">&lt;-</span> <span class="fu">sapply</span>(treelist, is.null)</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>numdieoffs <span class="ot">&lt;-</span> <span class="fu">sum</span>(dieoffs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>numtrees <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>treelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>numtrees, </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                <span class="cf">function</span>(x) <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">10</span>, <span class="at">mu=</span><span class="dv">5</span>), <span class="at">max.taxa =</span> <span class="dv">50</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>dieoffs <span class="ot">&lt;-</span> <span class="fu">sapply</span>(treelist, is.null)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>numdieoffs <span class="ot">&lt;-</span> <span class="fu">sum</span>(dieoffs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
 <p>Sometimes we fail to generate a tree with max.taxa number of lineages because they all go extinct (this is stochastic). How many died off before reaching 50 taxa?</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(numdieoffs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(numdieoffs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 30</code></pre>
+<pre><code>[1] 27</code></pre>
 </div>
 </div>
 </section>
@@ -262,7 +257,7 @@ window.Quarto = {
 <section id="section" class="level2">
 <h2 class="anchored" data-anchor-id="section">1.</h2>
 <p>The parameter “lambda” is the birth/diversification rate, and the parameter “mu” is the mortality/extinction rate. Try different combinations of the parameters (try lambda = 20, 50, 100, and mu = 20, 50, 100). What do you notice about your simulations?</p>
-<p>It might be conenient to write a function called “getnumdieoffs” that accepts lambda, mu, and numtaxa, and then spits out treelist. Then you can create another function that acts on treelist to return numdieoffs.</p>
+<p>It might be convenient to write a function called <code>getnumdieoffs</code> that accepts lambda, mu, and numtaxa, and then spits out treelist. Then you can create another function that acts on treelist to return numdieoffs.</p>
 <p>Organize the results of your simulations in a nice display.</p>
 </section>
 <section id="section-1" class="level2">
@@ -271,19 +266,19 @@ window.Quarto = {
 </section>
 <section id="section-2" class="level2">
 <h2 class="anchored" data-anchor-id="section-2">3.</h2>
-<p>Use ?trees to examine the help page for some of other tree simulation models. You will notcie tree.bd and tree.yule toward the bottom. Use your investigative abilities to research the Yule process and compare it to the birth- death process.</p>
+<p>Use <code>?trees</code> to examine the help page for some of other tree simulation models. You will notcie tree.bd and tree.yule toward the bottom. Use your investigative abilities to research the Yule process and compare it to the birth- death process.</p>
 </section>
 <section id="section-3" class="level2">
 <h2 class="anchored" data-anchor-id="section-3">4.</h2>
-<p>Do you think that tree.yule(1, max.taxa=10) and tree.bd(lambda=2,mu=1, max.taxa=10) simulate the same process? Justify your answer.</p>
+<p>Do you think that <code>tree.yule(1, max.taxa=10)</code> and <code>tree.bd(lambda=2,mu=1, max.taxa=10)</code> simulate the same process? Justify your answer.</p>
 </section>
 <section id="section-4" class="level2">
 <h2 class="anchored" data-anchor-id="section-4">5.</h2>
-<p>Do you think that tree.yule(1, max.taxa=10) and tree.bd(lambda=1,mu=0, max.taxa=10) simulate the same process? Justify your answer.</p>
+<p>Do you think that <code>tree.yule(1, max.taxa=10)</code> and <code>tree.bd(lambda=1,mu=0, max.taxa=10)</code> simulate the same process? Justify your answer.</p>
 </section>
 <section id="section-5" class="level2">
 <h2 class="anchored" data-anchor-id="section-5">6.</h2>
-<p>The diversitree package can simulate tip data using Markov models for two discrete states initialized from a particular state at the root. One model is the “mk2” model: sim.character(tree, pars, x0=0, model=“mk2”, br=NULL) the “pars” argument is a vector of the form (q12,q21) corresponding to the transition rates of the stochastic rate matrix, Q (the model argument can also be set to “mkn” to simulate Markov models with n states). Compare sim.character with the simMk function from phytools. Confirm whether these two R functions simulate the same process.</p>
+<p>The diversitree package can simulate tip data using Markov models for two discrete states initialized from a particular state at the root. One model is the “mk2” model: <code>sim.character(tree, pars, x0=0, model="mk2", br=NULL)</code> the “pars” argument is a vector of the form (q12,q21) corresponding to the transition rates of the stochastic rate matrix, Q (the model argument can also be set to “mkn” to simulate Markov models with n states). Compare sim.character with the simMk function from phytools. Confirm whether these two R functions simulate the same process.</p>
 </section>
 <section id="estimating-parameters" class="level2">
 <h2 class="anchored" data-anchor-id="estimating-parameters">Estimating parameters</h2>
@@ -298,29 +293,29 @@ window.Quarto = {
 <p>This will simulate a birth-death process until 20 species are produced (starting from a single individual species). Currently the diversification rate is set to lambda=5, and there is no extinction (mu=0).</p>
 <p>The make.bd function is a convenient way to define a likelihood for the tree we simulate. It automatically knows that there is a diversification rate (lambda) and an extinction rate (mu).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">5</span>,<span class="at">mu=</span><span class="dv">0</span>), <span class="at">max.taxa =</span> <span class="dv">20</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>loglik <span class="ot">&lt;-</span> <span class="fu">make.bd</span>(tree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">5</span>,<span class="at">mu=</span><span class="dv">0</span>), <span class="at">max.taxa =</span> <span class="dv">20</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>loglik <span class="ot">&lt;-</span> <span class="fu">make.bd</span>(tree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The make.bd function is a scalar function of two variables of the form loglik = loglik(c(lambda,mu)). Typing loglik into the console will print some information about the model.</p>
 <p>Let’s visualize the likelihood surface one parameter at a time (holding the other parameter at the true value).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#specify grids of values for the parameters:</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>lambdavals <span class="ot">&lt;-</span> <span class="fu">exp</span>( <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">3</span>,<span class="dv">3</span>,<span class="at">length=</span><span class="dv">30</span>))</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>muvals <span class="ot">&lt;-</span> <span class="fu">exp</span>( <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">6</span>,<span class="dv">2</span>,<span class="at">length=</span><span class="dv">30</span>))</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#plot loglik in each variable while holding the other at the true value:</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>loglik_lambda_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(lambdavals, <span class="cf">function</span>(x) <span class="fu">loglik</span>(<span class="fu">c</span>(x,<span class="dv">0</span>)))</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>loglik_mu_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(muvals, <span class="cf">function</span>(x) <span class="fu">loglik</span>(<span class="fu">c</span>(<span class="dv">5</span>,x)))</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>loglik_max <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">c</span>(loglik_lambda_vals, loglik_mu_vals))</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>))</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lambdavals, loglik_lambda_vals, <span class="at">ylim=</span><span class="fu">c</span>(loglik_max<span class="dv">-10</span>,loglik_max<span class="sc">+</span><span class="dv">2</span>),</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(lambda),<span class="at">ylab=</span><span class="st">'log-likelihood'</span>,</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">main=</span><span class="fu">expression</span>(<span class="st">'Holding '</span><span class="sc">~</span>mu<span class="sc">~</span><span class="st">' at its true value'</span>))</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(muvals, loglik_mu_vals, <span class="at">ylim=</span><span class="fu">c</span>(loglik_max<span class="dv">-10</span>,loglik_max<span class="sc">+</span><span class="dv">2</span>),</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(mu),<span class="at">ylab=</span><span class="st">'log-likelihood'</span>,</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">main=</span><span class="fu">expression</span>(<span class="st">'Holding '</span><span class="sc">~</span>lambda<span class="sc">~</span><span class="st">' at its true value'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#specify grids of values for the parameters:</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>lambdavals <span class="ot">&lt;-</span> <span class="fu">exp</span>( <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">3</span>,<span class="dv">3</span>,<span class="at">length=</span><span class="dv">30</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>muvals <span class="ot">&lt;-</span> <span class="fu">exp</span>( <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">6</span>,<span class="dv">2</span>,<span class="at">length=</span><span class="dv">30</span>))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#plot loglik in each variable while holding the other at the true value:</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>loglik_lambda_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(lambdavals, <span class="cf">function</span>(x) <span class="fu">loglik</span>(<span class="fu">c</span>(x,<span class="dv">0</span>)))</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>loglik_mu_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(muvals, <span class="cf">function</span>(x) <span class="fu">loglik</span>(<span class="fu">c</span>(<span class="dv">5</span>,x)))</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>loglik_max <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">c</span>(loglik_lambda_vals, loglik_mu_vals))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lambdavals, loglik_lambda_vals, <span class="at">ylim=</span><span class="fu">c</span>(loglik_max<span class="dv">-10</span>,loglik_max<span class="sc">+</span><span class="dv">2</span>),</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(lambda),<span class="at">ylab=</span><span class="st">'log-likelihood'</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">main=</span><span class="fu">expression</span>(<span class="st">'Holding '</span><span class="sc">~</span>mu<span class="sc">~</span><span class="st">' at its true value'</span>))</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(muvals, loglik_mu_vals, <span class="at">ylim=</span><span class="fu">c</span>(loglik_max<span class="dv">-10</span>,loglik_max<span class="sc">+</span><span class="dv">2</span>),</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(mu),<span class="at">ylab=</span><span class="st">'log-likelihood'</span>,</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">main=</span><span class="fu">expression</span>(<span class="st">'Holding '</span><span class="sc">~</span>lambda<span class="sc">~</span><span class="st">' at its true value'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -331,46 +326,46 @@ window.Quarto = {
 </div>
 <p>We can easily maximize the loglik over <span class="math inline">\((\lambda, \mu)\)</span> to obtain a maximum likelihood estimate (MLE):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>mle <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglik, <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), <span class="at">method=</span><span class="st">'subplex'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mle <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglik, <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), <span class="at">method=</span><span class="st">'subplex'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The find.mle function stores the MLE in mle$par, and the maximum log-likelihood is stored in . We can look at to see if the numerical method found a reasonable solution to the optimization problem:</p>
+<p>The find.mle function stores the MLE in <code>mle$par</code>, and the maximum log-likelihood is stored in . We can look at to see if the numerical method found a reasonable solution to the optimization problem:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle<span class="sc">$</span>message)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle<span class="sc">$</span>message)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "success! tolerance satisfied"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      lambda           mu 
-4.484412e+00 4.644587e-16 </code></pre>
+<pre><code>  lambda       mu 
+9.686685 6.456034 </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle<span class="sc">$</span>lnLik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle<span class="sc">$</span>lnLik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 48.35119</code></pre>
+<pre><code>[1] 54.82722</code></pre>
 </div>
 </div>
 <p>Are the estimates close to the values we used (<span class="math inline">\(\lambda=5, \mu-0\)</span>)?</p>
-<p>The value of mle$lnLik in that particular run appears to be positive… hmm.</p>
+<p>The value of <code>mle$lnLik</code> in that particular run appears to be positive… hmm.</p>
 <p>The maximum of the log-likelihood function roughly coincides with the parameters we used. How variable is this? Let’s simulate more trees. The make.bd function can be lapply’d to the treelist to give us a list of likelihood functions corresponding to our list of trees.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>treelist <span class="ot">&lt;-</span> <span class="fu">trees</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">5</span>,<span class="at">mu=</span><span class="dv">0</span>), </span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">type=</span><span class="fu">c</span>(<span class="st">"bd"</span>), <span class="at">n=</span><span class="dv">100</span>, </span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">max.taxa=</span><span class="dv">20</span>)</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># make a log-likelihood function for each tree:</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>logliklist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(treelist, make.bd )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>treelist <span class="ot">&lt;-</span> <span class="fu">trees</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">5</span>,<span class="at">mu=</span><span class="dv">0</span>),</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">type=</span><span class="fu">c</span>(<span class="st">"bd"</span>), <span class="at">n=</span><span class="dv">100</span>,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">max.taxa=</span><span class="dv">20</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># make a log-likelihood function for each tree:</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>logliklist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(treelist, make.bd )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>What does the distribution of MLEs look like for this set of trees?</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>mles <span class="ot">&lt;-</span> <span class="fu">lapply</span>(logliklist, <span class="cf">function</span>(x){<span class="fu">find.mle</span>(x, <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), <span class="at">method=</span><span class="st">'subplex'</span>)})</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>mles_pars <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(mles, <span class="cf">function</span>(x) x<span class="sc">$</span>par))</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mles_pars[,<span class="dv">1</span>],<span class="at">main=</span><span class="st">''</span>,</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(<span class="fu">hat</span>(lambda)))</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mles_pars[,<span class="dv">2</span>],<span class="at">main=</span><span class="st">''</span>,</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(<span class="fu">hat</span>(mu)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>mles <span class="ot">&lt;-</span> <span class="fu">lapply</span>(logliklist, <span class="cf">function</span>(x){<span class="fu">find.mle</span>(x, <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), <span class="at">method=</span><span class="st">'subplex'</span>)})</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>mles_pars <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(mles, <span class="cf">function</span>(x) x<span class="sc">$</span>par))</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mles_pars[,<span class="dv">1</span>],<span class="at">main=</span><span class="st">''</span>,</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(<span class="fu">hat</span>(lambda)))</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mles_pars[,<span class="dv">2</span>],<span class="at">main=</span><span class="st">''</span>,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(<span class="fu">hat</span>(mu)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -394,7 +389,7 @@ window.Quarto = {
 <p>The Generalized Likelihood Ratio Test is one way to assess whether <span class="math inline">\(\mu\)</span> is significantly different from zero. The model with more parameters will always fit the data better, but it may not fit the data “that much” better. The GLR test looks a log(ratio of likelihoods) = difference(log-Likelihoods) to produce a test statistic (also, rather annoyingly in this case, called <span class="math inline">\(\lambda\)</span>).</p>
 <p>Use</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">constrain</span>(loglik, mu <span class="sc">~</span> <span class="dv">0</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">constrain</span>(loglik, mu <span class="sc">~</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>to create the constrained log-likelihood functions, and fit them to obtain new estimates for lambda.</p>
 <p>Then, use Wikipedia, Google, or your favorite AI companion to help you formulate GLR test statistics and assess significant departues from a null hypothesis of <span class="math inline">\(\mu=0\)</span>.</p>
