@@ -254,17 +254,183 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>That’s it. Conceptually, it’s super simple. Computationally, it can be a little bit intense to simulate changes of state along edges that are compatible with node states at either end of the edge.</p>
 <p>The phytools package has a few functions that we will use.</p>
-<p><strong>One of these is fitMk</strong>. This function is similar to ace, except that user may supply a “root prior” (e.g.&nbsp;50% probability that the root is in state S or P, for our example). When we supply a root prior, we are optimizing a different objective function than ace. By default, fitMk uses scaled likelihoods at the root, identical to ace. The second distinction between fitMk and ace is that they use slightly different optimizers to find Maximum Likelihood Estimates (MLEs). Sometimes it can be convenient to try using both functions if one of them encounters numerical problems during optimization. It can also be a good idea to obtain estimates from both methods as a sanity check.</p>
+<p><strong>One of these is fitMk</strong>. This function is similar to ace, except that user may supply a “root prior” (e.g.&nbsp;50% probability that the root is in state S or P, for our example). When we supply a root prior, we are optimizing a different objective function than ace. By default, fitMk uses a ““flat” root prior, similar to what the likelihood function for ace does. The second distinction between fitMk and ace is that they use slightly different optimizers to find Maximum Likelihood Estimates (MLEs). Sometimes it can be convenient to try using both functions if one of them encounters numerical problems during optimization. It can also be a good idea to obtain estimates from both methods as a sanity check (although estimates will differ ever so slightly; on larger phylogenies, the estimates generally seem to converge to each other – at least in my experience).</p>
 <p>The other useful function is <strong>simmap</strong>, which simulates a stochastic character mapping on a tree given a Markov model generator matrix. This is the function that actually carries out steps 2-3 above.</p>
-<p>A third function <strong>make.simmap</strong>, does both steps (fitMk and simmap) in one go. Obviously it is not necessary to invoke make.simmap after running ace or fitMk.</p>
+<p>A third function <strong>make.simmap</strong>, does both steps (fitMk and simmap) in one go. Obviously it is not necessary to invoke make.simmap after running fitMk.</p>
+<p><strong>Note</strong>: there are methods that exist (such as <a href="https://delphy.fathom.info/">Delphy</a>) that estimate paramters using a Markov chain Monte Carlo routine that explores the space of character mappings. This is <strong>not</strong> what simmap and make.simmap do. They simply use fitMk results to simulate character mappings on trees.</p>
 <section id="comparing-fitmk-and-ace" class="level2">
 <h2 class="anchored" data-anchor-id="comparing-fitmk-and-ace">Comparing fitMk and ace</h2>
+<p>Let’s refit our two Markov models with ace, and then do the same thing using fitMk from phytools. The function calls are very similar (but fitMk switches the ordering of tree and tip data):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fitting models with ace:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>fit1.ace <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ER'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>fit2.ace <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ARD'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>fit1.fitMk <span class="ot">&lt;-</span> <span class="fu">fitMk</span>(tree, x, <span class="at">model=</span><span class="st">"ER"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>fit2.fitMk <span class="ot">&lt;-</span> <span class="fu">fitMk</span>(tree, x, <span class="at">model=</span><span class="st">"ARD"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>How do the estimates for the ER model compare with the two methods?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fit1.ace<span class="sc">$</span>rates</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.0008592213</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit1.fitMk<span class="sc">$</span>rates</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.0008605929</code></pre>
+</div>
+</div>
+<p>The rate estimates are very close, but not exactly the same. The log-likelihood values at the MLE are also not identical:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fit1.ace<span class="sc">$</span>loglik</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -11.89298</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fit1.fitMk<span class="sc">$</span>logLik</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -12.58613</code></pre>
+</div>
+</div>
+<p>The two functions, ace and fitMk, use slightly different likelihood functions, and different optimization routines to find the MLE. The fitMk function also allows users to supply a “root prior” different from a uniform distribution (which is the default in fitMk, see <a href="https://blog.phytools.org/2015/09/the-difference-between-different.html">this post</a>).</p>
+<p>For large datasets, the choice of root prior in fitMk should (hopefully) not influence results too much.</p>
+<p>For completeness, let’s compare the results of the ARD model with each method:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>fit2.ace<span class="sc">$</span>rates</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.000000000 0.003628625</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fit2.fitMk<span class="sc">$</span>rates</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.000000000 0.003628625</code></pre>
+</div>
+</div>
+<p>And the log-likelihoods:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fit2.ace<span class="sc">$</span>loglik</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -10.28796</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>fit2.fitMk<span class="sc">$</span>logLik</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -10.98111</code></pre>
+</div>
+</div>
+<p>So, the differences in the estimates themselves are negligible.</p>
 </section>
 <section id="simulate-character-mappings-with-simmap" class="level2">
 <h2 class="anchored" data-anchor-id="simulate-character-mappings-with-simmap">Simulate character mappings with simmap</h2>
-
-
+<p>The phytools package simulates stochastic character mappings easily once we have a fitMk object. Notice that our fit1.fitMk we created above has everything we need already, including the tree:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(fit1.fitMk)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "logLik"       "rates"        "index.matrix" "states"       "pi"          
+ [6] "method"       "root.prior"   "opt_results"  "data"         "tree"        
+[11] "lik"         </code></pre>
+</div>
+</div>
+<p>The matrix for our fitted Markov chain is encoded in rates, index.matrix, and states.</p>
+<p>Simulating character mappings is easy - we just call the simmap (“simulate mapping”) function:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>simmap.er <span class="ot">&lt;-</span> <span class="fu">simmap</span>(fit1.fitMk)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Now, let’s plot some of these:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># specify the colors:</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"#F8766D"</span>,<span class="st">"#00BFC4"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(cols) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"P"</span>,<span class="st">"S"</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>))</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>){ </span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plotSimmap</span>(simmap.er[i], </span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">ftype=</span><span class="st">"off"</span>,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">colors=</span>cols)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">'ER model character mappings'</span>, <span class="at">side=</span><span class="dv">3</span>, <span class="at">line=</span><span class="sc">-</span><span class="dv">2</span>, <span class="at">outer=</span><span class="cn">TRUE</span>,<span class="at">cex=</span><span class="fl">1.7</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="stochastic_mapping_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As you can see, these trees differ subtly in terms of the precise locations of amino acid changes along edges. Some of these have the root state residing in one state or the other.</p>
+<p>What about the ARD model that estimated unidirectional change only?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate character mappings:</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>simmap.ard <span class="ot">&lt;-</span> <span class="fu">simmap</span>(fit2.fitMk)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># specify the colors:</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"#F8766D"</span>,<span class="st">"#00BFC4"</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(cols) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"P"</span>,<span class="st">"S"</span>)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>))</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>){ </span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plotSimmap</span>(simmap.ard[i], </span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">ftype=</span><span class="st">"off"</span>,</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">colors=</span>cols)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">'ARD model character mappings'</span>, <span class="at">side=</span><span class="dv">3</span>, <span class="at">line=</span><span class="sc">-</span><span class="dv">2</span>, <span class="at">outer=</span><span class="cn">TRUE</span>,<span class="at">cex=</span><span class="fl">1.7</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="stochastic_mapping_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>All of these character mappings assign the root state to the amino acid P. However, the collection of character mapping still has variable numbers of mutations across the different simulations. The majority of the time, the P to S mutation giving rise to the large blue clade in the upper part of the trees does appear to be happening pretty early with high probability.</p>
+<p>We can also make some summary plots that include gradients in color on edges that describe average probabilities across the simulations (but getting or color scheme to work is a little tricky).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">densityMap</span>(simmap.er, <span class="at">ftype=</span><span class="st">'off'</span>, <span class="at">main=</span><span class="st">'ER model'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">densityMap</span>(simmap.ard, <span class="at">ftype=</span><span class="st">'off'</span>, <span class="at">main=</span><span class="st">'ARD model'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </section>
+</section>
+<section id="quantifying-the-distribution-of-trait-changes-under-the-fitted-models" class="level1">
+<h1>Quantifying the distribution of trait changes under the fitted models</h1>
+<p>Under the MLE for these models, how often does S change to P, and vice versa? (We know that S will never change to P under the ARD model, but there still may be some uncertainty concerning the number of times P changed to S.)</p>
+<p>The function countSimmap does this readily for us:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>counts.er <span class="ot">&lt;-</span> <span class="fu">countSimmap</span>(simmap.er)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>))</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.er<span class="sc">$</span>Tr[,<span class="st">'N'</span>], <span class="at">xlab=</span><span class="st">'Total number</span><span class="sc">\n</span><span class="st">of changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.er<span class="sc">$</span>Tr[,<span class="st">'P,S'</span>], <span class="at">xlab=</span><span class="st">'P -&gt; S changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.er<span class="sc">$</span>Tr[,<span class="st">'S,P'</span>], <span class="at">xlab=</span><span class="st">'S -&gt; P changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">'ER model amino acid changes'</span>, <span class="at">side=</span><span class="dv">3</span>, <span class="at">line=</span><span class="sc">-</span><span class="dv">2</span>, <span class="at">outer=</span><span class="cn">TRUE</span>,<span class="at">cex=</span><span class="fl">1.7</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="stochastic_mapping_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>counts.ard <span class="ot">&lt;-</span> <span class="fu">countSimmap</span>(simmap.ard)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.ard<span class="sc">$</span>Tr[,<span class="st">'N'</span>], <span class="at">xlab=</span><span class="st">'Total number</span><span class="sc">\n</span><span class="st">of changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.ard<span class="sc">$</span>Tr[,<span class="st">'P,S'</span>], <span class="at">xlab=</span><span class="st">'P -&gt; S changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="co">#hist(counts.ard$Tr[,'S,P'], xlab='S -&gt; P changes', main='')</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">'ARD model amino acid changes'</span>, <span class="at">side=</span><span class="dv">3</span>, <span class="at">line=</span><span class="sc">-</span><span class="dv">2</span>, <span class="at">outer=</span><span class="cn">TRUE</span>,<span class="at">cex=</span><span class="fl">1.7</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="stochastic_mapping_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ^^^ there are no changes from S to P in the fitted ARD model</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>So, in the ER model, the data support two amino acid changes, one from P to S, and one from S to P. This is consistent with our Hypothesis 1 from earlier, which posits that the small S clade nested within the P clade represents a back-mutation, returning to the ancestral state, S.</p>
+<p>In the ARD model, the data are consistent with two P to S mutations, one of which was long ago, and the other more recent. There is some support for 3 P to S mutations, two of which probably happened long ago.</p>
+
+
 </section>
 
 </main> <!-- /main -->

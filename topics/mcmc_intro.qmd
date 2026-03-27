@@ -16,7 +16,7 @@ From calculus, we know how to evaluate integrals using
 antiderivatives. You might also be familiar with numerical
 quadrature techniques like the trapezoid rule and Simpson's
 rule that approximate areas under curves with shapes that have
-nice are formulas.
+nice formulas.
 
 Monte Carlo integration works a little bit differently. Let's start
 by approximating the area of a circle to approximate $\pi$.
@@ -71,6 +71,7 @@ drawDartboard <- function(){
 	points(0, 0, pch = 19, col = "black", cex = 0.8)
 }
 
+drawDartboard()
 ```
 
 Now, I'm going to throw darts at this target. Because they land randomly,
@@ -91,15 +92,17 @@ throwDarts <- function(ndarts){
 
 	return(list(x=x,y=y))
 }
+
+throwDarts(30)
 ```
 
 Play around with the throwDarts function for different values of ndarts.
 How does this help us evaluate $\pi$? Remember that Area(circle) = $\pi$ * radius^2,
 and Area(square) = radius^2 = 1, because we deliberately chose radius=1.
 
-So, the area of the circle is just $\pi$/4, and the area of the rectangle is 1.
+So, the area of the circle is just $\pi/4$, and the area of the rectangle is 1.
 
-Another way of saying this is that $\pi$ = Area(circle)/Area(rectangle).
+Another way of saying this is that $\pi$ = $4 \times$ Area(circle)/Area(rectangle).
 
 So what? Well, the darts give us a way to calculate the ratio of areas.
 Convince yourself that (number of darts inside circle)/(total darts thrown)
@@ -122,6 +125,9 @@ countDartsInside <- function(ndarts){
 	numinside = sum(r < 0.5)
 	return(numinside/ndarts)
 }
+
+# I'll throw 100 darts:
+countDartsInside(100)
 ```
 
 The area of the circle is $\pi$/4, the area of the square is 1
@@ -136,6 +142,9 @@ calculatePi <- function(ndarts){
 
 	return(pi_approx)
 }
+
+# I will throw 1000 darts at the board:
+calculatePi(1000)
 ```
 
 # Optional coding exercise:
@@ -241,8 +250,13 @@ ndarts <- 50000
 xrands <- runif(ndarts, min=a, max=b)
 
 fbar_approx <- mean( f(xrands) )
+fbar_approx
+
 gbar_approx <- mean( g(xrands) )
+gbar_approx
+
 hbar_approx <- mean( h(xrands) )
+hbar_approx
 ```
 
 Once we have our approximations to the average values of the functions
@@ -252,8 +266,13 @@ the area under the curve):
 
 ```{r}
 integral_f <- fbar_approx * (b-a)
+integral_f
+
 integral_g <- gbar_approx * (b-a)
+integral_g
+
 integral_h <- hbar_approx * (b-a)
+integral_h
 ```
 
 Experiment with different values of ndarts to see how the approximations
@@ -286,16 +305,18 @@ plot(xvals, sapply(xvals, h), xlab='x', ylab='Gaussian',
 points(x=5, y=0,col='red')
 ```
 
-There are some challenges here. I probably can't use runif anymore
-because it requires a maximum value that is finite.
+We are trying to calcualte the area under the curve to the right of the red dot at x=5. That area is obviously tiny.
+
+There are some challenges to obtaining a Monte Carlo estimate here. I probably can't use runif anymore
+because it requires a maximum value that is finite, for one thing.
 
 Now, you might be saying to yourself, "Well, R has the ability to simulate
 variables from a standard normal distribuion, and our h(x) is just the PDF
 of a standard normal distribution. So, I could just simulate a large
 number of standard normal variates, and evaluate the fraction that
-are larger than 5.
+are larger than 5."
 
-"Okay," I reply. "Let's do that."
+"Okay," I reply. "You go right on ahead and do that."
 
 ```{r}
 tailsample <- rnorm(1e4)
@@ -326,10 +347,11 @@ sum(tailsample > 5)/length(tailsample)
 I'm seeing that I usually get 0 or 1 value larger than 5, so that our
 Monte Carlo approximation to the tail probability is either 0 or 1e-6.
 
-The problem is that we are simulating rare events. We need a workaround.
+The problem is that we are trying to simulate extremely rare events to calculate this probability. This is not going to work. We need a workaround.
 
-This is what Importance Sampling is designed to accommodate. The key is to
-multiply by 1:
+This is what [Importance Sampling](https://en.wikipedia.org/wiki/Importance_sampling) is designed to accommodate. 
+
+The key is to multiply by 1 (this is a surprisingly common mathematical trick):
 
 \begin{align*}
 Pr(Z>5) &= \int_5^\infty h(x) dx ,\\
@@ -337,11 +359,11 @@ Pr(Z>5) &= \int_5^\infty h(x) dx ,\\
 	&= \int \frac{h}{w} dw.
 \end{align*}
 
-The interpretation of these two integrals is different:
+Seems trivial at first glance, but the interpretation of these two integrals is different:
 
-In the first line, $\int f(x) dx$ means to sample x uniformly, and then average the $f(x_i)$
+In the first line, $\int h(x) dx$ means to sample x uniformly, and then average the $h(x_i)$
 
-In the second line, $\int f(x)/w(x) dw$ means to sample x from a PDF $w(x)$, instead of uniformly,
+In the second line, $\int h(x)/w(x) dw$ means to sample x from a PDF $w(x)$, instead of uniformly,
 	and then average the ratios $f(x)/w(x)$ to obtain the integral
 
 (If you're familiar with Measure theory, this is using the Radon Nikodym derivative.)
@@ -363,7 +385,17 @@ getimportanceest <- function(ndarts){
 
 	return(mean(ratios))
 }
+
+getimportanceest(100)
 ```
+
+We can compare this with R's built in function (i.e. the "ground truth") for calculating the tail probability:
+
+```{r}
+pnorm(5, lower.tail=F)
+```
+
+Not bad!
 
 # Exercise:
 What happens if you change the shift in $w(x)$ to be something
@@ -398,16 +430,17 @@ the Metropolis Hastings algorithm does.
 Obviously we could just sample using rnorm, but this is to show that
 the algorithm we are about to use works.
 
-Target distribution (we want to obtain samples from this
-distribution, and are pretending that we are unable to do so
-directly at the moment):
-We DO need to be able to evaluate $f(x)$ for this to work:
+The **target distribution** is the distribution we would like to sample from directly, but can't. We say that it has a density function, $f(x)$. 
+We DO need to be able to evaluate $f(x)$ to do MCMC.
+
 
 ```{r}
 f <- function(x) dnorm(x,mean=0)
 ```
 
-The Metropolis-Hastings algorithm works as follows:
+The Metropolis-Hastings algorithm defines a stochastic process in the parameter space. We propose a value, $y$, evaluate $f(y)$, compare to a previous value $f(x_k)$, and either accept or reject our proposed $y$ to add to a timeseries $\{x_t\}$. This timeseries is a realization of a discrete-time Markov chain. We do this for a very long time, and eventually the chain will converge to a stationary distribution coinciding with the distribution of $f(x)$. Pretty awesome.
+
+The algorithm works as follows:
 
 	At iteration k:
 		propose an update, y, which may become x_{k+1}
@@ -470,8 +503,8 @@ discard the early portion of their MCMC runs as a "burn-in" period. The histogra
 row obviously has a tail that is much larger than it should be, by virtue of the bad
 initial guess.
 
-However, it is a nice feature of MCMC that in teh long run it will wander to the
-current distribution.
+However, it is a nice feature of MCMC that in the long run it will wander to the
+target distribution.
 
 The steps of the Metropolis-Hastings algorithm are very similar to importance
 sampling. We have near-total freedom to choose the proposal distribution, in much the

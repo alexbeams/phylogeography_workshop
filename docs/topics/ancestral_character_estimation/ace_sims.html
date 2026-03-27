@@ -347,9 +347,9 @@ P S
 401 0.2746174 7.253826e-01
 402 0.9810853 1.891467e-02
 403 0.9998225 1.775022e-04
-404 1.0000000 1.477098e-10
-405 1.0000000 1.701022e-13
-406 1.0000000 1.212072e-11</code></pre>
+404 1.0000000 1.476925e-10
+405 1.0000000 1.440331e-13
+406 1.0000000 1.271426e-11</code></pre>
 </div>
 </div>
 <p>This is a datarame with the scaled likelihoods of the two states for each node. The tree has 400 tips, so the nodes are numbered 401 through 799 (a bifurcating tree with N tips has N-1 internal nodes). Each row in the dataframe above is one of the nodes, and the values in the columns are the relative likelihoods that it resides in state P or state S under the MLE. We can use this data to plot estimated states at the internal nodes.</p>
@@ -406,14 +406,60 @@ P S
 <li>In the ARD model, mutations from S to P never occur under the MLE</li>
 <li>The ARD model makes the prediction that, given enough time, every virus we sample will have the amino acid S, and P will go extinct.</li>
 </ul>
-<p><strong>All of these conclusions are conditional on the Markov models we are using.</strong> Remember: junk in = junk out. There are some potential pitfalls of these models that we should articulate now:</p>
+</section>
+<section id="which-model-is-better-supported-by-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="which-model-is-better-supported-by-the-data">Which model is better supported by the data?</h2>
+<p>How do we decide which of these is more plausible? One way to try to address this is with a <a href="https://en.wikipedia.org/wiki/Likelihood-ratio_test"><strong>Generalized Likelihood Ratio test</strong></a>. The ER model (one estimated parameter in our example here) is a special case of the ARD model (two estimated parameters in our example here). Another way to put it is that the ER model is “nested” within the ARD model. This is precisely the condition under which we may apply the GLR test.</p>
+<p>To carry out a GLR test, we calculate a test statistic obtained from the ratio of the two likelihoods, hence the name. Let’s look at the log-likelihoods for our two models:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fit1<span class="sc">$</span>loglik</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -11.89298</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fit2<span class="sc">$</span>loglik</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -10.28796</code></pre>
+</div>
+</div>
+<p>You wil notice that the log-likelihood for the ARD model is larger than the log-likelihood for the ER model. This indicates that the ARD model fits the data better than the ER model. This makes perfect sense, because a model with more parameters should fit the data better than a model with fewer paramters.</p>
+<p>The question is whether the improvement in model fit is meaningful, or whether we are overfitting to noise in the data.</p>
+<p>The idea behind the GLR test is: if the the difference in log-likelihoods (or equivalently, the logarithm of the ratio of the likelihoods) is huge, then the improvement from the more complicated model is meaningful, i.e.&nbsp;not overfit. A small improvement in the fit of the model, as quantified by a marginally higher log-likelihood, indicates that we are adding more paramters/complexity to our model than is warranted.</p>
+<p>From statistics, we know that provided we have a sufficiently large dataset, the quantity</p>
+<p><span class="math inline">\(\lambda_{LR} = -2 (l_{\text{ER}} - l_{\text{ARD}})\)</span></p>
+<p>is approximately distributed according to a <span class="math inline">\(\chi^2\)</span> distribution under the null hypothesis that data arise from the simpler model. The degrees of freedom for this <span class="math inline">\(\chi^2\)</span> distribution is equal to the difference in the number of parameters between the models (so in our case, a single degree of freedom). Values of <span class="math inline">\(\lambda_{LR}\)</span> that are huge are evidence against the null hypothesis. If we want to control type 1 errors at $5%, we may say that values of <span class="math inline">\(\lambda_{LR}\)</span> landing above the <span class="math inline">\(95\%\)</span>-ile of the distribution lead us to reject the null hypothesis. Recall that a <span class="math inline">\(p\)</span>-value is the probability of observing a value of the test statistic as extreme or more extreme than the one we calculate.</p>
+<p>So, to carry out a GLR test, we proceed as follows:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> (fit1<span class="sc">$</span>loglik <span class="sc">-</span> fit2<span class="sc">$</span>loglik)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>lambda</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.21004</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we have one degree of freedom because the more complicated model has one more paramter than the simpler model:</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>dfs <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the p-value, which is the probability of obseving a lambda as extreme or more extreme than the one we calculated above; </span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># chisq variables are always non-negative, and "extreme" in this case means large and positive -- so we want the upper tail probability,</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># rather than the cumulative probability:</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">pchisq</span>(lambda, <span class="at">df=</span>dfs, <span class="at">lower.tail=</span>F) </span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.07318772</code></pre>
+</div>
+</div>
+<p>So, we have a p-value equal to 0.073. Most people would say that there is not sufficient evidence to reject the null hypothesis (ER model) in favor of the alternative (ARD model) based on this.</p>
+<p>In other words, there is not strong evidence to support unidirectional change in amino acids.</p>
+<p><strong>All of these conclusions are conditional on the Markov models we are using.</strong> Remember: junk in = junk out.</p>
+<p>These conclusions are totally contingent upon the confidence we do (or do not have) in these models.</p>
+<p>There are some potential pitfalls of these models that we should articulate now:</p>
 <ul>
 <li><p>Either of these amino acids could carry a fitness benefit that could lead to increased numbers of infections by one lineage or the other. We are not modeling this effect</p></li>
 <li><p>The models are assuming that rates are constant in time. This may not be a reasonable assumption to make.</p></li>
 <li><p>Can you think of any other criticisms?</p></li>
 </ul>
 <p>These criticisms aside, from the methodological point of view there is another thing we have not done: we have not obtained an estimate for when mutations actually occurred. Our estimates of ancestral states should inform the timing and number of mutations, but more work is needed to do so.</p>
-<p>In the next section (stochastic character mapping), we will do both of these things.</p>
+<p>In a later section (stochastic character mapping), we will do both of these things.</p>
 
 
 </section>

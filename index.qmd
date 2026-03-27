@@ -50,14 +50,14 @@ Topics and agenda
 :::{layout="[[12]]"}
 
 :::{.date}
-Monday<br>[September 29, 2025]
+Day 1
 :::
 
 :::{layout="[[10]]"}
 
 :::{.card .mb-3}
 :::{.card-body}
-[Monday: Discrete trait analysis I in R](monday.qmd){.card-title .stretched-link}
+[Day 1: Discrete trait analysis I in R](monday.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Introduction, ancestral character estimation, and stochastic character mapping
@@ -70,13 +70,13 @@ Introduction, ancestral character estimation, and stochastic character mapping
 :::{layout="[[12]]"}
 
 :::{.date}
-Wednesday<br>[October 1, 2025]
+Day 2
 :::
 
 
 :::{.card .mb-3}
 :::{.card-body}
-[Wednesday: Discrete trait analysis II in R](wednesday.qmd){.card-title .stretched-link}
+[Day 2: Discrete trait analysis II in R](wednesday.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Birth-death models, state-dependent speciation and extinction (SSE) models
@@ -89,14 +89,14 @@ Birth-death models, state-dependent speciation and extinction (SSE) models
 :::{layout="[[12]]"}
 
 :::{.date}
-Thursday<br>[October 2, 2025]
+Day 3
 :::
 
 
 
 :::{.card .mb-3}
 :::{.card-body}
-[Thursday: Phylodynamics I in R and BEAST2](thursday.qmd){.card-title .stretched-link}
+[Day 3: Phylodynamics I in R and BEAST2](thursday.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Joint estimation of character change with phylogeny, and Phylodynamics models in BEAST2
@@ -109,13 +109,13 @@ Joint estimation of character change with phylogeny, and Phylodynamics models in
 :::{layout="[[12]]"}
 
 :::{.date}
-Friday<br>[October 3, 2025]
+Day 4
 :::
 
 
 :::{.card .mb-3}
 :::{.card-body}
-[Friday: Phylodynamics II in BEAST2](friday.qmd){.card-title .stretched-link}
+[Day 4: Phylodynamics II in BEAST2](friday.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Bayesian stochastic search variable selection

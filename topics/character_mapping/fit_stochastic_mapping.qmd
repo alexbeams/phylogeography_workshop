@@ -8,9 +8,8 @@ library(phytools) # simmap functions, Mk models
 
 This code is complementary to the other one in
        this subdirectory, and walks through how
-       to fit models using a character mapping
-       approach.
-
+       to fit models using functions from phytools.
+ 
 Most of the phytools stuff is based on the Mk
        model, which is a particular type of
        Markov model. M stands for "Markov",

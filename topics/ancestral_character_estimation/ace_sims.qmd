@@ -172,8 +172,57 @@ Aside from the differences at the root of the tree, the two models appear to mos
 - In the ARD model, mutations from S to P never occur under the MLE 
 - The ARD model makes the prediction that, given enough time, every virus we sample will have the amino acid S, and P will go extinct.
 
+## Which model is better supported by the data?
 
-**All of these conclusions are conditional on the Markov models we are using.** Remember: junk in = junk out. There are some potential pitfalls of these models that we should articulate now:
+How do we decide which of these is more plausible? One way to try to address this is with a [**Generalized Likelihood Ratio test**](https://en.wikipedia.org/wiki/Likelihood-ratio_test). The ER model (one estimated parameter in our example here) is a special case of the ARD model (two estimated parameters in our example here). Another way to put it is that the ER model is "nested" within the ARD model. This is precisely the condition under which we may apply the GLR test.
+
+To carry out a GLR test, we calculate a test statistic obtained from the ratio of the two likelihoods, hence the name. Let's look at the log-likelihoods for our two models:
+
+```{r}
+fit1$loglik
+fit2$loglik
+```
+
+You wil notice that the log-likelihood for the ARD model is larger than the log-likelihood for the ER model. This indicates that the ARD model fits the data better than the ER model. This makes perfect sense, because a model with more parameters should fit the data better than a model with fewer paramters.
+
+The question is whether the improvement in model fit is meaningful, or whether we are overfitting to noise in the data. 
+
+The idea behind the GLR test is: if the the difference in log-likelihoods (or equivalently, the logarithm of the ratio of the likelihoods) is huge, then the improvement from the more complicated model is meaningful, i.e. not overfit. A small improvement in the fit of the model, as quantified by a marginally higher log-likelihood, indicates that we are adding more paramters/complexity to our model than is warranted. 
+
+From statistics, we know that provided we have a sufficiently large dataset, the quantity
+
+$\lambda_{LR} = -2 (l_{\text{ER}} - l_{\text{ARD}})$
+
+is approximately distributed according to a $\chi^2$ distribution under the null hypothesis that data arise from the simpler model. The degrees of freedom for this $\chi^2$ distribution is equal to the difference in the number of parameters between the models (so in our case, a single degree of freedom). Values of $\lambda_{LR}$ that are huge are evidence against the null hypothesis. If we want to control type 1 errors at $5\%, we may say that values of $\lambda_{LR}$ landing above the $95\%$-ile of the distribution lead us to reject the null hypothesis. Recall that a $p$-value is the probability of observing a value of the test statistic as extreme or more extreme than the one we calculate. 
+
+So, to carry out a GLR test, we proceed as follows:
+
+```{r}
+lambda <- -2 * (fit1$loglik - fit2$loglik)
+lambda
+
+# we have one degree of freedom because the more complicated model has one more paramter than the simpler model:
+dfs <- 1
+
+# calculate the p-value, which is the probability of obseving a lambda as extreme or more extreme than the one we calculated above; 
+# chisq variables are always non-negative, and "extreme" in this case means large and positive -- so we want the upper tail probability,
+# rather than the cumulative probability:
+
+p <- pchisq(lambda, df=dfs, lower.tail=F) 
+
+p
+```
+
+So, we have a p-value equal to 0.073. Most people would say that there is not sufficient evidence to reject the null hypothesis (ER model) in favor of the alternative (ARD model) based on this. 
+
+In other words, there is not strong evidence to support unidirectional change in amino acids. 
+
+
+**All of these conclusions are conditional on the Markov models we are using.** Remember: junk in = junk out. 
+
+These conclusions are totally contingent upon the confidence we do (or do not have) in these models.
+ 
+There are some potential pitfalls of these models that we should articulate now:
 
 - Either of these amino acids could carry a fitness benefit that could lead to increased numbers of infections by one lineage or the other. We are not modeling this effect
 
@@ -184,4 +233,4 @@ Aside from the differences at the root of the tree, the two models appear to mos
 
 These criticisms aside, from the methodological point of view there is another thing we have not done: we have not obtained an estimate for when mutations actually occurred. Our estimates of ancestral states should inform the timing and number of mutations, but more work is needed to do so.
  
-In the next section (stochastic character mapping), we will do both of these things.
+In a later section (stochastic character mapping), we will do both of these things.

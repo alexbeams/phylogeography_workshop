@@ -181,7 +181,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(coda) <span class="co"># for handling output from MCMC</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phytools) <span class="co"># simmap functions, Mk models</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>This code is complementary to the other one in this subdirectory, and walks through how to fit models using a character mapping approach.</p>
+<p>This code is complementary to the other one in this subdirectory, and walks through how to fit models using functions from phytools.</p>
 <p>Most of the phytools stuff is based on the Mk model, which is a particular type of Markov model. M stands for “Markov”, and “k” indicates the number of states. (Lewis has an interesting discussion relating to the use of conditional likelihoods as a means of overcoming acquisition bias – the tendency to only record changes of state, and not maintenance of a character).</p>
 <p>fitMk fits the model to the data using nlminb, and optimization routine similar to quasi- Newton methods like BFGS. Compare this to ace.</p>
 <p>mcmcMk fits Mk models to trees using MCMC.</p>
