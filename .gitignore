@@ -7,3 +7,5 @@
 
 # temporary R files
 .knit.md
+
+**/*.quarto_ipynb

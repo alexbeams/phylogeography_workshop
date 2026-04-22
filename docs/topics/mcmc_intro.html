@@ -217,7 +217,8 @@ window.Quarto = {
 <section id="example-1-monte-carlo-sampling-to-approximate-pi" class="level1">
 <h1>Example 1: Monte Carlo sampling to approximate <span class="math inline">\(\pi\)</span></h1>
 <p>From calculus, we know how to evaluate integrals using antiderivatives. You might also be familiar with numerical quadrature techniques like the trapezoid rule and Simpson’s rule that approximate areas under curves with shapes that have nice formulas.</p>
-<p>Monte Carlo integration works a little bit differently. Let’s start by approximating the area of a circle to approximate <span class="math inline">\(\pi\)</span>.</p>
+<p>Monte Carlo integration works a little bit differently.</p>
+<p>Let’s start by approximating the number <span class="math inline">\(\pi\)</span>. We will do this by making use of the fact that the area of a circle is <span class="math inline">\(\pi r^2\)</span>, where <span class="math inline">\(r\)</span> is the radius of a given circle.</p>
 <p>Suppose there is a square dart board with a circle inscribed. My dart throws are random, so when I launch a dart at the board it lands randomly someplace in the square. Sometimes darts will land inside the circle, sometimes they will land outside.</p>
 <p>If I’ve chosen my square so that it is 1 meter x 1 meter, then the inscribed circle will have a diamter of 1 meter. Like this:</p>
 <div class="cell">
@@ -298,23 +299,24 @@ window.Quarto = {
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$x
- [1] -0.375681431  0.122031403  0.209480694 -0.459494831  0.157815536
- [6] -0.380490674 -0.059588144  0.168075186  0.009956323 -0.347806618
-[11] -0.335315018 -0.294444195  0.411415847  0.476140606  0.344306354
-[16] -0.115013527 -0.361559636  0.311818109 -0.132736218  0.137525067
-[21] -0.203412242  0.314997103 -0.343083358  0.181185228 -0.414450199
-[26]  0.496265934 -0.385419161  0.070939519 -0.171947449  0.026454575
+ [1]  0.035741036 -0.130418367  0.127501206  0.106808160  0.215441211
+ [6] -0.309626916 -0.280874318 -0.091140477 -0.131946731  0.199743554
+[11] -0.207050991  0.052257700 -0.298120893  0.151592562 -0.003516686
+[16]  0.420301212 -0.079746416 -0.123642670  0.357463593  0.064474492
+[21]  0.372860098  0.366019728 -0.176350244  0.179154549  0.349430542
+[26] -0.302425973 -0.050920040  0.497137178 -0.404890162  0.470183362
 
 $y
- [1]  0.380375977 -0.206881896  0.037975476  0.337492140  0.070625344
- [6]  0.436387184  0.404924983  0.398126663  0.253238356  0.489700424
-[11] -0.369901121 -0.192160061 -0.088567698 -0.396114802  0.262476357
-[16]  0.333207341  0.296379098 -0.150144990 -0.362624811  0.043749606
-[21]  0.204269872  0.419767525  0.210506996  0.108874536 -0.181705009
-[26] -0.136198679 -0.064333102  0.490884976 -0.155274979 -0.003165901</code></pre>
+ [1] -0.023292030  0.380185959  0.153678139  0.259206183 -0.137603689
+ [6]  0.189978684 -0.035489399  0.233256883  0.243887973  0.408039668
+[11]  0.402683905 -0.347377703  0.071631277 -0.163075257  0.389891176
+[16]  0.061802905 -0.336209080  0.013969465 -0.280790237 -0.131148799
+[21]  0.356611690 -0.499930648  0.290725273 -0.258885832 -0.408306781
+[26] -0.493591179  0.008154079 -0.472012836  0.305464433  0.465210983</code></pre>
 </div>
 </div>
-<p>Play around with the throwDarts function for different values of ndarts. How does this help us evaluate <span class="math inline">\(\pi\)</span>? Remember that Area(circle) = <span class="math inline">\(\pi\)</span> * radius^2, and Area(square) = radius^2 = 1, because we deliberately chose radius=1.</p>
+<p>Play around with the throwDarts function for different values of ndarts.</p>
+<p>How does this help us evaluate <span class="math inline">\(\pi\)</span>? Remember that Area(circle) = <span class="math inline">\(\pi\)</span> * radius^2, and Area(square) = radius^2 = 1, because we deliberately chose radius=1.</p>
 <p>So, the area of the circle is just <span class="math inline">\(\pi/4\)</span>, and the area of the rectangle is 1.</p>
 <p>Another way of saying this is that <span class="math inline">\(\pi\)</span> = <span class="math inline">\(4 \times\)</span> Area(circle)/Area(rectangle).</p>
 <p>So what? Well, the darts give us a way to calculate the ratio of areas. Convince yourself that (number of darts inside circle)/(total darts thrown) is equal to this ratio of areas.</p>
@@ -342,7 +344,7 @@ $y
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.76</code></pre>
+<pre><code>[1] 0.78</code></pre>
 </div>
 </div>
 <p>The area of the circle is <span class="math inline">\(\pi\)</span>/4, the area of the square is 1</p>
@@ -366,7 +368,7 @@ $y
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 3.092</code></pre>
+<pre><code>[1] 3.22</code></pre>
 </div>
 </div>
 </section>
@@ -405,7 +407,7 @@ $y
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's plot these:</span></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>xvals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">10</span>,<span class="dv">10</span>,<span class="at">length=</span><span class="dv">1000</span>)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>))</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>))</span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(xvals, <span class="fu">sapply</span>(xvals, f), <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="st">'x'</span>,<span class="at">ylab=</span><span class="st">'f(x) = sin(x)'</span>)</span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(xvals, <span class="fu">sapply</span>(xvals, g), <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="st">'x'</span>,<span class="at">ylab=</span><span class="st">'g(x) = x^2'</span>)</span>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(xvals, <span class="fu">sapply</span>(xvals, h), <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="st">'x'</span>,<span class="at">ylab=</span><span class="st">'h(x) = gaussian'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -417,8 +419,8 @@ $y
 </div>
 </div>
 </div>
-<p>We could inscribe these shapes within rectangles (like with the dartboard example), but the annoying difficulty with that is that our functions have different heights. So, we would need to customize our dartboard in each case. We don’t want to do that. Instead, we want to modify our method to accomodate any function whatsoever, particularly as we might not always be able to “draw” the function conveniently (if it is a function of 1000’s of variables, for example).</p>
-<p>Instead, we can go back to calculus. At some point in calculus, you were taught “The Mean Value Theorem for Integrals”. You may not remember it, but I guarantee that it was taught to you if you took calculus.</p>
+<p>We could inscribe these shapes within rectangles (like with the dartboard example), but annoyingly our functions have different heights. We would need to customize our dartboard in each case. We don’t want to do that. Instead, we want to modify our method to accomodate any function whatsoever, particularly as we might not always be able to “draw” the function conveniently (if it is a function of 1000’s of variables, for example).</p>
+<p>Instead, we can go back to calculus. At some point in calculus, you were taught a nice theorem called <strong>The Mean Value Theorem for Integrals</strong>.</p>
 <p>It says this:</p>
 <p><span class="math display">\[\begin{align*}
 \bar{f} = \frac{1}{b-a} \int_a^b f(x) dx.
@@ -433,7 +435,8 @@ $y
 \int_a^b f(x) dx &amp;= (b-a) \bar{f}.
 \end{align*}\]</span></p>
 <p>If we could evaluate <span class="math inline">\(\bar{f}\)</span> somehow, then multiplying by <span class="math inline">\((b-a)\)</span> would give us our integral. We can’t evaluate <span class="math inline">\(\bar{f}\)</span> exactly, but we can certainly approximate it.</p>
-<p>All we have to do is this: randomly choose x-coordinates between <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>, evaluate <span class="math inline">\(f(x)\)</span> at each of those points, and then average those values. This will give us a Monte Carlo approximation to the average value of <span class="math inline">\(f(x)\)</span>:</p>
+<p>All we have to do is this: randomly choose x-coordinates between <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>, evaluate <span class="math inline">\(f(x)\)</span> at each of those points, and then average those values to approximate <span class="math inline">\(\bar{f}\)</span>.</p>
+<p>I will now randomly choose 50000 points between <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>, evaluate our functions at each of these points, and take averages to get <span class="math inline">\(\bar{f}\)</span>, <span class="math inline">\(\bar{g}\)</span>, and <span class="math inline">\(\bar{h}\)</span>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ndarts <span class="ot">&lt;-</span> <span class="dv">50000</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>xrands <span class="ot">&lt;-</span> <span class="fu">runif</span>(ndarts, <span class="at">min=</span>a, <span class="at">max=</span>b)</span>
@@ -441,17 +444,17 @@ $y
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>fbar_approx <span class="ot">&lt;-</span> <span class="fu">mean</span>( <span class="fu">f</span>(xrands) )</span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>fbar_approx</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.004452281</code></pre>
+<pre><code>[1] -0.002661413</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gbar_approx <span class="ot">&lt;-</span> <span class="fu">mean</span>( <span class="fu">g</span>(xrands) )</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>gbar_approx</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 8.329761</code></pre>
+<pre><code>[1] 8.340866</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>hbar_approx <span class="ot">&lt;-</span> <span class="fu">mean</span>( <span class="fu">h</span>(xrands) )</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>hbar_approx</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.09903018</code></pre>
+<pre><code>[1] 0.09991649</code></pre>
 </div>
 </div>
 <p>Once we have our approximations to the average values of the functions (i.e.&nbsp;approximations to the heights), we just multiply those by the widths on the x-axis (b-a) to get our approximation to the integral (i.e. the area under the curve):</p>
@@ -459,17 +462,17 @@ $y
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>integral_f <span class="ot">&lt;-</span> fbar_approx <span class="sc">*</span> (b<span class="sc">-</span>a)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>integral_f</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.04452281</code></pre>
+<pre><code>[1] -0.02661413</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>integral_g <span class="ot">&lt;-</span> gbar_approx <span class="sc">*</span> (b<span class="sc">-</span>a)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>integral_g</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 83.29761</code></pre>
+<pre><code>[1] 83.40866</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>integral_h <span class="ot">&lt;-</span> hbar_approx <span class="sc">*</span> (b<span class="sc">-</span>a)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>integral_h</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.9903018</code></pre>
+<pre><code>[1] 0.9991649</code></pre>
 </div>
 </div>
 <p>Experiment with different values of ndarts to see how the approximations change.</p>
@@ -495,8 +498,8 @@ $y
 </div>
 </div>
 <p>We are trying to calcualte the area under the curve to the right of the red dot at x=5. That area is obviously tiny.</p>
-<p>There are some challenges to obtaining a Monte Carlo estimate here. I probably can’t use runif anymore because it requires a maximum value that is finite, for one thing.</p>
-<p>Now, you might be saying to yourself, “Well, R has the ability to simulate variables from a standard normal distribuion, and our h(x) is just the PDF of a standard normal distribution. So, I could just simulate a large number of standard normal variates, and evaluate the fraction that are larger than 5.”</p>
+<p>There are some challenges to obtaining a Monte Carlo estimate here. I probably can’t use the runif function anymore because it requires a maximum value that is finite, for one.</p>
+<p>Now, you might be saying to yourself, “Well, R has the ability to simulate variables from a standard normal distribution, and our h(x) is just the PDF of a standard normal distribution. So, I could just simulate a large number of standard normal variates, and evaluate the fraction that are larger than 5.”</p>
 <p>“Okay,” I reply. “You go right on ahead and do that.”</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>tailsample <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fl">1e4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -522,7 +525,7 @@ $y
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>tailsample <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fl">1e6</span>)</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(tailsample <span class="sc">&gt;</span> <span class="dv">5</span>)<span class="sc">/</span><span class="fu">length</span>(tailsample)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0</code></pre>
+<pre><code>[1] 2e-06</code></pre>
 </div>
 </div>
 <p>I’m seeing that I usually get 0 or 1 value larger than 5, so that our Monte Carlo approximation to the tail probability is either 0 or 1e-6.</p>
@@ -536,7 +539,7 @@ Pr(Z&gt;5) &amp;= \int_5^\infty h(x) dx ,\\
 \end{align*}\]</span></p>
 <p>Seems trivial at first glance, but the interpretation of these two integrals is different:</p>
 <p>In the first line, <span class="math inline">\(\int h(x) dx\)</span> means to sample x uniformly, and then average the <span class="math inline">\(h(x_i)\)</span></p>
-<p>In the second line, <span class="math inline">\(\int h(x)/w(x) dw\)</span> means to sample x from a PDF <span class="math inline">\(w(x)\)</span>, instead of uniformly, and then average the ratios <span class="math inline">\(f(x)/w(x)\)</span> to obtain the integral</p>
+<p>In the second line, <span class="math inline">\(\int h(x)/w(x) dw\)</span> means to sample x from a PDF <span class="math inline">\(w(x)\)</span>, instead of uniformly, and then average the ratios <span class="math inline">\(f(x)/w(x)\)</span> to obtain the integral.</p>
 <p>(If you’re familiar with Measure theory, this is using the Radon Nikodym derivative.)</p>
 <p>The only restriction is here is that <span class="math inline">\(w(x)\)</span> needs to be supported on the original domain of integration for <span class="math inline">\(x\)</span>, in this case, <span class="math inline">\([5, \infty)\)</span>.</p>
 <p>Here’s an example:</p>
@@ -556,7 +559,7 @@ Pr(Z&gt;5) &amp;= \int_5^\infty h(x) dx ,\\
 <span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a><span class="fu">getimportanceest</span>(<span class="dv">100</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 4.176922e-07</code></pre>
+<pre><code>[1] 1.667383e-07</code></pre>
 </div>
 </div>
 <p>We can compare this with R’s built in function (i.e.&nbsp;the “ground truth”) for calculating the tail probability:</p>
@@ -606,8 +609,7 @@ Repeat ad infinitum</code></pre>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>ninits <span class="ot">&lt;-</span> <span class="dv">100000</span> <span class="co"># how long to run</span></span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>xk <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="at">length=</span>ninits)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>To illustrate the method, let’s make the initial value different from zero (in practice, it’s good for the initial value to not be in the tails of <span class="math inline">\(f(x)\)</span>):</p>
-<p>But I will chose a “bad” guess in the tails to illustrate the algorithm’s behavior:</p>
+<p>To illustrate the method, let’s make the initial value different from zero. In practice, it’s good for the initial value to not be in the tails of <span class="math inline">\(f(x)\)</span>, but I will chose a “bad” guess in the tails to illustrate the algorithm’s behavior:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>xk[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">20</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a></span>

@@ -222,7 +222,7 @@ window.Quarto = {
 <p>Our working example will be this Seasonal Coronavirus NL63 phylogeny obtained from NextStrain: <a href="https://nextstrain.org/seasonal-cov/nl63">https://nextstrain.org/seasonal-cov/nl63</a></p>
 <p>In the left-hand panel on the webpage at NextStrain, you can see the option to Color in the phylogeny according to a variety of characteristics, including “Genotype”. If you select Genotype and then select “Spike” as the gene, and then examine position 100, you will see something fascinating: the phylogeny displays clear evidence of mutations from the amino acid S (Glycine) to P (Aspartic acid), and vice versa. The phylogeny on NextStrain colors in the internal edges of their phylogeny to display where the mutations may have occurred. Our goal is to try to replicate this using the ace function in R.</p>
 <p>As a side note: Seasonal Coronavirus NL63 is fascinating because it uses the same ACE2 receptor to enter cells as SARS-CoV-2. In both viruses, the Spike protein on the virus is a little gizmo that helps the viruses bind to ACE2 and enter cells during infection. You have probably experienced NL63 infection multiple times in your life up to this point – usually in the form of a cold, or completely asymptomatic.</p>
-<p>Let’s see how these amino acids in the Spike protein evolved over time! First, let’s read in the tree and plot it. I have manually provided tip data below to reproduce what we see on NextStrain.</p>
+<p>Let’s see how these amino acids in the Spike protein evolved over time. First, let’s read in the tree and plot it. I have manually provided tip data below to reproduce what we see on NextStrain.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">read.tree</span>(<span class="st">'coronavirus_nl63/nextstrain_seasonal-cov_nl63_timetree.nwk'</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -307,7 +307,7 @@ Scaled likelihoods at the root (type '...$lik.anc' to get them for all nodes):
 </div>
 <p>The output above tells us what the structure of our Markov model is (Rate index matrix), as well as the value of the objective function (Log-likelihood) at the Maximum Likelihood paramter estimate (Parameter estimates). There is only one parameter estimated because we used an “equal rates” model. The estimate for the rate is a pretty small number, which makes perfect sense – while there is some evidence for a back mutation (from P to S), or possibly for <span class="math inline">\(\sim 4\)</span> mutations from S to P, there seems to be a fairly small number of mutations overall. The rate estimate we are getting seems to make sense.</p>
 <p>The last bit of the output is particularly salient for our question we began with: it tell us the “Scaled likelihoods at the root”, and assigns a higher value to S than to P. This means that, under this model, the ancestral virus most likely had the amino acid S rather than the amino acid P. This already tells us that, at least to the extent we think our Markov model is reasonable, the data seem more consistent with Hypotheses 1 or 3 than Hypothesis 2.</p>
-<p>Okay, so far so good - but maybe I think the equal rates model is unreasonable to begin with. After all, it is a little bit striking that there is a huge clade in the phylogeny with no evidence of mutation from S to P whatsoever, but there does seem to be clear evidence of back-mutation from P to S. Maybe the rate of mutation from P to S is much faster than the rate from S to P. This is what our second model allows for. Let’s see how those estimates turned out:</p>
+<p>Okay, so far so good - but maybe I think the equal rates model is unreasonable to begin with. After all, it is a little bit striking that there is a huge clade in the phylogeny with no evidence of mutation from S to P whatsoever, but there does seem to be evidence of back-mutation from P to S. Maybe the rate of mutation from P to S is much faster than the rate from S to P. This is what our second model allows for. Let’s see how those estimates turned out:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -347,9 +347,9 @@ P S
 401 0.2746174 7.253826e-01
 402 0.9810853 1.891467e-02
 403 0.9998225 1.775022e-04
-404 1.0000000 1.476925e-10
-405 1.0000000 1.440331e-13
-406 1.0000000 1.271426e-11</code></pre>
+404 1.0000000 1.573227e-10
+405 1.0000000 5.274722e-13
+406 1.0000000 1.000175e-09</code></pre>
 </div>
 </div>
 <p>This is a datarame with the scaled likelihoods of the two states for each node. The tree has 400 tips, so the nodes are numbered 401 through 799 (a bifurcating tree with N tips has N-1 internal nodes). Each row in the dataframe above is one of the nodes, and the values in the columns are the relative likelihoods that it resides in state P or state S under the MLE. We can use this data to plot estimated states at the internal nodes.</p>
@@ -423,16 +423,17 @@ P S
 </div>
 <p>You wil notice that the log-likelihood for the ARD model is larger than the log-likelihood for the ER model. This indicates that the ARD model fits the data better than the ER model. This makes perfect sense, because a model with more parameters should fit the data better than a model with fewer paramters.</p>
 <p>The question is whether the improvement in model fit is meaningful, or whether we are overfitting to noise in the data.</p>
-<p>The idea behind the GLR test is: if the the difference in log-likelihoods (or equivalently, the logarithm of the ratio of the likelihoods) is huge, then the improvement from the more complicated model is meaningful, i.e.&nbsp;not overfit. A small improvement in the fit of the model, as quantified by a marginally higher log-likelihood, indicates that we are adding more paramters/complexity to our model than is warranted.</p>
-<p>From statistics, we know that provided we have a sufficiently large dataset, the quantity</p>
+<p>The idea behind the GLR test is: if the the difference in log-likelihoods (or equivalently, the logarithm of the ratio of the likelihoods) is huge, then the improvement from the more complicated model is meaningful, i.e.&nbsp;not overfit. A small improvement in the fit of the model, as quantified by a marginally higher log-likelihood, indicates that we are adding more paramters/complexity to our model without producing a dramatically improved fit.</p>
+<p>From statistics, theory establishes that, provided we have a sufficiently large dataset, the quantity</p>
 <p><span class="math inline">\(\lambda_{LR} = -2 (l_{\text{ER}} - l_{\text{ARD}})\)</span></p>
-<p>is approximately distributed according to a <span class="math inline">\(\chi^2\)</span> distribution under the null hypothesis that data arise from the simpler model. The degrees of freedom for this <span class="math inline">\(\chi^2\)</span> distribution is equal to the difference in the number of parameters between the models (so in our case, a single degree of freedom). Values of <span class="math inline">\(\lambda_{LR}\)</span> that are huge are evidence against the null hypothesis. If we want to control type 1 errors at $5%, we may say that values of <span class="math inline">\(\lambda_{LR}\)</span> landing above the <span class="math inline">\(95\%\)</span>-ile of the distribution lead us to reject the null hypothesis. Recall that a <span class="math inline">\(p\)</span>-value is the probability of observing a value of the test statistic as extreme or more extreme than the one we calculate.</p>
+<p>is approximately distributed according to a <span class="math inline">\(\chi^2\)</span> distribution under the null hypothesis that data arise from the simpler model. The degrees of freedom for this <span class="math inline">\(\chi^2\)</span> distribution is equal to the difference in the number of parameters between the models (so in our case, a single degree of freedom). Values of <span class="math inline">\(\lambda_{LR}\)</span> that are huge are evidence against the null hypothesis. If we want to control type 1 errors (false-positives) at <span class="math inline">\(5\%\)</span>, we may say that values of <span class="math inline">\(\lambda_{LR}\)</span> landing above the <span class="math inline">\(95\%\)</span>-ile of the distribution lead us to reject the null hypothesis.</p>
+<p>Recall that a <span class="math inline">\(p\)</span>-value is the probability of observing a value of the test statistic as extreme or more extreme (under the null hypothesis) than the one we calculate from the data.</p>
 <p>So, to carry out a GLR test, we proceed as follows:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> (fit1<span class="sc">$</span>loglik <span class="sc">-</span> fit2<span class="sc">$</span>loglik)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>lambda</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 3.21004</code></pre>
+<pre><code>[1] 3.210039</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we have one degree of freedom because the more complicated model has one more paramter than the simpler model:</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>dfs <span class="ot">&lt;-</span> <span class="dv">1</span></span>
@@ -456,9 +457,9 @@ P S
 <ul>
 <li><p>Either of these amino acids could carry a fitness benefit that could lead to increased numbers of infections by one lineage or the other. We are not modeling this effect</p></li>
 <li><p>The models are assuming that rates are constant in time. This may not be a reasonable assumption to make.</p></li>
-<li><p>Can you think of any other criticisms?</p></li>
 </ul>
-<p>These criticisms aside, from the methodological point of view there is another thing we have not done: we have not obtained an estimate for when mutations actually occurred. Our estimates of ancestral states should inform the timing and number of mutations, but more work is needed to do so.</p>
+<p>Can you think of any other criticisms?</p>
+<p>From the methodological point of view there is another thing we have not done: we have not obtained an estimate for <strong>when mutations actually occurred</strong>. Our estimates of ancestral states should inform the timing and number of mutations, but more work is needed to do so.</p>
 <p>In a later section (stochastic character mapping), we will do both of these things.</p>
 
 

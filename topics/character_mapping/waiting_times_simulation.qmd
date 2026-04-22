@@ -10,29 +10,31 @@ states at internal nodes.
 
 ## Exercises
 ## 1.
-Using a tree of your choice (simulated or otherwise), as well as data describing
-states of the tips, fit a Markov model of trait change using ace. Use the values
-in lik.anc to randomly sample configurations of internal node states. Is this
-equivalent to simulating evolution in the demo "Fitting and simulating Markov
-models on tees ucing ancestral character estimation (ace)?" Why or why not?
 
-The strategy for stochastic character mapping relies on a different method of
-simulation than either strategy outlined in the previous exercise. Rather than determining states using transition probabilities for a fixed branch length,
-stochastic character mapping simulates a Markov model in continuous time.
-
+The strategy for stochastic character mapping relies on simulating changes of state 
+for Markov chains. So far, we have seen how to calculate transition probabilities given
+a fixed amount of time. 
+ 
 To illustrate this idea, let's begin with a simple 2-state Markov chain.
 
 ```{r}
-Q <- matrix(c(-1,10,1,-10), nrow=2, byrow=T)
+Q <- matrix(c(-1,100,1,-100), nrow=2, byrow=T)
 ```
 
+This generator says that if we are in state 1, we move to state 2 at a rate equal to 1. If we are in state 2, we move back to 
+state 1 at a rate equal to 100. So, we expect to be spending more time in state 1 than in state 2. In fact, the relative amount
+of time we expect to reside in either state is given by the stationary distribution
+
+$\pi = (\frac{100}{101},\frac{1}{101})^T$.
+
 The output of this simulation is going to be a list/vector/whatever of event times. We start at time zero. I'm going to decide at the outset that I want to
-simulate 100 changes of state, so we will have 100 event times.
+simulate 50 changes of state, so we will have 50 event times.
 
 ```{r}
+n <- 50
 
-events <- rep(0, 100)
-states <- rep(1,100)
+events <- rep(0, n)
+states <- rep(1,n)
 
 ```
 
@@ -42,21 +44,24 @@ we start in state 1 above.
 
 Because the rates of our stochastic rate matrix Q are constant in time,
 the time until each event is described by an exponential distribution.
-The process we are about to simulate is known as a \textbf{Poisson process}.
-In our case, the rate could be different depending on the current state the sytem is in.
+The procedure we are about to implement is known as **Gillespie's Algorithm**.
+The process we are about to simulate is also a type of **Inhomogeneous Poisson Process**.
 
-If we are currently in state 1, the time until the next event, i.e. the time
-until a transition to state 2, follows $T \sim q_{21} e^{-q_{21}t}$, and if we
+The algorithm proceeds as follows. 
+If we are currently in state 1, we know that we switch to state 2 at rate $q_{21}$. In the stochastic 
+setting, the amount of time until the state change is an Exponentially-distributed random variable with 
+rate $q_{21}$, so that $T_{21} \sim q_{21} e^{-q_{21}t}$. If we
 are currently in state 2, the time until a transition to state 1 follows
-$T \sim q_{12} e^{-q_12t}
+$T_{12} \sim q_{12} e^{-q_{12}t}$.
 
-## Exercise
-## 3.
-Verify that the $q_{ij}$ convention used in the previous sentence matches
-your intuition (and that I have not made a mistake).
+## 2.
+Which convention are we using for $q_{ij}$? Is this the transition rate from state $i$ to state $j$, or the
+rate into state $i$ from state $j$?
+
+Let's proceed to simulate this Markov chain in continuous time:
 
 ```{r}
-for(i in 2:100){
+for(i in 2:n){
 	state=states[i-1]
 	events[i] <- events[i-1] + rexp(1, rate= -Q[state, state])
 
@@ -64,40 +69,44 @@ for(i in 2:100){
 }
 
 dat <- cbind(events, states)
-plot(states~events,dat)
+plot(states~events,dat,type='s',xlab='Time',ylab='State')
 ```
 
-## Exercise
-## 4.
-Plot the simulation contained in dat from the previous exercise in a way that captures
-left continuity (i.e. that the times in events coincide with the state changes into
-the state in the same row)
+There are a couple of takeaways from this plot. First, we see that the system is switching between
+states 1 and 2 at random times. Second, the system appears to be spending more time in state 1 than in
+state 2. Let's verify that this matches the stationary distribution. 
 
-This is the essence of stochastic character mapping -- but with one crucial piece missing so far.
+```{r}
+# What was the total simulation time?
+Ttot <- tail(dat,n=1)[1]
 
-The general strategy for simulating character mappings is to use a two step approach. Step one: simulate
-a configuration of internal node states using a method similar to the ones alluded to at the start of
-this demo. Step two: simulate character mappings by simulating state transitions in continuous time
-in the manner just above, but while also ensuring that the start and end states of the process match
-with the nodal states at either end of a particular branch.
+# Calculate the amounts of time spent in each state:
 
-## Exercise
+diffdat <- cbind(diff(dat[,'events']),dat[-dim(dat)[1],'states']) 
 
-## 5.
+# How much total time in state 1?
+T1 <-  sum(diffdat[diffdat[,2]==1,1])
 
-Modify the event time simulation to run for a pre-specified amount of time (or branch length)
+# How much total time in state 2?
+T2 <-  sum(diffdat[diffdat[,2]==2,1])
+
+print(c(T1/Ttot, T2/Ttot))
+
+```
+
+The fraction of time spent in state 2 should be 1/101 $\approx 0.0099$. We are simulating over a fairly short
+chunk of time, so we expect some randomness in any given simulation. 
+If we simulate for a longer period of time, these time averages should approach the stationary distribution. 
+Try changing n above to a large number (like 10000) to confirm this.
+
+## 3.
+
+Modify the event time simulation above to run for a pre-specified amount of time (or branch length)
 and an undetermined number of events. Simulate realizations of the stochastic process that
-accomodate predefined initial and final states. (Hint: the strategy originally described
-just tosses out any trajectories that don't satisfy boundary conditions for a particular branch.)
-(Using the term ``boundary conditions'' to mean the node states at either end of a branch.)
+accomodate predefined initial and final states, or "boundary data". (Hint: you may include a step that invovles rejecting
+a trajectory if it does not match with your boundary data.)
 
-
-
-## 5b
-If the configuration of node states associated with a particular branch imlpy at least one state change,
-is there a convenient way to modify the event time simulator to always simulate at least one state change?
-
-## 6.
+## 4.
 In simulating a stochastic character mapping, does it matter which direction we simulate from? Mathematically,
 there is no reason why we couldn't use tip states as initial conditions, but that doesn't really seem
 consistent with evolution occurring in forward time. Are there situations where the two approaches are

@@ -18,7 +18,7 @@ After an introduction to this week's workshop, we will gain some experience work
 :::{layout="[[12]]"}
 
 :::{.date}
-Monday<br>[September 29, 2025]
+Day 1<br>
 :::
 
 :::{layout="[[10]]"}
@@ -103,16 +103,6 @@ R demo
 :::{.text-muted}
 Practical session in R
 :::
-:::
-:::
-:::
-
-:::{.card .mb-3}
-:::{.card-body}
-[1530--1630: Fitting models with Stochastic character mapping](topics/character_mapping/fit_stochastic_mapping.qmd){.card-title .stretched-link}
-
-:::{.text-muted}
-Practical session in R
 :::
 :::
 :::

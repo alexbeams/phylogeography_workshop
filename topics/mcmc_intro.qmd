@@ -18,8 +18,11 @@ quadrature techniques like the trapezoid rule and Simpson's
 rule that approximate areas under curves with shapes that have
 nice formulas.
 
-Monte Carlo integration works a little bit differently. Let's start
-by approximating the area of a circle to approximate $\pi$.
+Monte Carlo integration works a little bit differently. 
+
+Let's start
+by approximating the number $\pi$. We will do this by making use of the fact
+that the area of a circle is $\pi r^2$, where $r$ is the radius of a given circle.
 
 Suppose there is a square dart board with a circle inscribed. My dart
 throws are random, so when I launch a dart at the board it lands randomly
@@ -97,6 +100,8 @@ throwDarts(30)
 ```
 
 Play around with the throwDarts function for different values of ndarts.
+
+
 How does this help us evaluate $\pi$? Remember that Area(circle) = $\pi$ * radius^2,
 and Area(square) = radius^2 = 1, because we deliberately chose radius=1.
 
@@ -193,23 +198,22 @@ definite integrals should evaluate to:
 
 # Let's plot these:
 xvals <- seq(-10,10,length=1000)
-par(mfrow=c(3,1))
+par(mfrow=c(1,3))
 plot(xvals, sapply(xvals, f), type='l',xlab='x',ylab='f(x) = sin(x)')
 plot(xvals, sapply(xvals, g), type='l',xlab='x',ylab='g(x) = x^2')
 plot(xvals, sapply(xvals, h), type='l',xlab='x',ylab='h(x) = gaussian')
 ```
 
 We could inscribe these shapes within rectangles (like with the dartboard
-example), but the annoying difficulty with that is that our functions
-have different heights. So, we would need to customize our dartboard
+example), but annoyingly our functions
+have different heights. We would need to customize our dartboard
 in each case. We don't want to do that. Instead, we want to modify our method
 to accomodate any function whatsoever, particularly as we might not always
 be able to "draw" the function conveniently (if it is a function of 1000's of
 variables, for example).
 
 Instead, we can go back to calculus. At some point in calculus, you were
-taught "The Mean Value Theorem for Integrals". You may not remember it,
-but I guarantee that it was taught to you if you took calculus.
+taught a nice theorem called **The Mean Value Theorem for Integrals**. 
 
 It says this:
 
@@ -242,8 +246,10 @@ certainly approximate it.
 
 All we have to do is this: randomly choose x-coordinates between
 $a$ and $b$, evaluate $f(x)$ at each of those points, and then average those
-values. This will give us a Monte Carlo approximation to the average
-value of $f(x)$:
+values to approximate $\bar{f}$. 
+
+I will now randomly choose 50000 points between $a$ and $b$, evaluate our functions 
+at each of these points, and take averages to get $\bar{f}$, $\bar{g}$, and $\bar{h}$:
 
 ```{r}
 ndarts <- 50000
@@ -307,11 +313,11 @@ points(x=5, y=0,col='red')
 
 We are trying to calcualte the area under the curve to the right of the red dot at x=5. That area is obviously tiny.
 
-There are some challenges to obtaining a Monte Carlo estimate here. I probably can't use runif anymore
-because it requires a maximum value that is finite, for one thing.
+There are some challenges to obtaining a Monte Carlo estimate here. I probably can't use the runif function anymore
+because it requires a maximum value that is finite, for one.
 
 Now, you might be saying to yourself, "Well, R has the ability to simulate
-variables from a standard normal distribuion, and our h(x) is just the PDF
+variables from a standard normal distribution, and our h(x) is just the PDF
 of a standard normal distribution. So, I could just simulate a large
 number of standard normal variates, and evaluate the fraction that
 are larger than 5."
@@ -364,7 +370,7 @@ Seems trivial at first glance, but the interpretation of these two integrals is 
 In the first line, $\int h(x) dx$ means to sample x uniformly, and then average the $h(x_i)$
 
 In the second line, $\int h(x)/w(x) dw$ means to sample x from a PDF $w(x)$, instead of uniformly,
-	and then average the ratios $f(x)/w(x)$ to obtain the integral
+	and then average the ratios $f(x)/w(x)$ to obtain the integral.
 
 (If you're familiar with Measure theory, this is using the Radon Nikodym derivative.)
 
@@ -471,10 +477,8 @@ xk <- rep(0, length=ninits)
 ```
 
 To illustrate the method, let's make the initial value
-different from zero (in practice, it's good for the initial
-value to not be in the tails of $f(x)$):
-
-But I will chose a "bad" guess in the tails to illustrate the algorithm's behavior:
+different from zero. In practice, it's good for the initial
+value to not be in the tails of $f(x)$, but I will chose a "bad" guess in the tails to illustrate the algorithm's behavior:
 
 ```{r}
 xk[1] <- 20

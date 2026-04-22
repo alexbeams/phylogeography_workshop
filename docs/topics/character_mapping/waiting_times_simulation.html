@@ -211,29 +211,30 @@ window.Quarto = {
 </section>
 <section id="section" class="level2">
 <h2 class="anchored" data-anchor-id="section">1.</h2>
-<p>Using a tree of your choice (simulated or otherwise), as well as data describing states of the tips, fit a Markov model of trait change using ace. Use the values in lik.anc to randomly sample configurations of internal node states. Is this equivalent to simulating evolution in the demo “Fitting and simulating Markov models on tees ucing ancestral character estimation (ace)?” Why or why not?</p>
-<p>The strategy for stochastic character mapping relies on a different method of simulation than either strategy outlined in the previous exercise. Rather than determining states using transition probabilities for a fixed branch length, stochastic character mapping simulates a Markov model in continuous time.</p>
+<p>The strategy for stochastic character mapping relies on simulating changes of state for Markov chains. So far, we have seen how to calculate transition probabilities given a fixed amount of time.</p>
 <p>To illustrate this idea, let’s begin with a simple 2-state Markov chain.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">1</span>,<span class="sc">-</span><span class="dv">10</span>), <span class="at">nrow=</span><span class="dv">2</span>, <span class="at">byrow=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">100</span>,<span class="dv">1</span>,<span class="sc">-</span><span class="dv">100</span>), <span class="at">nrow=</span><span class="dv">2</span>, <span class="at">byrow=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The output of this simulation is going to be a list/vector/whatever of event times. We start at time zero. I’m going to decide at the outset that I want to simulate 100 changes of state, so we will have 100 event times.</p>
+<p>This generator says that if we are in state 1, we move to state 2 at a rate equal to 1. If we are in state 2, we move back to state 1 at a rate equal to 100. So, we expect to be spending more time in state 1 than in state 2. In fact, the relative amount of time we expect to reside in either state is given by the stationary distribution</p>
+<p><span class="math inline">\(\pi = (\frac{100}{101},\frac{1}{101})^T\)</span>.</p>
+<p>The output of this simulation is going to be a list/vector/whatever of event times. We start at time zero. I’m going to decide at the outset that I want to simulate 50 changes of state, so we will have 50 event times.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>events <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">100</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">100</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>events <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span>,n)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We have to decide whether to start in state 1 or state 2. I have declared that we start in state 1 above.</p>
-<p>Because the rates of our stochastic rate matrix Q are constant in time, the time until each event is described by an exponential distribution. The process we are about to simulate is known as a . In our case, the rate could be different depending on the current state the sytem is in.</p>
-<p>If we are currently in state 1, the time until the next event, i.e.&nbsp;the time until a transition to state 2, follows <span class="math inline">\(T \sim q_{21} e^{-q_{21}t}\)</span>, and if we are currently in state 2, the time until a transition to state 1 follows $T q_{12} e^{-q_12t}</p>
-</section>
-<section id="exercise" class="level2">
-<h2 class="anchored" data-anchor-id="exercise">Exercise</h2>
+<p>Because the rates of our stochastic rate matrix Q are constant in time, the time until each event is described by an exponential distribution. The procedure we are about to implement is known as <strong>Gillespie’s Algorithm</strong>. The process we are about to simulate is also a type of <strong>Inhomogeneous Poisson Process</strong>.</p>
+<p>The algorithm proceeds as follows. If we are currently in state 1, we know that we switch to state 2 at rate <span class="math inline">\(q_{21}\)</span>. In the stochastic setting, the amount of time until the state change is an Exponentially-distributed random variable with rate <span class="math inline">\(q_{21}\)</span>, so that <span class="math inline">\(T_{21} \sim q_{21} e^{-q_{21}t}\)</span>. If we are currently in state 2, the time until a transition to state 1 follows <span class="math inline">\(T_{12} \sim q_{12} e^{-q_{12}t}\)</span>.</p>
 </section>
 <section id="section-1" class="level2">
-<h2 class="anchored" data-anchor-id="section-1">3.</h2>
-<p>Verify that the <span class="math inline">\(q_{ij}\)</span> convention used in the previous sentence matches your intuition (and that I have not made a mistake).</p>
+<h2 class="anchored" data-anchor-id="section-1">2.</h2>
+<p>Which convention are we using for <span class="math inline">\(q_{ij}\)</span>? Is this the transition rate from state <span class="math inline">\(i\)</span> to state <span class="math inline">\(j\)</span>, or the rate into state <span class="math inline">\(i\)</span> from state <span class="math inline">\(j\)</span>?</p>
+<p>Let’s proceed to simulate this Markov chain in continuous time:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">100</span>){</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n){</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    state<span class="ot">=</span>states[i<span class="dv">-1</span>]</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    events[i] <span class="ot">&lt;-</span> events[i<span class="dv">-1</span>] <span class="sc">+</span> <span class="fu">rexp</span>(<span class="dv">1</span>, <span class="at">rate=</span> <span class="sc">-</span>Q[state, state])</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -241,7 +242,7 @@ window.Quarto = {
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(events, states)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(states<span class="sc">~</span>events,dat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(states<span class="sc">~</span>events,dat,<span class="at">type=</span><span class="st">'s'</span>,<span class="at">xlab=</span><span class="st">'Time'</span>,<span class="at">ylab=</span><span class="st">'State'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -250,29 +251,34 @@ window.Quarto = {
 </div>
 </div>
 </div>
-</section>
-<section id="exercise-1" class="level2">
-<h2 class="anchored" data-anchor-id="exercise-1">Exercise</h2>
+<p>There are a couple of takeaways from this plot. First, we see that the system is switching between states 1 and 2 at random times. Second, the system appears to be spending more time in state 1 than in state 2. Let’s verify that this matches the stationary distribution.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># What was the total simulation time?</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>Ttot <span class="ot">&lt;-</span> <span class="fu">tail</span>(dat,<span class="at">n=</span><span class="dv">1</span>)[<span class="dv">1</span>]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the amounts of time spent in each state:</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>diffdat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">diff</span>(dat[,<span class="st">'events'</span>]),dat[<span class="sc">-</span><span class="fu">dim</span>(dat)[<span class="dv">1</span>],<span class="st">'states'</span>]) </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># How much total time in state 1?</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>T1 <span class="ot">&lt;-</span>  <span class="fu">sum</span>(diffdat[diffdat[,<span class="dv">2</span>]<span class="sc">==</span><span class="dv">1</span>,<span class="dv">1</span>])</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># How much total time in state 2?</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>T2 <span class="ot">&lt;-</span>  <span class="fu">sum</span>(diffdat[diffdat[,<span class="dv">2</span>]<span class="sc">==</span><span class="dv">2</span>,<span class="dv">1</span>])</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">c</span>(T1<span class="sc">/</span>Ttot, T2<span class="sc">/</span>Ttot))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.992453269 0.007546731</code></pre>
+</div>
+</div>
+<p>The fraction of time spent in state 2 should be 1/101 <span class="math inline">\(\approx 0.0099\)</span>. We are simulating over a fairly short chunk of time, so we expect some randomness in any given simulation. If we simulate for a longer period of time, these time averages should approach the stationary distribution. Try changing n above to a large number (like 10000) to confirm this.</p>
 </section>
 <section id="section-2" class="level2">
-<h2 class="anchored" data-anchor-id="section-2">4.</h2>
-<p>Plot the simulation contained in dat from the previous exercise in a way that captures left continuity (i.e.&nbsp;that the times in events coincide with the state changes into the state in the same row)</p>
-<p>This is the essence of stochastic character mapping – but with one crucial piece missing so far.</p>
-<p>The general strategy for simulating character mappings is to use a two step approach. Step one: simulate a configuration of internal node states using a method similar to the ones alluded to at the start of this demo. Step two: simulate character mappings by simulating state transitions in continuous time in the manner just above, but while also ensuring that the start and end states of the process match with the nodal states at either end of a particular branch.</p>
-</section>
-<section id="exercise-2" class="level2">
-<h2 class="anchored" data-anchor-id="exercise-2">Exercise</h2>
+<h2 class="anchored" data-anchor-id="section-2">3.</h2>
+<p>Modify the event time simulation above to run for a pre-specified amount of time (or branch length) and an undetermined number of events. Simulate realizations of the stochastic process that accomodate predefined initial and final states, or “boundary data”. (Hint: you may include a step that invovles rejecting a trajectory if it does not match with your boundary data.)</p>
 </section>
 <section id="section-3" class="level2">
-<h2 class="anchored" data-anchor-id="section-3">5.</h2>
-<p>Modify the event time simulation to run for a pre-specified amount of time (or branch length) and an undetermined number of events. Simulate realizations of the stochastic process that accomodate predefined initial and final states. (Hint: the strategy originally described just tosses out any trajectories that don’t satisfy boundary conditions for a particular branch.) (Using the term ``boundary conditions’’ to mean the node states at either end of a branch.)</p>
-</section>
-<section id="b" class="level2">
-<h2 class="anchored" data-anchor-id="b">5b</h2>
-<p>If the configuration of node states associated with a particular branch imlpy at least one state change, is there a convenient way to modify the event time simulator to always simulate at least one state change?</p>
-</section>
-<section id="section-4" class="level2">
-<h2 class="anchored" data-anchor-id="section-4">6.</h2>
+<h2 class="anchored" data-anchor-id="section-3">4.</h2>
 <p>In simulating a stochastic character mapping, does it matter which direction we simulate from? Mathematically, there is no reason why we couldn’t use tip states as initial conditions, but that doesn’t really seem consistent with evolution occurring in forward time. Are there situations where the two approaches are equivalent? Why or why not?</p>
 
 

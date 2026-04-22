@@ -26,7 +26,7 @@ In the left-hand panel on the webpage at NextStrain, you can see the option to C
 
 As a side note: Seasonal Coronavirus NL63 is fascinating because it uses the same ACE2 receptor to enter cells as SARS-CoV-2. In both viruses, the Spike protein on the virus is a little gizmo that helps the viruses bind to ACE2 and enter cells during infection. You have probably experienced NL63 infection multiple times in your life up to this point -- usually in the form of a cold, or completely asymptomatic.
 
-Let's see how these amino acids in the Spike protein evolved over time! First, let's read in the tree and plot it. I have manually provided tip data below to reproduce what we see on NextStrain.
+Let's see how these amino acids in the Spike protein evolved over time. First, let's read in the tree and plot it. I have manually provided tip data below to reproduce what we see on NextStrain.
 
 ```{r}
 tree <- read.tree('coronavirus_nl63/nextstrain_seasonal-cov_nl63_timetree.nwk')
@@ -99,7 +99,7 @@ The output above tells us what the structure of our Markov model is (Rate index 
 
 The last bit of the output is particularly salient for our question we began with: it tell us the "Scaled likelihoods at the root", and assigns a higher value to S than to P. This means that, under this model, the ancestral virus most likely had the amino acid S rather than the amino acid P. This already tells us that, at least to the extent we think our Markov model is reasonable, the data seem more consistent with Hypotheses 1 or 3 than Hypothesis 2. 
 
-Okay, so far so good - but maybe I think the equal rates model is unreasonable to begin with. After all, it is a little bit striking that there is a huge clade in the phylogeny with no evidence of mutation from S to P whatsoever, but there does seem to be clear evidence of back-mutation from P to S. Maybe the rate of mutation from P to S is much faster than the rate from S to P. This is what our second model allows for. Let's see how those estimates turned out:
+Okay, so far so good - but maybe I think the equal rates model is unreasonable to begin with. After all, it is a little bit striking that there is a huge clade in the phylogeny with no evidence of mutation from S to P whatsoever, but there does seem to be evidence of back-mutation from P to S. Maybe the rate of mutation from P to S is much faster than the rate from S to P. This is what our second model allows for. Let's see how those estimates turned out:
 
 ```{r}
 fit2
@@ -187,13 +187,15 @@ You wil notice that the log-likelihood for the ARD model is larger than the log-
 
 The question is whether the improvement in model fit is meaningful, or whether we are overfitting to noise in the data. 
 
-The idea behind the GLR test is: if the the difference in log-likelihoods (or equivalently, the logarithm of the ratio of the likelihoods) is huge, then the improvement from the more complicated model is meaningful, i.e. not overfit. A small improvement in the fit of the model, as quantified by a marginally higher log-likelihood, indicates that we are adding more paramters/complexity to our model than is warranted. 
+The idea behind the GLR test is: if the the difference in log-likelihoods (or equivalently, the logarithm of the ratio of the likelihoods) is huge, then the improvement from the more complicated model is meaningful, i.e. not overfit. A small improvement in the fit of the model, as quantified by a marginally higher log-likelihood, indicates that we are adding more paramters/complexity to our model without producing a dramatically improved fit. 
 
-From statistics, we know that provided we have a sufficiently large dataset, the quantity
+From statistics, theory establishes that, provided we have a sufficiently large dataset, the quantity
 
 $\lambda_{LR} = -2 (l_{\text{ER}} - l_{\text{ARD}})$
 
-is approximately distributed according to a $\chi^2$ distribution under the null hypothesis that data arise from the simpler model. The degrees of freedom for this $\chi^2$ distribution is equal to the difference in the number of parameters between the models (so in our case, a single degree of freedom). Values of $\lambda_{LR}$ that are huge are evidence against the null hypothesis. If we want to control type 1 errors at $5\%, we may say that values of $\lambda_{LR}$ landing above the $95\%$-ile of the distribution lead us to reject the null hypothesis. Recall that a $p$-value is the probability of observing a value of the test statistic as extreme or more extreme than the one we calculate. 
+is approximately distributed according to a $\chi^2$ distribution under the null hypothesis that data arise from the simpler model. The degrees of freedom for this $\chi^2$ distribution is equal to the difference in the number of parameters between the models (so in our case, a single degree of freedom). Values of $\lambda_{LR}$ that are huge are evidence against the null hypothesis. If we want to control type 1 errors (false-positives) at $5\%$, we may say that values of $\lambda_{LR}$ landing above the $95\%$-ile of the distribution lead us to reject the null hypothesis. 
+
+Recall that a $p$-value is the probability of observing a value of the test statistic as extreme or more extreme (under the null hypothesis) than the one we calculate from the data. 
 
 So, to carry out a GLR test, we proceed as follows:
 
@@ -228,9 +230,8 @@ There are some potential pitfalls of these models that we should articulate now:
 
 - The models are assuming that rates are constant in time. This may not be a reasonable assumption to make.
 
-- Can you think of any other criticisms?
+Can you think of any other criticisms?
 
-
-These criticisms aside, from the methodological point of view there is another thing we have not done: we have not obtained an estimate for when mutations actually occurred. Our estimates of ancestral states should inform the timing and number of mutations, but more work is needed to do so.
+From the methodological point of view there is another thing we have not done: we have not obtained an estimate for **when mutations actually occurred**. Our estimates of ancestral states should inform the timing and number of mutations, but more work is needed to do so.
  
 In a later section (stochastic character mapping), we will do both of these things.

@@ -6,7 +6,7 @@ Phylogeography, broadly speaking, is concerned with reconstructing evolutionary 
 Prior experience in phylogenetics or evolution is not required or assumed, but enthusiasm is. Familiarity with statistics, Markov chains, R, and working in the terminal is great, but not strictly required. The target audience for this workshop includes all of the graduate students in MAGPIE, as well as anyone else who is interested to learn about mathematical models used in phylogeography and evolution of traits more generally.
 
 
-Install all of the following things before Monday, September 29, so that we can hit the ground running.
+Install all of the following things before Day 1 so that we can hit the ground running.
 
 ## Requirements for R
 
@@ -44,7 +44,7 @@ AliView (useful for looking at multiple sequence alignments): [https://ormbunkar
 
 ## Requirements for Compute Canada
 
-On Thursday, we will try to get BEAST2 to run on the Fir server. You will need an account with the Digital Research Alliance of Canada. Create one here if you don't have one aready:
+We will try to get BEAST2 to run on the Fir server. You will need an account with the Digital Research Alliance of Canada. Create one here if you don't have one aready:
 
 [https://ccdb.alliancecan.ca/security/login
 ](https://ccdb.alliancecan.ca/security/login)

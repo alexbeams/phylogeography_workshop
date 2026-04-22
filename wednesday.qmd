@@ -17,7 +17,7 @@ Welcome to Day Two! We will briefly recap things we learned on Monday before mov
 :::{layout="[[12]]"}
 
 :::{.date}
-Wednesday<br>[October 1, 2025]
+Day 2
 :::
 
 :::{layout="[[10]]"}

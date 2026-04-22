@@ -105,6 +105,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../../css/styles.css">
 </head>
@@ -197,7 +226,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Where precisely do we think mutations occurred on the phylogeny?</li>
 </ol></li>
 </ul>
-<p>With ancestral character estimation (ace), we approached answers to these questions. We considered two types of Markov models (equal rates, ER, and all rates different, ARD). The MLEs of the model parameters carry pretty different interpretations, but the ancestral estimates of past ancestors are largely robust. The main difference we saw was concerning the inferred root state of the phylogeny in each model.</p>
+<p>With ancestral character estimation (ace), we approached answers to these questions. We considered two types of Markov models (equal rates, ER, and all rates different, ARD). The MLEs of the model parameters carry pretty different interpretations, but the ancestral estimates of past ancestors are largely insensitive to the particular model we used. The main difference we saw was concerning the inferred root state of the phylogeny in each model.</p>
 <p>Stochastic character mapping, or character mapping, uses our fitted Markov chain models to annotate phylogenies with mutations along edges. So far, we have just been annotating internal nodes of the phylogenies with their most likely states, given the models and the data (tip data + phylogeny).</p>
 <p>To perform character mapping, we will make use of a suite of functions from the phytools package in R.</p>
 <p>Let’s start by loading in our Coronavirus NL63 phylogeny:</p>
@@ -254,10 +283,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>That’s it. Conceptually, it’s super simple. Computationally, it can be a little bit intense to simulate changes of state along edges that are compatible with node states at either end of the edge.</p>
 <p>The phytools package has a few functions that we will use.</p>
-<p><strong>One of these is fitMk</strong>. This function is similar to ace, except that user may supply a “root prior” (e.g.&nbsp;50% probability that the root is in state S or P, for our example). When we supply a root prior, we are optimizing a different objective function than ace. By default, fitMk uses a ““flat” root prior, similar to what the likelihood function for ace does. The second distinction between fitMk and ace is that they use slightly different optimizers to find Maximum Likelihood Estimates (MLEs). Sometimes it can be convenient to try using both functions if one of them encounters numerical problems during optimization. It can also be a good idea to obtain estimates from both methods as a sanity check (although estimates will differ ever so slightly; on larger phylogenies, the estimates generally seem to converge to each other – at least in my experience).</p>
+<p><strong>One of these is fitMk</strong>. This function is similar to ace, except that user may supply a “root prior” (e.g.&nbsp;50% probability that the root is in state S or P, for our example). When we supply a root prior, we are optimizing a different objective function than ace. By default, fitMk uses a “flat” root prior, similar to what the likelihood function for ace does. The second distinction between fitMk and ace is that they use slightly different optimizers to find Maximum Likelihood Estimates (MLEs). Sometimes it can be convenient to try using both functions if one of them encounters numerical problems during optimization. It can also be a good idea to obtain estimates from both methods as a sanity check (although estimates will differ ever so slightly; on larger phylogenies, the estimates generally seem to converge to each other – at least in my experience).</p>
+<p>The terminology “Mk” refers to a Markov model with <span class="math inline">\(k\)</span> states.</p>
 <p>The other useful function is <strong>simmap</strong>, which simulates a stochastic character mapping on a tree given a Markov model generator matrix. This is the function that actually carries out steps 2-3 above.</p>
 <p>A third function <strong>make.simmap</strong>, does both steps (fitMk and simmap) in one go. Obviously it is not necessary to invoke make.simmap after running fitMk.</p>
-<p><strong>Note</strong>: there are methods that exist (such as <a href="https://delphy.fathom.info/">Delphy</a>) that estimate paramters using a Markov chain Monte Carlo routine that explores the space of character mappings. This is <strong>not</strong> what simmap and make.simmap do. They simply use fitMk results to simulate character mappings on trees.</p>
+<p><strong>Note</strong>: there are methods that exist (such as <a href="https://delphy.fathom.info/">Delphy</a>) that estimate paramters using a Markov chain Monte Carlo routine that explores the space of character mappings. This is <strong>not</strong> what simmap and make.simmap do. They simply use ace/fitMk results to simulate character mappings on trees.</p>
 <section id="comparing-fitmk-and-ace" class="level2">
 <h2 class="anchored" data-anchor-id="comparing-fitmk-and-ace">Comparing fitMk and ace</h2>
 <p>Let’s refit our two Markov models with ace, and then do the same thing using fitMk from phytools. The function calls are very similar (but fitMk switches the ordering of tree and tip data):</p>
@@ -267,8 +297,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>fit1.ace <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ER'</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>fit2.ace <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ARD'</span>)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>fit1.fitMk <span class="ot">&lt;-</span> <span class="fu">fitMk</span>(tree, x, <span class="at">model=</span><span class="st">"ER"</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>fit2.fitMk <span class="ot">&lt;-</span> <span class="fu">fitMk</span>(tree, x, <span class="at">model=</span><span class="st">"ARD"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># fitting models with fitMk:</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>fit1.fitMk <span class="ot">&lt;-</span> <span class="fu">fitMk</span>(tree, x, <span class="at">model=</span><span class="st">"ER"</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>fit2.fitMk <span class="ot">&lt;-</span> <span class="fu">fitMk</span>(tree, x, <span class="at">model=</span><span class="st">"ARD"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>How do the estimates for the ER model compare with the two methods?</p>
 <div class="cell">
@@ -383,7 +415,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>All of these character mappings assign the root state to the amino acid P. However, the collection of character mapping still has variable numbers of mutations across the different simulations. The majority of the time, the P to S mutation giving rise to the large blue clade in the upper part of the trees does appear to be happening pretty early with high probability.</p>
-<p>We can also make some summary plots that include gradients in color on edges that describe average probabilities across the simulations (but getting or color scheme to work is a little tricky).</p>
+<p>We can also make some summary plots that include gradients in color on edges that describe average probabilities across the simulations (but getting our color scheme to work is a little tricky).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">densityMap</span>(simmap.er, <span class="at">ftype=</span><span class="st">'off'</span>, <span class="at">main=</span><span class="st">'ER model'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
