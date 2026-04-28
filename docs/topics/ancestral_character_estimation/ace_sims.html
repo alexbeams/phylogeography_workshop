@@ -162,22 +162,22 @@ window.Quarto = {
   <li class="nav-item">
     <a class="nav-link" href="../../monday.html"> <i class="bi bi-pie-chart" role="img">
 </i> 
-<span class="menu-text">Monday: Discrete trait analysis I in R</span></a>
+<span class="menu-text">Day 1: Discrete trait analysis I in R</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../wednesday.html"> <i class="bi bi-map" role="img">
 </i> 
-<span class="menu-text">Wednesday: Discrete trait analysis II in R</span></a>
+<span class="menu-text">Day 2: Discrete trait analysis II in R</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../thursday.html"> <i class="bi bi-activity" role="img">
 </i> 
-<span class="menu-text">Thursday: Phylodynamics I in R and BEAST2</span></a>
+<span class="menu-text">Day 3: Phylodynamics I in R and BEAST2</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../friday.html"> <i class="bi bi-tree" role="img">
 </i> 
-<span class="menu-text">Friday: Phylodynamics II in BEAST2</span></a>
+<span class="menu-text">Day 4: Phylodynamics II in BEAST2</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../about.html"> <i class="bi bi-space-shuttle" role="img">
@@ -346,10 +346,10 @@ P S
 <pre><code>            P            S
 401 0.2746174 7.253826e-01
 402 0.9810853 1.891467e-02
-403 0.9998225 1.775022e-04
-404 1.0000000 1.573227e-10
-405 1.0000000 5.274722e-13
-406 1.0000000 1.000175e-09</code></pre>
+403 0.9998225 1.775021e-04
+404 1.0000000 2.445225e-12
+405 1.0000000 3.113372e-12
+406 1.0000000 1.660805e-10</code></pre>
 </div>
 </div>
 <p>This is a datarame with the scaled likelihoods of the two states for each node. The tree has 400 tips, so the nodes are numbered 401 through 799 (a bifurcating tree with N tips has N-1 internal nodes). Each row in the dataframe above is one of the nodes, and the values in the columns are the relative likelihoods that it resides in state P or state S under the MLE. We can use this data to plot estimated states at the internal nodes.</p>
@@ -433,7 +433,7 @@ P S
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> (fit1<span class="sc">$</span>loglik <span class="sc">-</span> fit2<span class="sc">$</span>loglik)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>lambda</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 3.210039</code></pre>
+<pre><code>[1] 3.21004</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we have one degree of freedom because the more complicated model has one more paramter than the simpler model:</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>dfs <span class="ot">&lt;-</span> <span class="dv">1</span></span>

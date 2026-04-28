@@ -34,7 +34,7 @@ Slides
 
 :::{.card .mb-3}
 :::{.card-body}
-[1030-1130: Estimating parameters of basic birth-death models](topics/sse_models/fit_bd.qmd){.card-title .stretched-link}
+[1030-1130: Estimating parameters of BiSSE models for *Hymenoptera*](topics/sse_models/bisse_tutorial.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Practical session in R
