@@ -346,10 +346,10 @@ P S
 <pre><code>            P            S
 401 0.2746174 7.253826e-01
 402 0.9810853 1.891467e-02
-403 0.9998225 1.775021e-04
-404 1.0000000 2.445225e-12
-405 1.0000000 3.113372e-12
-406 1.0000000 1.660805e-10</code></pre>
+403 0.9998225 1.775022e-04
+404 1.0000000 1.573183e-10
+405 1.0000000 5.274620e-13
+406 1.0000000 3.038069e-12</code></pre>
 </div>
 </div>
 <p>This is a datarame with the scaled likelihoods of the two states for each node. The tree has 400 tips, so the nodes are numbered 401 through 799 (a bifurcating tree with N tips has N-1 internal nodes). Each row in the dataframe above is one of the nodes, and the values in the columns are the relative likelihoods that it resides in state P or state S under the MLE. We can use this data to plot estimated states at the internal nodes.</p>
@@ -446,7 +446,7 @@ P S
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.07318772</code></pre>
+<pre><code>[1] 0.07318771</code></pre>
 </div>
 </div>
 <p>So, we have a p-value equal to 0.073. Most people would say that there is not sufficient evidence to reject the null hypothesis (ER model) in favor of the alternative (ARD model) based on this.</p>

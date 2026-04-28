@@ -299,18 +299,19 @@ window.Quarto = {
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$x
- [1]  0.15226449 -0.24863066 -0.40081433  0.45290312  0.29692995  0.13680919
- [7] -0.15309420 -0.10441394 -0.24467269  0.16634625  0.14122166 -0.38697378
-[13] -0.01541661 -0.23703344  0.39401016 -0.02127850  0.07334207  0.06392790
-[19]  0.43474811 -0.09510027  0.06301600 -0.06997662  0.09434707  0.37154140
-[25]  0.17255498  0.26354863  0.47724293 -0.03836388 -0.24382962 -0.15597324
+ [1]  0.06671284  0.12802133  0.40552749 -0.01684358 -0.18758947  0.22426427
+ [7]  0.33945578 -0.46751997  0.16742680  0.10580230  0.39161534  0.25500034
+[13]  0.04695009  0.40229190  0.34645380 -0.01679501 -0.32684343 -0.10230003
+[19] -0.31777522  0.34671044  0.08087616 -0.33643196 -0.47024452 -0.33529646
+[25] -0.47463519  0.18439476 -0.07214171  0.07933201  0.28360726 -0.33384161
 
 $y
- [1] -0.10918567 -0.03120555  0.11231389 -0.44262914  0.45266348 -0.25914240
- [7] -0.33275950  0.09039027  0.09059881 -0.36534917  0.39240961  0.14530119
-[13]  0.34777695 -0.04975760  0.07367567 -0.05085935 -0.39120354 -0.16385768
-[19]  0.20741465  0.10514554  0.05853328  0.05263543  0.49003614 -0.04212685
-[25] -0.22020050  0.31238190  0.11972241 -0.48209864  0.42964603  0.15474169</code></pre>
+ [1]  0.365845332  0.190161936  0.341993412 -0.413729113  0.148137117
+ [6]  0.103952016 -0.190590314  0.109206133  0.107616948  0.397293463
+[11] -0.419261778  0.092472288  0.173585398  0.419438699 -0.009570561
+[16]  0.315268075 -0.302463228 -0.451910203  0.250836309 -0.458219751
+[21] -0.391513329 -0.243840315  0.062401824 -0.162034966 -0.003021144
+[26]  0.392810396 -0.277446273 -0.156148421  0.227375737  0.488512016</code></pre>
 </div>
 </div>
 <p>Play around with the throwDarts function for different values of ndarts.</p>
@@ -366,7 +367,7 @@ $y
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 3.264</code></pre>
+<pre><code>[1] 3.108</code></pre>
 </div>
 </div>
 </section>
@@ -442,17 +443,17 @@ $y
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>fbar_approx <span class="ot">&lt;-</span> <span class="fu">mean</span>( <span class="fu">f</span>(xrands) )</span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>fbar_approx</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.0003897058</code></pre>
+<pre><code>[1] -0.001505592</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gbar_approx <span class="ot">&lt;-</span> <span class="fu">mean</span>( <span class="fu">g</span>(xrands) )</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>gbar_approx</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 8.348018</code></pre>
+<pre><code>[1] 8.380196</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>hbar_approx <span class="ot">&lt;-</span> <span class="fu">mean</span>( <span class="fu">h</span>(xrands) )</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>hbar_approx</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.100288</code></pre>
+<pre><code>[1] 0.0993152</code></pre>
 </div>
 </div>
 <p>Once we have our approximations to the average values of the functions (i.e.&nbsp;approximations to the heights), we just multiply those by the widths on the x-axis (b-a) to get our approximation to the integral (i.e. the area under the curve):</p>
@@ -460,17 +461,17 @@ $y
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>integral_f <span class="ot">&lt;-</span> fbar_approx <span class="sc">*</span> (b<span class="sc">-</span>a)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>integral_f</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.003897058</code></pre>
+<pre><code>[1] -0.01505592</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>integral_g <span class="ot">&lt;-</span> gbar_approx <span class="sc">*</span> (b<span class="sc">-</span>a)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>integral_g</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 83.48018</code></pre>
+<pre><code>[1] 83.80196</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>integral_h <span class="ot">&lt;-</span> hbar_approx <span class="sc">*</span> (b<span class="sc">-</span>a)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>integral_h</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.00288</code></pre>
+<pre><code>[1] 0.993152</code></pre>
 </div>
 </div>
 <p>Experiment with different values of ndarts to see how the approximations change.</p>
@@ -557,7 +558,7 @@ Pr(Z&gt;5) &amp;= \int_5^\infty h(x) dx ,\\
 <span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a><span class="fu">getimportanceest</span>(<span class="dv">100</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.440289e-07</code></pre>
+<pre><code>[1] 2.556063e-07</code></pre>
 </div>
 </div>
 <p>We can compare this with R’s built in function (i.e.&nbsp;the “ground truth”) for calculating the tail probability:</p>
