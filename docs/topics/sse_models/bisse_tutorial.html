@@ -221,7 +221,8 @@ window.Quarto = {
 <p>Ultrametric trees are not common in infectious disease epidemiology. However, BiSSE and its variants are conceptually related to models like the Multi-type birth-death model, which is often used to study infectious diseases and is available in BEAST2. An understanding of these macroevolutionary models will help us work with more complicated models in infectious disease analyses.</p>
 <section id="trait-change-in-the-hymenoptera" class="level2">
 <h2 class="anchored" data-anchor-id="trait-change-in-the-hymenoptera">Trait change in the Hymenoptera</h2>
-<p>Let’s start by reading in an example phylogenetic tree for the <em>Hymenoptera</em>. This an order of insects that includes wasps, bees, and ants. These data are pubicly available, and were analyzed in Blaimer, B.B., Santos, B.F., Cruaud, A. et al.&nbsp;Key innovations and the diversification of Hymenoptera. Nat Commun 14, 1212 (2023). https://doi.org/10.1038/s41467-023-36868-4.</p>
+<p>Let’s start by reading in an example phylogenetic tree for the <em>Hymenoptera</em>. This an order of insects that includes wasps, bees, and ants. These data are publicly available, and were analyzed in</p>
+<p><strong>Blaimer, B.B., Santos, B.F., Cruaud, A. et al.&nbsp;Key innovations and the diversification of Hymenoptera. Nat Commun 14, 1212 (2023). https://doi.org/10.1038/s41467-023-36868-4.</strong></p>
 <p>There are several different datasets with trait information associated with this phylogeny. One of these is carnivory (a binary trait for whether or not a particular species eats other insects).</p>
 <p>Let’s read in the tree and the associated carnivory data. Due to some slight mismatch between species names in the tree and in the carnivory dataset, I have a handful of additional commands that manually rename species to be consistent (mostly by moving underscores and spaces):</p>
 <div class="cell">
@@ -283,7 +284,10 @@ wwnms "Trassedia_n_sp_PSUC_FEM95969"</code></pre>
 </div>
 <p>Carnivory is predominant, but there are a few distinct clades of peaceful non-carnivores in the mix. Which one of these is the ancestral trait? Did peaceful non-carnivory evolve three separate times, or has carnivory evolved multiple times?</p>
 <p>Glancing at the tree, it looks like there might be some important differences between carnivores and non-carnivores in terms of branching rates in the tree. Notice that the group of non-carnivores at the top-left position of the tree look like a relatively new group of species. They share a common ancestor recently (at least relative to other clades throughout the tree, which tend to share a common ancestor in the more distant past, closer to the root of the tree). On the other hand, the group of non-carnivores close to the 3 o’clock position in the tree have pretty long terminal branch lengths, with their common ancestor a long time ago. Hmm…</p>
-<p>It isn’t super clear what relationship, if any, exists between carnivory status and speciation rates – but we might be interested to know if there is one. (This is what the original authors were interested in.) Even if a relationship between diversification and carnivory status isn’t our main focus, it still might be important for us to account for a relationship between these things in order to obtain a reliable estimate of trait evolution in these animals (i.e.&nbsp;to color in ancestral nodes in a reasonable way). Depending on how personally invested we are in the relationship between trait and diversification, we might be inclined to think of the diversification process as being a <a href="https://en.wikipedia.org/wiki/Nuisance_parameter">nuisance parameter</a> as far as the sequence of trait changes is concerned.</p>
+<p>It isn’t super clear what relationship, if any, exists between carnivory status and speciation rates – but we might be interested to know if there is one. (This is what the original authors were interested in.) On the other hand, even if a relationship between diversification and carnivory status isn’t our main focus, it still might be important for us to account for such a relationship between these things in order to obtain a reliable estimate of trait evolution in these animals (i.e.&nbsp;to color in ancestral nodes in a reasonable way). Depending on how personally invested we are in the relationship between trait and diversification, we might be inclined to think of the diversification process as being a <a href="https://en.wikipedia.org/wiki/Nuisance_parameter">nuisance parameter</a> as far as the sequence of trait changes is concerned.</p>
+</section>
+<section id="warm-up-ace-andor-fitmk" class="level2">
+<h2 class="anchored" data-anchor-id="warm-up-ace-andor-fitmk">Warm-up: ace and/or fitMk</h2>
 <p>As a warm-up, let’s start by fitting our basic Markov models from yesterday. These do not account for any relationship between trait type and branching rate whatsoever. Let’s use both ace and fitMk to see if they give similar answers:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit using ace:</span></span>
@@ -318,7 +322,7 @@ suspicious: gradients apparently non-finite</code></pre>
 <pre><code>[1] 8.340472e-05</code></pre>
 </div>
 </div>
-<p>In the ER model, we see that the estiamtes from ace and fitMk are indistinguishable. Great! How about the all rates different (ARD) model?</p>
+<p>In the ER model, we see that the estimates from ace and fitMk are indistinguishable. Great! How about the all rates different (ARD) model?</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fit.ard.ace<span class="sc">$</span>rates</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -330,8 +334,12 @@ suspicious: gradients apparently non-finite</code></pre>
 </div>
 </div>
 <p>The estimates from ace and fitMk look identical in this case, too. It looks like one of the rates is almost an order of magnitude larger than the other.</p>
-<section id="review-question-in-the-ard-models-which-rate-corresponds-to-a-change-from-carnivory1-to-carnivory0-and-vice-versa" class="level3">
-<h3 class="anchored" data-anchor-id="review-question-in-the-ard-models-which-rate-corresponds-to-a-change-from-carnivory1-to-carnivory0-and-vice-versa">Review question: in the ARD models, which rate corresponds to a change from carnivory=1 to carnivory=0, and vice versa?</h3>
+<section id="review-question-in-the-ard-models-which-rate-corresponds-to-a-change-from-carnivory1-to-carnivory0-and-vice-versa" class="level4">
+<h4 class="anchored" data-anchor-id="review-question-in-the-ard-models-which-rate-corresponds-to-a-change-from-carnivory1-to-carnivory0-and-vice-versa">Review question: in the ARD models, which rate corresponds to a change from carnivory=1 to carnivory=0, and vice versa?</h4>
+</section>
+</section>
+<section id="bisse-models" class="level2">
+<h2 class="anchored" data-anchor-id="bisse-models">BiSSE models</h2>
 <p>Now, let’s try estimating these rates using a BiSSE model. We start by specifying a likelihood function:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>bisse_likelihood_carn <span class="ot">&lt;-</span> <span class="fu">make.bisse</span>(tree, xcarn)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -361,7 +369,11 @@ function (pars, condition.surv = TRUE, root = ROOT.OBS, root.p = NULL,
 </div>
 <p>The most important bit of information for us is the first section that explains the parameters this model accepts: two diversification/speciation rates (lambda0 and lambda1), two death/extinction rates (mu0 and mu1), and finally our rates of change in trait type over time (q01 and q10).</p>
 <p>The observant among you will notice that this list includes six (6) parameters. Our ARD models previously had 2. Tripling the number of parameters is a pretty big change. Is there any way we can start with a simpler case and gradually make the model more complex? After all, I don’t have the faintest idea what values of lambda and mu make sense for these data. Also, what if I want to consider an ER model?</p>
-<p>There is a very convenient way to impose restrictions on the parameters to make the model simpler in diversitree. As a baseline, let’s see what happens if we use an ER model, and assume that diversification/extinction are independent of the trait. In this case, I kind of expect to get similar results to ace/fitMk in the ER case. To create this model, we do the following:</p>
+</section>
+</section>
+<section id="er-model-in-bisse" class="level1">
+<h1>ER model in BiSSE</h1>
+<p>There is a very convenient way to impose restrictions on the parameters to make the model simpler in diversitree. As a baseline, let’s see what happens if we use an ER model, and assume that diversification/extinction are independent of the trait. In this case, I expect to get similar results to ace/fitMk in the ER case. To create this model, we do the following:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>bisse_likelihood_er_indep <span class="ot">&lt;-</span> <span class="fu">constrain</span>(bisse_likelihood_carn, <span class="at">formulae=</span><span class="fu">c</span>(lambda0<span class="sc">~</span>lambda1, mu0<span class="sc">~</span>mu1, q10<span class="sc">~</span>q01))</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -555,6 +567,8 @@ attr(,"class")
 </div>
 </div>
 <p>From this output, we see that the optimization appeared to converge successfully. The two diversification rates (lambda0 and lambda1) are pretty close to each other, but the two extinction rates (mu0 and mu1) are very different from each other. The parameter mu0 is over five orders of magnitude larger than mu1. However, our estimate for <span class="math inline">\(q\)</span> in the ER model seems unaffected, holding steady at <span class="math inline">\(q=8.21 \times 10^{-5}\)</span>.</p>
+<section id="glr-tests-in-bisse-models" class="level3">
+<h3 class="anchored" data-anchor-id="glr-tests-in-bisse-models">GLR tests in BiSSE models</h3>
 <p>We can ask whether the difference in extinction rates is statistically significant. The fit of our two BiSSE models is very similar in terms of log-likelihood. Previously, the log-likelihood under the assumption of no relationship between diversifiction/extinction and trait change was <span class="math inline">\(\ln \mathcal{L} = -3975.768\)</span>. In this more complicated model, with five parameters, we have <span class="math inline">\(\ln \mathcal{L} = -3975.037\)</span>. The simpler model with three parameters is nested within the more complicated model with five parameters, so we can apply a <a href="https://en.wikipedia.org/wiki/Likelihood-ratio_test">Generalized Likelihood Ratio test</a> to see if the model with the additional two parameters is supported by the data. (My guess is that it will not be – the improvement in log-likelihood is miniscule.)</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">pchisq</span>(<span class="dv">2</span> <span class="sc">*</span> (<span class="sc">-</span><span class="fl">3975.037+3975.768</span>), <span class="at">df=</span><span class="dv">2</span>, <span class="at">lower=</span>F)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -563,7 +577,13 @@ attr(,"class")
 </div>
 </div>
 <p>Remember that the test statistic is <span class="math inline">\(2 \times (-3975.037 - -3975.768)\)</span>, and under the null hypothesis that the data actually do arise from the simpler model, this quantity is <span class="math inline">\(\chi^2\)</span>-distributed with two degrees of freedom (because the more complex model has two additional parameters). The quantity we just calculated is the p-value, that is, the probability of observing a value of the test statistic as extreme or more extreme than the one we actually observed (here, “extreme” means “large”). A p-value of 0.52 is not remotely close to statistical significance. On this basis, we would say that the more complex model is not supported by the data.</p>
-<p>So at least for these data, when fitting an ER model, it seems that (i) our estimated rate of state change does not change very much when we simultaneously estimate a diversification and extinction rate, and (ii) there is not any convincing evidence of a relationship between carnivory status and diversification/extinction rates.</p>
+<p>It is probably worth pointing out that just looking at differences in parameter estimates is not a reliable way to judge whether a more complicated model is supported by the data or not. When we allowed for the possibility that diversification and extinction rates could differ by carnivory status, we saw that one of the extinction rates looked like <span class="math inline">\(10^{-3}\)</span> and the other was on the order of <span class="math inline">\(10^{-8}\)</span>. In the simpler model where the extinction rates were constrained to equal each other,we got an estimate on the order of <span class="math inline">\(10^{-9}\)</span>–<span class="math inline">\(10^{-8}\)</span>. This is a huge difference – but the likelihood, or measure of fit to the data, did not change by a meaningful amount. In general, this type of instability in parameter estimates is an indication that the data contain limited information about the parameter (in this case, extinction rates) in the first place. Take this lesson to heart.</p>
+<p>For futher reading (and in case the point is not driven home strongly enough) you may find this paper interesting:</p>
+<p><strong>Rabosky DL. Extinction rates should not be estimated from molecular phylogenies. Evolution. 2010 Jun;64(6):1816-24. doi: 10.1111/j.1558-5646.2009.00926.x. Epub 2009 Dec 17. PMID: 20030708.</strong></p>
+<p>For the Hymenoptera carnivory data, when fitting an ER model, it seems that (i) our estimated rate of state change does not change very much when we simultaneously estimate a diversification and extinction rate, and (ii) there is not any convincing evidence of a relationship between carnivory status and diversification/extinction rates.</p>
+</section>
+<section id="ancestral-state-reconstructions-with-bisse" class="level2">
+<h2 class="anchored" data-anchor-id="ancestral-state-reconstructions-with-bisse">Ancestral state reconstructions with BiSSE</h2>
 <p><strong>What about ancestral state reconstructions?</strong> We might expect the inferences at internal nodes to be pretty similar to what we see from ace/fitMk, but we might as well verify this now. Let’s plot the most likely ancestral states at the internal nodes of our tree under ace, and compare this with our BiSSE model estimates. We will need the asr.marginal function for the BiSSE models:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>asr.bisse.er.indep <span class="ot">&lt;-</span> <span class="fu">asr.marginal</span>(bisse_likelihood_er_indep,<span class="fu">coef</span>(fit.bisse.er.indep))</span>
@@ -621,10 +641,32 @@ attr(,"class")
 <p>What is the ancestral state reconstruction under the ER model, anyway? It seems that the progenitor of the extant species in <em>Hymenoptera</em> was not carnivorous. Most of the signal in the data for this is probably coming from the clade near the 3 o’clock position in the tree consisting of very old species (relative to the rest) that are all not carnivorous.</p>
 <p>We have not done character mapping, so we are not able to identify precisely when state changes occurred along branches. However, the plausible scenario seems to be that the common ancestor for all of the species was not carnivorous, but carnivory evolved in one lineage a very long time ago. Since then, non-carnivory has independently evolved twice.</p>
 <p><strong>Do you think the answer will change if we consider asymmetric trait change, i.e.&nbsp;an ARD model?</strong></p>
-
-
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
 </section>
 </section>
+<section id="section" class="level1">
+<h1>1.</h1>
+<p>We never actually asked whether the ARD model was statistically supported over the ER model when we were using ace. Carry out a Generalized Likelihood Ratio Test to determine whether differences in <span class="math inline">\(q_{01}\)</span> and <span class="math inline">\(q_{10}\)</span> are statistically significant when using ace (or fitMk).</p>
+</section>
+<section id="section-1" class="level1">
+<h1>2.</h1>
+<p>Fit an ARD model for the carnivory data under the assumption that the diversification and extinction rates are independent of the trait. Use the <code>constrain</code> function to help you. You may find it useful to start the optimization from ace’s ARD estimates (and feel free to use the BiSSE ER model’s diversification/extinction rate estimates as well).</p>
+</section>
+<section id="section-2" class="level1">
+<h1>3.</h1>
+<p>Next, fit your ARD model under the assumption that diversification and extinction rates can differ by trait. Does a Generalized Likelihood Ratio Test indicate that speciation/extinction rates differ by carnivory status?</p>
+</section>
+<section id="section-3" class="level1">
+<h1>4.</h1>
+<p>What happens if you compare this full BiSSE model with the simplest possible case (ER model with diversification/extinction uncorrelated with carnivory status) under a Generalized Likelihood Ratio Test?</p>
+</section>
+<section id="section-4" class="level1">
+<h1>5.</h1>
+<p>Load in a different Hymenoptera dataset of your choice. Do you find evidence of correlation between trait and diversification/extinction rates? How does this affect your estimates of ancestral states? Repeat the workflow of the tutorial and questions 1-4 to arrive at an answer.</p>
+
+
 </section>
 
 </main> <!-- /main -->
