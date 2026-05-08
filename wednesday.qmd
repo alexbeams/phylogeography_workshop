@@ -47,7 +47,7 @@ Practical session in R
 
 :::{.card .mb-3}
 :::{.card-body}
-[1130-1230: Intro to State-dependent Speciation and Extinction (SSE) models](topics/sse_models/sse_models.pdf){.card-title .stretched-link}
+[1130-1230: Intro to State-dependent Speciation and Extinction (SSE) models](topics/sse_models/sse_models2.pdf){.card-title .stretched-link}
 
 :::{.text-muted}
 Slides
