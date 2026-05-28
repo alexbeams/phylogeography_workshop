@@ -279,7 +279,7 @@ tree topologies as well as branch lengths in order to produce an estimate of the
 a paramter -- all we would need to do is optimize our likelihood function over the space of phylogenetic trees. 
  
 Use the nni function on the original parsimony tree to obtain all of the trees that are one
-nearest-neighbor interchange away from the parsimony tree. Fit Markov models to each tree and
+[nearest-neighbor interchange](https://en.wikipedia.org/wiki/Tree_rearrangement) away from the parsimony tree. Fit Markov models to each tree and
 calculate the likelihood for each tree under the optimized parameters of the Markov model. Then, compare the likelihoods
 of the different tree topologies.
 Based off of this, do you think it might be possible to estimate the most likely tree, given

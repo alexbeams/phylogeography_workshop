@@ -234,10 +234,11 @@ Attaching package: 'expm'</code></pre>
 </section>
 <section id="basic-markov-chains" class="level1">
 <h1>1. Basic Markov chains</h1>
-<p>To reconstruct phylogenetic trees from DNA sequence data, we commonly use continuous-time discrete-state Markov chains to model changes in nucleotides over time. In the simplest case, we consider the evolution of a particular site in a genome independent of all the rest. This page is focused on the mathematics of Markov chains. By understanding how these stochastic processes work, we will be in a better position to understand the underlying assumptions of many methods in statistical phylogenetics.</p>
-<p>Let’s begin by considering a simple 2-state Markov chain defined in continuous time. A site in a DNA sequence is usually modeled with four sites (A, C, T, G). We will start with a 2-state Markov chain to learn the basics in the simplest possible case. Extending to four states is not conceptually different, but becomes mathematically much more cumbersome.</p>
+<p>This page is focused on the mathematics of Markov chains. To reconstruct phylogenetic trees from DNA sequence data, we commonly use continuous-time discrete-state Markov chains to model changes in nucleotides over time. By understanding how these stochastic processes work, we will be in a better position to understand the underlying assumptions of many methods in statistical phylogenetics.</p>
+<p>In phylogenetic reconstruction, we often consider the evolution of a particular site in a genome independent of all the rest. The evolution of an entire genome can thus be broken down into evolution of individual sites in parallel. So, understanding models for evolution at a single nucleotide site actually gets us pretty close to understanding how we model evolution of an entire genome.</p>
+<p>Let’s begin by considering a simple 2-state Markov chain defined in continuous time. A site in a DNA sequence is usually modeled with four sites (A, C, T, G). We will start with a 2-state Markov chain to learn the basics in the simplest possible case. Extending to four states is not conceptually different, but becomes mathematically more cumbersome.</p>
 <p>Let’s begin! We consider a vector, <span class="math inline">\(P\)</span>, with two entries that sum to one. The components of <span class="math inline">\(P\)</span> are the probability the state resides in one state or the other at a particular time. The process is simple: if the system is in state 1, it can transition to state 2 at rate <span class="math inline">\(q_{12}\)</span>. If the system is in state 2, it can transition to state 1 at rate <span class="math inline">\(q_{21}\)</span>. Easy! But how do we translate this into a formal mathematical statement? We use differential equations!</p>
-<p>The probability the chain is one state or the other changes over time according to the ordinary differential equations (sometimes called the Kolmogorov equations)</p>
+<p>The probability the chain is one state or the other changes over time according to the ordinary differential equations</p>
 <p><span class="math display">\[\begin{align*}
 dP_1/dt &amp;= - q_{12} P_1 + q_{21} P_2,\\
 dP_2/dt &amp;= q_{12}P_1 - q_{21} P_2.
@@ -264,11 +265,11 @@ d/dt (P_1  e^{(q_{12}+q_{21})t}) = q_{21}  e^{(q_{12}+q_{21})t}.
 <p>This is why we multiplied both sides by the integrating factor – we’re just using differentation rules from Calculus to solve the problem. We now have an equation that we can integrate on both sides of the = sign.</p>
 <p>Integrating this up once gives <span class="math display">\[\begin{align*}
 P_1  e^{(q_{12}+q_{21})t} = \frac{q_{21}}{q_{12}+q_{21}}  e^{(q_{12}+q_{21})t} + C,
-\end{align*}\]</span> where <span class="math inline">\(C\)</span> is a constant of integration we need to determine eventually. We can now isolate P_1:</p>
+\end{align*}\]</span> where <span class="math inline">\(C\)</span> is a constant of integration we need to determine eventually. We can now isolate <span class="math inline">\(P_1\)</span>:</p>
 <p><span class="math display">\[\begin{align*}
 P_1 =  \frac{q_{21}}{q_{12}+q_{21}}  + C e^{-(q_{12}+q_{21})t}.
 \end{align*}\]</span></p>
-<p>We still have to determine <span class="math inline">\(C\)</span>. We use initial conditions to do so. Set <span class="math inline">\(P_{1,0} = P_1(0)\)</span>:</p>
+<p>We almost have a formula for <span class="math inline">\(P_1(t)\)</span> now, but we still have to determine <span class="math inline">\(C\)</span>. We use initial conditions to do so. Set <span class="math inline">\(P_{1,0} = P_1(0)\)</span>:</p>
 <p><span class="math display">\[\begin{align*}
 P_{1,0} &amp;= \frac{q_{21}}{q_{12}+q_{21}}  + C e^{-(q_{12}+q_{21})0} ,\\
 &amp;= \frac{q_{21}}{q_{12}+q_{21}}  + C,

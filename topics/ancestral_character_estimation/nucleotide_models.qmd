@@ -12,16 +12,21 @@ library(expm) # matrix exponential
 
 # 1. Basic Markov chains
 
-To reconstruct phylogenetic trees from DNA sequence data, we commonly use continuous-time 
-discrete-state Markov chains to model changes in nucleotides over time. In the simplest case, we consider
-the evolution of a particular site in a genome independent of all the rest. This page is focused on the mathematics
-of Markov chains. By understanding how these stochastic processes work, we will be in a better position to understand
+This page is focused on the mathematics
+of Markov chains. To reconstruct phylogenetic trees from DNA sequence data, we commonly use continuous-time 
+discrete-state Markov chains to model changes in nucleotides over time. 
+By understanding how these stochastic processes work, we will be in a better position to understand
 the underlying assumptions of many methods in statistical phylogenetics.
+
+In phylogenetic reconstruction, we often consider
+the evolution of a particular site in a genome independent of all the rest. The evolution of an entire genome can thus be 
+broken down into evolution of individual sites in parallel. So, understanding models for evolution at a single nucleotide site
+actually gets us pretty close to understanding how we model evolution of an entire genome.
 
 Let's begin by considering a simple 2-state Markov chain
 defined in continuous time. A site in a DNA sequence is usually modeled with four sites (A, C, T, G). We will 
 start with a 2-state Markov chain to learn the basics in the simplest possible case. Extending to four states
-is not conceptually different, but becomes mathematically much more cumbersome. 
+is not conceptually different, but becomes mathematically more cumbersome. 
 
 Let's begin! We consider a vector, $P$, with two entries that sum to one. The components of $P$
 are the probability the state resides in one state or the
@@ -30,7 +35,6 @@ at rate $q_{12}$. If the system is in state 2, it can transition to state 1 at r
 translate this into a formal mathematical statement? We use differential equations!
 
 The probability the chain is one state or the other changes over time according to the ordinary differential equations
-(sometimes called the Kolmogorov equations) 
 
 \begin{align*}
  dP_1/dt &= - q_{12} P_1 + q_{21} P_2,\\
@@ -83,13 +87,13 @@ Integrating this up once gives
 \begin{align*}
 P_1  e^{(q_{12}+q_{21})t} = \frac{q_{21}}{q_{12}+q_{21}}  e^{(q_{12}+q_{21})t} + C,
 \end{align*}
-where $C$ is a constant of integration we need to determine eventually. We can now isolate P_1:
+where $C$ is a constant of integration we need to determine eventually. We can now isolate $P_1$:
 
 \begin{align*}
 P_1 =  \frac{q_{21}}{q_{12}+q_{21}}  + C e^{-(q_{12}+q_{21})t}.
 \end{align*}
 
-We still have to determine $C$. We use initial conditions to do so. Set $P_{1,0} = P_1(0)$:
+We almost have a formula for $P_1(t)$ now, but we still have to determine $C$. We use initial conditions to do so. Set $P_{1,0} = P_1(0)$:
 
 \begin{align*}
 P_{1,0} &= \frac{q_{21}}{q_{12}+q_{21}}  + C e^{-(q_{12}+q_{21})0} ,\\
