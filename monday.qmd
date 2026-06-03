@@ -85,6 +85,17 @@ Practical session in R
 
 :::{.card .mb-3}
 :::{.card-body}
+[1430--1530: Introduction to Character mapping](topics/character_mapping/stochastic_character_mapping.pdf){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides
+:::
+:::
+:::
+
+
+:::{.card .mb-3}
+:::{.card-body}
 [1430--1530: Introduction to Stochastic character mapping -- Simulating event times](topics/character_mapping/waiting_times_simulation.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
