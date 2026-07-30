@@ -418,9 +418,29 @@ window.Quarto = {
 <p>We can also make some summary plots that include gradients in color on edges that describe average probabilities across the simulations (but getting our color scheme to work is a little tricky).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">densityMap</span>(simmap.er, <span class="at">ftype=</span><span class="st">'off'</span>, <span class="at">main=</span><span class="st">'ER model'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>sorry - this might take a while; please be patient</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="stochastic_mapping_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">densityMap</span>(simmap.ard, <span class="at">ftype=</span><span class="st">'off'</span>, <span class="at">main=</span><span class="st">'ARD model'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">densityMap</span>(simmap.ard, <span class="at">ftype=</span><span class="st">'off'</span>, <span class="at">main=</span><span class="st">'ARD model'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>sorry - this might take a while; please be patient</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="stochastic_mapping_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 </section>
@@ -429,13 +449,13 @@ window.Quarto = {
 <p>Under the MLE for these models, how often does S change to P, and vice versa? (We know that S will never change to P under the ARD model, but there still may be some uncertainty concerning the number of times P changed to S.)</p>
 <p>The function countSimmap does this readily for us:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>counts.er <span class="ot">&lt;-</span> <span class="fu">countSimmap</span>(simmap.er)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>))</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.er<span class="sc">$</span>Tr[,<span class="st">'N'</span>], <span class="at">xlab=</span><span class="st">'Total number</span><span class="sc">\n</span><span class="st">of changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.er<span class="sc">$</span>Tr[,<span class="st">'P,S'</span>], <span class="at">xlab=</span><span class="st">'P -&gt; S changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.er<span class="sc">$</span>Tr[,<span class="st">'S,P'</span>], <span class="at">xlab=</span><span class="st">'S -&gt; P changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">'ER model amino acid changes'</span>, <span class="at">side=</span><span class="dv">3</span>, <span class="at">line=</span><span class="sc">-</span><span class="dv">2</span>, <span class="at">outer=</span><span class="cn">TRUE</span>,<span class="at">cex=</span><span class="fl">1.7</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>counts.er <span class="ot">&lt;-</span> <span class="fu">countSimmap</span>(simmap.er)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>))</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.er<span class="sc">$</span>Tr[,<span class="st">'N'</span>], <span class="at">xlab=</span><span class="st">'Total number</span><span class="sc">\n</span><span class="st">of changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.er<span class="sc">$</span>Tr[,<span class="st">'P,S'</span>], <span class="at">xlab=</span><span class="st">'P -&gt; S changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.er<span class="sc">$</span>Tr[,<span class="st">'S,P'</span>], <span class="at">xlab=</span><span class="st">'S -&gt; P changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">'ER model amino acid changes'</span>, <span class="at">side=</span><span class="dv">3</span>, <span class="at">line=</span><span class="sc">-</span><span class="dv">2</span>, <span class="at">outer=</span><span class="cn">TRUE</span>,<span class="at">cex=</span><span class="fl">1.7</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -443,13 +463,13 @@ window.Quarto = {
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>counts.ard <span class="ot">&lt;-</span> <span class="fu">countSimmap</span>(simmap.ard)</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.ard<span class="sc">$</span>Tr[,<span class="st">'N'</span>], <span class="at">xlab=</span><span class="st">'Total number</span><span class="sc">\n</span><span class="st">of changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.ard<span class="sc">$</span>Tr[,<span class="st">'P,S'</span>], <span class="at">xlab=</span><span class="st">'P -&gt; S changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="co">#hist(counts.ard$Tr[,'S,P'], xlab='S -&gt; P changes', main='')</span></span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">'ARD model amino acid changes'</span>, <span class="at">side=</span><span class="dv">3</span>, <span class="at">line=</span><span class="sc">-</span><span class="dv">2</span>, <span class="at">outer=</span><span class="cn">TRUE</span>,<span class="at">cex=</span><span class="fl">1.7</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>counts.ard <span class="ot">&lt;-</span> <span class="fu">countSimmap</span>(simmap.ard)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.ard<span class="sc">$</span>Tr[,<span class="st">'N'</span>], <span class="at">xlab=</span><span class="st">'Total number</span><span class="sc">\n</span><span class="st">of changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(counts.ard<span class="sc">$</span>Tr[,<span class="st">'P,S'</span>], <span class="at">xlab=</span><span class="st">'P -&gt; S changes'</span>, <span class="at">main=</span><span class="st">''</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="co">#hist(counts.ard$Tr[,'S,P'], xlab='S -&gt; P changes', main='')</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">'ARD model amino acid changes'</span>, <span class="at">side=</span><span class="dv">3</span>, <span class="at">line=</span><span class="sc">-</span><span class="dv">2</span>, <span class="at">outer=</span><span class="cn">TRUE</span>,<span class="at">cex=</span><span class="fl">1.7</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -457,10 +477,21 @@ window.Quarto = {
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ^^^ there are no changes from S to P in the fitted ARD model</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ^^^ there are no changes from S to P in the fitted ARD model</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>So, in the ER model, the data support two amino acid changes, one from P to S, and one from S to P. This is consistent with our Hypothesis 1 from earlier, which posits that the small S clade nested within the P clade represents a back-mutation, returning to the ancestral state, S.</p>
 <p>In the ARD model, the data are consistent with two P to S mutations, one of which was long ago, and the other more recent. There is some support for 3 P to S mutations, two of which probably happened long ago.</p>
+</section>
+<section id="exercises" class="level1">
+<h1>Exercises</h1>
+<ol type="1">
+<li><p>For one of the models (ARD or ER), can you determine the distribution of times when mutations occur? Is there evidence that mutations were concentrated in one particular window of time in the past? The markChanges function may be helpful for addressing this.</p></li>
+<li><p>Evolutionary biologists sometimes refer to gradual versus punctuated evolution (see <a href="https://en.wikipedia.org/wiki/Punctuated_equilibrium">here</a>). Given your answers to the previous question, do you think the Markov models we are using are more consistent with one interpretation or the other?</p></li>
+<li><p>Stochastic character mapping requires sampling internal node states using a modification of the joint ancestral reconstruction approach. Explain why it would never make sense to sample internal node states using a marginal approach in the context of stochastic character mapping.</p></li>
+<li><p>(PhD level): write a program that imposes a discretization upon a phylogenetic tree that respects internal nodes. Sample states at all of the discretization points. In the limit as the discretization becomes increasingly fine, the distribution of character changes should approach that obtained by simulating trait changes in continuous time along edges. Carry out a simulation study to provide evidence that this method is equivalent to the continuous-time sampling method used by simmap. Related to this, you might be interested to read the paper</p></li>
+</ol>
+<p>Freyman WA, Höhna S. Stochastic character mapping of state-dependent diversification reveals the tempo of evolutionary decline in self-compatible Onagraceae lineages. Systematic Biology. 2019 May 1;68(3):505-19.</p>
+<p>although this paper deals more directly with state dependent speciation and extinction (SSE) models, which are the next subject we will tackle.</p>
 
 
 </section>

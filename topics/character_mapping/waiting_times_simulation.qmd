@@ -11,7 +11,7 @@ states at internal nodes.
 ## Exercises
 ## 1.
 
-The strategy for stochastic character mapping relies on simulating changes of state 
+One strategy for stochastic character mapping relies on simulating changes of state 
 for Markov chains. So far, we have seen how to calculate transition probabilities given
 a fixed amount of time. 
  

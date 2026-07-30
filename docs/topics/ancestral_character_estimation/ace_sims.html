@@ -339,6 +339,7 @@ P S
 <section id="displaying-evolutionary-histories-with-our-fitted-models" class="level2">
 <h2 class="anchored" data-anchor-id="displaying-evolutionary-histories-with-our-fitted-models">Displaying evolutionary histories with our fitted models</h2>
 <p>So far, all we have done is fit our models and interpret the parameter estimates. However, we can do a little bit more than this. Similar to NextStrain, we can annotate our tree with our estimated models to indicate what the ancestral states may have been. This is, after all, the point of ancestral state inference/ancestral character estimation.</p>
+<p>We will start by examining the <em>joint reconstruction</em> using ace. In a later subsection, we will see how to obtain marginal reconstructions for comparison.</p>
 <p>The scaled likelihoods a the root that we see in the printout from fit1 and fit2 are built up from likelihoods at all of the internal nodes desending from the root. These are tucked away in the fitted model output (“lik.anc”):</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fit1<span class="sc">$</span>lik.anc)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -347,9 +348,9 @@ P S
 401 0.2746174 7.253826e-01
 402 0.9810853 1.891467e-02
 403 0.9998225 1.775022e-04
-404 1.0000000 1.573183e-10
-405 1.0000000 5.274620e-13
-406 1.0000000 3.038069e-12</code></pre>
+404 1.0000000 1.479346e-10
+405 1.0000000 5.073238e-13
+406 1.0000000 1.000168e-09</code></pre>
 </div>
 </div>
 <p>This is a datarame with the scaled likelihoods of the two states for each node. The tree has 400 tips, so the nodes are numbered 401 through 799 (a bifurcating tree with N tips has N-1 internal nodes). Each row in the dataframe above is one of the nodes, and the values in the columns are the relative likelihoods that it resides in state P or state S under the MLE. We can use this data to plot estimated states at the internal nodes.</p>
@@ -446,7 +447,7 @@ P S
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.07318771</code></pre>
+<pre><code>[1] 0.07318772</code></pre>
 </div>
 </div>
 <p>So, we have a p-value equal to 0.073. Most people would say that there is not sufficient evidence to reject the null hypothesis (ER model) in favor of the alternative (ARD model) based on this.</p>
@@ -461,9 +462,73 @@ P S
 <p>Can you think of any other criticisms?</p>
 <p>From the methodological point of view there is another thing we have not done: we have not obtained an estimate for <strong>when mutations actually occurred</strong>. Our estimates of ancestral states should inform the timing and number of mutations, but more work is needed to do so.</p>
 <p>In a later section (stochastic character mapping), we will do both of these things.</p>
-
-
 </section>
+<section id="joint-versus-marginal-ancestral-state-reconstruction" class="level2">
+<h2 class="anchored" data-anchor-id="joint-versus-marginal-ancestral-state-reconstruction">Joint versus Marginal ancestral state reconstruction</h2>
+<p>By default, ace implements a joint reconstruction through a Viterbi-style max algorithm (see the accompanying slides for more information). The purpose of the joint reconstruction is to identify the configuration of internal node states, <span class="math inline">\(\textbf{y}^*\)</span>, that make the greatest contribution to the likelihood <span class="math inline">\(p(\textbf{x}| \mathcal{T}) = \sum_{\textbf{y}} p(\textbf{x}, \textbf{y}| \mathcal{T})\)</span>.</p>
+<p>Another possibility is to obtain a marginal reconstruction. The typical approach is to (i) use a reversible model of trait change that allows one to reroot a tree at any node, and then (ii) evaluate <span class="math inline">\(\pi(x) L_{r}(x)\)</span> for all possible states <span class="math inline">\(x\)</span> at the root, <span class="math inline">\(r\)</span>, and select the largest as the marginal estimate.</p>
+<p>The joint reconstruction provides the most plausible evolutionary scenario giving rise to the data under the MLE. The marginal reconstruction provides the most likely state for one particular node independent of the rest.</p>
+<p>Let’s compare joint and marginal reconstructions under the ER model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>fit1m <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ER'</span>, <span class="at">marginal=</span><span class="cn">FALSE</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>fit2m <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ER'</span>, <span class="at">marginal=</span><span class="cn">TRUE</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's add in node labels for the tree:</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>tree<span class="sc">$</span>node.label <span class="ot">&lt;-</span> (<span class="fu">Ntip</span>(tree)<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="fu">Ntip</span>(tree) <span class="sc">+</span> tree<span class="sc">$</span>Nnode)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co"># what were the most likely node states?</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>nodestates1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'P'</span>,<span class="st">'S'</span>)[<span class="fu">apply</span>(fit1m<span class="sc">$</span>lik.anc, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">which</span>(x<span class="sc">==</span><span class="fu">max</span>(x)) )]</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>treedat1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span>tree<span class="sc">$</span>tip.label, <span class="at">aminoacid =</span> <span class="fu">as.factor</span>(x))</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>nodedat1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span><span class="fu">as.character</span>((<span class="fu">Ntip</span>(tree)<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="fu">Ntip</span>(tree)<span class="sc">+</span>tree<span class="sc">$</span>Nnode)), <span class="at">aminoacid=</span>nodestates1)</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>treedat1 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(treedat1, nodedat1)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggtree</span>(tree) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">'ER Model,</span><span class="sc">\n</span><span class="st">Joint Reconstruction'</span>) <span class="sc">+</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>, <span class="at">size=</span><span class="dv">18</span>, <span class="at">face=</span><span class="st">"bold"</span>))</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> p1 <span class="sc">%&lt;+%</span> treedat1</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> p1 <span class="sc">+</span> <span class="fu">geom_tippoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid)) <span class="sc">+</span> <span class="fu">geom_nodepoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid))  <span class="sc">+</span> </span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">'none'</span>)</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, the all-rates different model:</span></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="co"># what were the most likely node states?</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>nodestates2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'P'</span>,<span class="st">'S'</span>)[<span class="fu">apply</span>(fit2m<span class="sc">$</span>lik.anc, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">which</span>(x<span class="sc">==</span><span class="fu">max</span>(x)) )]</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>treedat2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span>tree<span class="sc">$</span>tip.label, <span class="at">aminoacid =</span> <span class="fu">as.factor</span>(x))</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>nodedat2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span><span class="fu">as.character</span>((<span class="fu">Ntip</span>(tree)<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="fu">Ntip</span>(tree)<span class="sc">+</span>tree<span class="sc">$</span>Nnode)), <span class="at">aminoacid=</span>nodestates2)</span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>treedat2 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(treedat2, nodedat2)</span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggtree</span>(tree) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">'ER Model,</span><span class="sc">\n</span><span class="st">Marginal Reconstruction'</span>) <span class="sc">+</span></span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>, <span class="at">size=</span><span class="dv">18</span>, <span class="at">face=</span><span class="st">"bold"</span>))</span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> p2 <span class="sc">%&lt;+%</span> treedat2</span>
+<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> p2 <span class="sc">+</span> <span class="fu">geom_tippoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid)) <span class="sc">+</span> <span class="fu">geom_nodepoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid)) </span>
+<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a>legend <span class="ot">&lt;-</span> <span class="fu">get_legend</span>(p2 <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.box.margin=</span><span class="fu">margin</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">12</span>)))</span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(p1,p2<span class="sc">+</span><span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">'none'</span>),legend, <span class="at">nrow=</span><span class="dv">1</span>, <span class="at">rel_widths=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,.<span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ace_sims_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="exercises" class="level1">
+<h1>Exercises</h1>
+<ol type="1">
+<li><p>Compare marginal and joint reconstructions under the ARD model. Comment on any differences between the methods that you can identify.</p></li>
+<li><p>Download a different phylogenetic tree of your choice from NextStrain and repeat the workflow in this demo. One interesting possibility is Seasonal Coronavirus OC43. On NextStrain, try coloring in the tree by Genotype. Position 11 of the Spike gene shows some interesting changes over time.</p></li>
+</ol>
+
+
 </section>
 
 </main> <!-- /main -->

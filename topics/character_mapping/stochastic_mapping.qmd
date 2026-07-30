@@ -195,11 +195,11 @@ All of these character mappings assign the root state to the amino acid P. Howev
 
 We can also make some summary plots that include gradients in color on edges that describe average probabilities across the simulations (but getting our color scheme to work is a little tricky).
  
-```{r, eval=F}
+```{r, eval=T}
 densityMap(simmap.er, ftype='off', main='ER model')
 ``` 
 
-```{r,eval=F}
+```{r,eval=T}
 densityMap(simmap.ard, ftype='off', main='ARD model')
 ``` 
 
@@ -237,4 +237,16 @@ So, in the ER model, the data support two amino acid changes, one from P to S, a
 
 In the ARD model, the data are consistent with two P to S mutations, one of which was long ago, and the other more recent. There is some support for 3 P to S mutations, two of which probably happened long ago.
 
+# Exercises
 
+1. For one of the models (ARD or ER), can you determine the distribution of times when mutations occur? Is there evidence that mutations were concentrated in one particular window of time in the past? The markChanges function may be helpful for addressing this.
+
+2. Evolutionary biologists sometimes refer to gradual versus punctuated evolution (see [here](https://en.wikipedia.org/wiki/Punctuated_equilibrium)). Given your answers to the previous question, do you think the Markov models we are using are more consistent with one interpretation or the other?
+
+3. Stochastic character mapping requires sampling internal node states using a modification of the joint ancestral reconstruction approach. Explain why it would never make sense to sample internal node states using a marginal approach in the context of stochastic character mapping.
+
+4. (PhD level): write a program that imposes a discretization upon a phylogenetic tree that respects internal nodes. Sample states at all of the discretization points. In the limit as the discretization becomes increasingly fine, the distribution of character changes should approach that obtained by simulating trait changes in continuous time along edges. Carry out a simulation study to provide evidence that this method is equivalent to the continuous-time sampling method used by simmap. Related to this, you might be interested to read the paper 
+
+Freyman WA, Höhna S. Stochastic character mapping of state-dependent diversification reveals the tempo of evolutionary decline in self-compatible Onagraceae lineages. Systematic Biology. 2019 May 1;68(3):505-19. 
+
+although this paper deals more directly with state dependent speciation and extinction (SSE) models, which are the next subject we will tackle.
