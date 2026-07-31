@@ -1,8 +1,8 @@
-# Estimating parameters of basic birth-death models
+# Identifiability of parameters in birth-death models
 
-## First: simulating trees
+## First: simulating birth-death trees
 
-So far, we have been treating the trees as given
+So far, we have been treating phylogenetic trees as given
       without asking how they are created (by some
       biologist, presumably). If the traits we are
       interested in do not influence diversification,
@@ -22,48 +22,116 @@ It is for this reason that we start by considering models for
       people who use BEAST, which we will get to later in
       the week).
 
-Let's start by simulating some trees using birth-death models.
+Let's start by simulating some trees using Yule and birth-death models.
+
+The Yule model is a special case of birth death models. The Yule model is characterized 
+by having the death rate $\mu=0$. 
 
 ```{r}
 tree <- tree.bd(c(lambda=1, mu=0), max.taxa = 50)
-plot(tree)
+plot(tree, show.tip.label=F)
 ```
 
-It doesn't always work if mu>0.
+If $\mu > 0$, the process s fundamentally different. This is because sometimes the
+process goes extinct before the desired number
+of taxa are obtained.
 Let's use the lapply function to generate a
 list of simulated outputs (lapply is like a
-for loop).
+for loop) to see how frequently this happens.
 
 ```{r}
 numtrees <- 50
 treelist <- lapply(1:numtrees,
-                function(x) tree.bd(c(lambda=10, mu=5), max.taxa = 50)
+                function(x) tree.bd(c(lambda=2, mu=1), max.taxa = 50)
 )
 
 dieoffs <- sapply(treelist, is.null)
 numdieoffs <- sum(dieoffs)
 ```
 
-```{r}
-numtrees <- 50
-treelist <- lapply(1:numtrees,
-                function(x) tree.bd(c(lambda=10, mu=5), max.taxa = 50)
-)
-
-dieoffs <- sapply(treelist, is.null)
-numdieoffs <- sum(dieoffs)
-```
-
-Sometimes we fail to generate a tree with max.taxa number of
-lineages because they all go extinct (this is stochastic).
 How many died off before reaching 50 taxa?
 
 ```{r}
 print(numdieoffs)
 ```
 
+This is sort of interesting. In the first tree we simulated above, we set $\lambda=1$
+and $\mu=0$, for a net birth rate equal to 1. In this second example, we set $\lambda=2$ and
+$\mu=1$. The net birth rate still equals 1, but extinction is far more likely now.
+
+**Follow up question**: if we look at a tree produced by $\lambda=1$, $\mu=0$ and 
+another tree (successfully) produced with $\lambda=2$, $\mu=1$, are they noticeably different?
+
+```{r}
+tree_yule <- tree
+tree_bd <- treelist[!dieoffs][[1]]
+
+
+par(mfrow=c(1,2))
+plot(tree_yule, main=bquote(lambda~'=1, '~mu~'=0'),
+	show.tip.label=F)
+
+plot(tree_bd, main=bquote(lambda~'=2, '~mu~'=1'),
+	show.tip.label=F)
+
+```
+
+It isn't super obvious whether these trees have different statistical properties. One clue is to examine
+the number of lineages through time:
+
+```{r}
+require(ape)
+
+par(mfrow=c(1,2))
+ltt.plot(tree_yule, xlab='Time', ylab='No. of lineages',
+	xlim=c(-5,0),main=bquote(lambda~'=1, '~mu~'=0'))
+ltt.plot(tree_bd, xlab='Time', ylab='No. of lineages',
+	xlim=c(-5,0),main=bquote(lambda~'=2, '~mu~'=1'))
+
+```
+
+This suggests these trees are actually quite different. The height of the birth-death tree
+is shorter than the Yule tree. With a nonzero death rate, lineages accumulate at a faster rate than
+in Yule trees (conditional, of course, on attaining 50 taxa before extinction). Put another way: conditioning
+on 50 taxa in a birth-death model biases us towards trees that grow rapidly. In the Yule model, lineages 
+can be produced more slowly without risk of extinction.
+
+
+There is another way to determine whether these trees are statistically indistinguishable or not. We can use
+the likelihood function, which quantifies the probability (density) of observing a particular tree given
+model parameters. 
+
+We can create likelihood functions for these trees like so:
+
+```{r}
+
+loglik.yule <- make.bd(tree_yule)
+loglik.bd <- make.bd(tree_bd)
+```
+
+Let's plot these as functions of $\lambda$ for different values of $\mu$ to see where the Maximum Likelihood
+Estimates lie:
+
+```{r}
+lambdavals <- 10^seq(-3,1.1,length=30)
+muvals <- 10^seq(-3,1.1,length=30)
+
+loglik.yule.vals1 <- sapply(lambdavals, function(x) loglik.yule(c(x,0)))
+loglik.yule.vals2 <- sapply(muvals, function(x) loglik.yule(c(x,0)))
+
+par(mfrow=c(1,2))
+plot(lambdavals, loglik.yule.vals1, type='l', xlab=bquote(lambda),ylab=bquote(L[Yule]))
+points(x=1,y=max(loglik.yule.vals1))
+
+plot(muvals, loglik.yule.vals2, type='l', xlab=bquote(mu),ylab=bquote(L[Yule]))
+points(x=0,y=max(loglik.yule.vals2))
+
+
+```
+
 # Exercises:
 ## 1.
+
 The parameter "lambda" is the birth/diversification rate,
 and the parameter "mu" is the mortality/extinction rate.
 Try different combinations of the parameters (try
