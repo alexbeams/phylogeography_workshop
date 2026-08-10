@@ -1,4 +1,4 @@
-# Identifiability of parameters in birth-death models
+# Estimating parameters in birth-death models 
 
 ## First: simulating birth-death trees
 
@@ -75,6 +75,9 @@ $$
 If we truncate this system $dP/dt = Q P$ at large but finite $N$, then we can approximate the solution as
 $P_N(t) \approx e^{Q_Nt} P_{N}(0)$. The approximation should be reasonable if we choose $N$ sufficiently large. If we simulate only up to time $t=4$, $N$ probably doesn't need to be to huge. If we simulate for longer amounts of time, then we will need make $N$ larger.
 
+For comparison, we can also use the analytical solution $P_n(t) = e^{-\lambda t} (1-e^{-\lambda t})^{n-1}$.
+
+
 ```{r}
 # How long to simulate?
 t <- 4
@@ -122,6 +125,12 @@ inds <- sapply(yulelist, is.null)
 yulelist <- yulelist[!inds]
 
 n <- sapply(yulelist, Ntip)
+
+# Let's also create a fucntion for our analytical solution for comparison:
+getpn <- function(n) exp(-lambda*t)*(1-exp(-lambda*t))^(n-1)
+
+pn.a <- sapply(0:400, getpn)
+
 ```
 
 So now we have simulated lots of Yule trees (~ 1000 of them) and we can compare the distribution of lineages with the prediction from the Master equation:
@@ -129,8 +138,9 @@ So now we have simulated lots of Yule trees (~ 1000 of them) and we can compare 
 ```{r}
 hist(n, freq=F, main='Distribution of lineages by time t=4', breaks=20)
 lines(pn, lwd=2)
-legend('topright', legend=c('Master equation solution'), 
-	lwd=2,lty=1,col='black') 
+lines(pn.a, lwd=3, lty=3, col='red')
+legend('topright', legend=c('Numerical approximation', 'Analytical solution'), 
+	lwd=3,lty=c(1,3),col=c('black','red'), title='Master Equation solution') 
 
 ```
 
@@ -208,8 +218,10 @@ This suggests these trees are different (depending on the random seed used to si
 
 If you do this, you may notice a tendency for birth-death trees to have shorter heights than their Yule counterparts (conditioning on the same number of taxa, of course). Indeed, conditioning on 50 taxa in the birth death process biases us towards to trees that grow rapidly. The ones that grow more slowly could be at greater risk of extinction. In the Yule process there is no extinction, so we are more likely to observe slowly-growing trees that eventually reach 50 taxa.
 
-## Exercise 
-Exercise: Instead of simulating trees up to a fixed number of taxa, simulate trees up to a fixed time. Do you notice any differences between Yule and birth death trees in terms of the number of taxa produced by time $t$?
+## Exercises
+1. Simulate a large number of Yule and birth-death trees for a fixed number of taxa and compare the distributions of tree heights to determine whether there is in fact a meaningful difference.
+
+2. Instead of simulating trees up to a fixed number of taxa, simulate trees up to a fixed time. Do you notice any differences between Yule and birth death trees in terms of the number of taxa produced by time $t$?
 
 ## Estimating parameters using likelihoods
 
@@ -231,8 +243,6 @@ We can create likelihood functions for these trees like so:
 loglik.yule <- make.bd(tree_yule)
 loglik.bd <- make.bd(tree_bd)
 ```
-
-These don't actually use the Master equation to obtain $p_n(t)$. Instead, they interpret trees as realizations of an [Inhomogeneous Poisson Process](https://en.wikipedia.org/wiki/Poisson_point_process#Inhomogeneous_Poisson_point_process). The underlying theory is the same, however.
 
 Let's try finding the MLE for the Yule tree (supplying the ground truth as the initial guess in the optimization procedure):
 
@@ -381,7 +391,7 @@ In the previous section, we saw that it is in principle possible to estimate par
 
 Models with this property are said to be [identifiable](https://en.wikipedia.org/wiki/Identifiability). The Yule Process and the birth death model are identifiable (assuming that the rates are fixed constants in time). Seemingly innocuous modifications to these models render them unidentifiable. 
 
-The final example we will consider in this tutorial is the birth-death-sampling model. The primary motivation for considering the birth-death-sampling model comes from epidemiology. In that context, pathogens spread between hosts, and infection events correspond to bifurcation events in the pathogen phylogeny. In practice, the vast majority of individuals who are infected are never sampled. Consequently, observed pathogen phylogenies represent a small piece of the true underlying phylogeny. 
+The final example we will consider in this tutorial is the birth-death-sampling model. The primary motivation for considering the birth-death-sampling model comes from epidemiology. In that context, pathogens spread between hosts, and infection events correspond to bifurcation events in the pathogen phylogeny. Infected people are also observed over a period of time (perhaps as they show up at the hospital). Consequently, the trees produced are not ultrametric, they are heterochronous. In practice, the vast majority of individuals who are infected are also never sampled, so observed pathogen phylogenies represent a small piece of the true underlying phylogeny. 
 
 In this model, three things can happen:
 
@@ -391,21 +401,23 @@ In this model, three things can happen:
 
 3. A lineage (which resides in an infected host) can be sampled (at rate $\psi$)
 
-We only observe the lineages that get sampled. The phylogeny we observe describes ancestry of the sampled lineages. This is potentially a very small portion of the entire tree.
+Arguably the most important aspect of this process is that we only observe the lineages that get sampled. The phylogeny describes ancestry of these sampled lineages. This is potentially a very small portion of the entire tree.
 
-You might be able to intuit the problem already. We didn't emphasize this in the birth-death model earlier, but in that context we are in fact also observing a subset of the entire phylogeny. The Master equation abstracted away the tree produced by the stochastic process, but in fact it can be helpful to consider dynamic updates to a phylogeny as time proceeds. A birth event corresponds to a lineage bifurcating into two lineages. A death event is somewhat different: when a lienage dies, it gets pruned away from the tree entirely. Thus, a phylogeny produced under a birth-death model is missing all of the lineages that died off before the end of the simulation. 
+You might be able to intuit the problem already. We didn't emphasize this in the birth-death model earlier, but in that context we are in fact also observing a subset of the entire phylogeny. If we simulate a birth-death model up to time $t$, we never observe lineages that die out before time $t$. The Master equation abstracted away the tree produced by the stochastic process, but in fact it can be helpful to consider dynamic updates to a phylogeny as time proceeds. A birth event corresponds to a lineage bifurcating into two lineages. A death event is somewhat different: when a lienage dies, it gets pruned away from the tree entirely. Thus, a phylogeny produced under a birth-death model is missing all of the lineages that died off before the end of the simulation. 
 
 The heart of the identifiability problem in the birth-death-sampling model is that sampling functions in a very similar way to death. Lineages that are not sampled are pruned away from the tree, just like lineages that die.
 
 If a lineage can either bifurcate at rate $\lambda$, go extinct at rate $\mu$, or be sampled at rate $\psi$, this is a competing rates problem. The probability a particular lineage gets sampled is $\psi/(\lambda+\mu+\psi)$. The probability a lineage dies is $\mu/(\lambda+\mu+\psi)$. You immediately see how to determine the probability a lineage bifurcates before those other two events take place. Some extensions of this model assume lineages can still transmit after sampling, but in this basic model we will assume that sampled lineages are quarantined and treated so that transmission is impossible.
 
-Now, if we simulate birth-death-sampling models and try to estimate parameters, we should expect to run into difficulties.
+Now, if we simulate birth-death-sampling models and try to estimate parameters, we should expect to run into difficulties because it should be impossible to distinguish between lineages that are missing because they died out versus because they were never sampled. Because we cannot distinguish these types of lineages from each other, there should not be any way for us to determine the relative magnitudes of $\psi$ and $\mu$. 
 
-We will use the castor package to do this.
+We will use the castor package to see if this reasoning is correct or not.
 
-```{r}
+```{r,eval=F}
 require(castor)
 require(ape)
+
+set.seed(3)
 
 tm <- 4
 
@@ -426,7 +438,7 @@ tree.bds = generate_tree_hbds(
 plot(tree.bds$tree, show.tip.label=F, main='Birth-death-sampling tree')
 ```
 
-One immediate observation: these trees are generally not ultrametric, as the trees up to now have been. Because we specified a sampling rate, we observe lineages at random times. It is possible to modify the simulation so that sampling takes place at one particular time.
+These trees are generally not ultrametric, as the trees up to now have been. Because we specified a sampling rate, we observe lineages at random times. It is possible to modify the simulation so that sampling takes place at one particular time.
 
 ## Exercises
 

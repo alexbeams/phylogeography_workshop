@@ -347,10 +347,10 @@ P S
 <pre><code>            P            S
 401 0.2746174 7.253826e-01
 402 0.9810853 1.891467e-02
-403 0.9998225 1.775022e-04
-404 1.0000000 1.479346e-10
-405 1.0000000 5.073238e-13
-406 1.0000000 1.000168e-09</code></pre>
+403 0.9998225 1.775021e-04
+404 1.0000000 2.429854e-12
+405 1.0000000 3.310031e-12
+406 1.0000000 2.125137e-11</code></pre>
 </div>
 </div>
 <p>This is a datarame with the scaled likelihoods of the two states for each node. The tree has 400 tips, so the nodes are numbered 401 through 799 (a bifurcating tree with N tips has N-1 internal nodes). Each row in the dataframe above is one of the nodes, and the values in the columns are the relative likelihoods that it resides in state P or state S under the MLE. We can use this data to plot estimated states at the internal nodes.</p>
@@ -391,8 +391,12 @@ P S
 <span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> p2 <span class="sc">+</span> <span class="fu">geom_tippoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid)) <span class="sc">+</span> <span class="fu">geom_nodepoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid)) </span>
 <span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>legend <span class="ot">&lt;-</span> <span class="fu">get_legend</span>(p2 <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.box.margin=</span><span class="fu">margin</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">12</span>)))</span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(p1,p2<span class="sc">+</span><span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">'none'</span>),legend, <span class="at">nrow=</span><span class="dv">1</span>, <span class="at">rel_widths=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,.<span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>legend <span class="ot">&lt;-</span> <span class="fu">get_legend</span>(p2 <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.box.margin=</span><span class="fu">margin</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">12</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in get_plot_component(plot, "guide-box"): Multiple components found;
+returning the first one. To return all, use `return_all = TRUE`.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(p1,p2<span class="sc">+</span><span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">'none'</span>),legend, <span class="at">nrow=</span><span class="dv">1</span>, <span class="at">rel_widths=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,.<span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -413,11 +417,11 @@ P S
 <p>How do we decide which of these is more plausible? One way to try to address this is with a <a href="https://en.wikipedia.org/wiki/Likelihood-ratio_test"><strong>Generalized Likelihood Ratio test</strong></a>. The ER model (one estimated parameter in our example here) is a special case of the ARD model (two estimated parameters in our example here). Another way to put it is that the ER model is “nested” within the ARD model. This is precisely the condition under which we may apply the GLR test.</p>
 <p>To carry out a GLR test, we calculate a test statistic obtained from the ratio of the two likelihoods, hence the name. Let’s look at the log-likelihoods for our two models:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fit1<span class="sc">$</span>loglik</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fit1<span class="sc">$</span>loglik</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -11.89298</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fit2<span class="sc">$</span>loglik</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fit2<span class="sc">$</span>loglik</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -10.28796</code></pre>
 </div>
@@ -431,23 +435,23 @@ P S
 <p>Recall that a <span class="math inline">\(p\)</span>-value is the probability of observing a value of the test statistic as extreme or more extreme (under the null hypothesis) than the one we calculate from the data.</p>
 <p>So, to carry out a GLR test, we proceed as follows:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> (fit1<span class="sc">$</span>loglik <span class="sc">-</span> fit2<span class="sc">$</span>loglik)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>lambda</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> (fit1<span class="sc">$</span>loglik <span class="sc">-</span> fit2<span class="sc">$</span>loglik)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>lambda</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 3.21004</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we have one degree of freedom because the more complicated model has one more paramter than the simpler model:</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>dfs <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the p-value, which is the probability of obseving a lambda as extreme or more extreme than the one we calculated above; </span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># chisq variables are always non-negative, and "extreme" in this case means large and positive -- so we want the upper tail probability,</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># rather than the cumulative probability:</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">pchisq</span>(lambda, <span class="at">df=</span>dfs, <span class="at">lower.tail=</span>F) </span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we have one degree of freedom because the more complicated model has one more paramter than the simpler model:</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>dfs <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the p-value, which is the probability of obseving a lambda as extreme or more extreme than the one we calculated above; </span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># chisq variables are always non-negative, and "extreme" in this case means large and positive -- so we want the upper tail probability,</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># rather than the cumulative probability:</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">pchisq</span>(lambda, <span class="at">df=</span>dfs, <span class="at">lower.tail=</span>F) </span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.07318772</code></pre>
+<pre><code>[1] 0.07318771</code></pre>
 </div>
 </div>
 <p>So, we have a p-value equal to 0.073. Most people would say that there is not sufficient evidence to reject the null hypothesis (ER model) in favor of the alternative (ARD model) based on this.</p>
@@ -470,47 +474,51 @@ P S
 <p>The joint reconstruction provides the most plausible evolutionary scenario giving rise to the data under the MLE. The marginal reconstruction provides the most likely state for one particular node independent of the rest.</p>
 <p>Let’s compare joint and marginal reconstructions under the ER model:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>fit1m <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ER'</span>, <span class="at">marginal=</span><span class="cn">FALSE</span>)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>fit2m <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ER'</span>, <span class="at">marginal=</span><span class="cn">TRUE</span>)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's add in node labels for the tree:</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>tree<span class="sc">$</span>node.label <span class="ot">&lt;-</span> (<span class="fu">Ntip</span>(tree)<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="fu">Ntip</span>(tree) <span class="sc">+</span> tree<span class="sc">$</span>Nnode)</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co"># what were the most likely node states?</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>nodestates1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'P'</span>,<span class="st">'S'</span>)[<span class="fu">apply</span>(fit1m<span class="sc">$</span>lik.anc, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">which</span>(x<span class="sc">==</span><span class="fu">max</span>(x)) )]</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>treedat1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span>tree<span class="sc">$</span>tip.label, <span class="at">aminoacid =</span> <span class="fu">as.factor</span>(x))</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>nodedat1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span><span class="fu">as.character</span>((<span class="fu">Ntip</span>(tree)<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="fu">Ntip</span>(tree)<span class="sc">+</span>tree<span class="sc">$</span>Nnode)), <span class="at">aminoacid=</span>nodestates1)</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>treedat1 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(treedat1, nodedat1)</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggtree</span>(tree) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">'ER Model,</span><span class="sc">\n</span><span class="st">Joint Reconstruction'</span>) <span class="sc">+</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>, <span class="at">size=</span><span class="dv">18</span>, <span class="at">face=</span><span class="st">"bold"</span>))</span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> p1 <span class="sc">%&lt;+%</span> treedat1</span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> p1 <span class="sc">+</span> <span class="fu">geom_tippoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid)) <span class="sc">+</span> <span class="fu">geom_nodepoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid))  <span class="sc">+</span> </span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">'none'</span>)</span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, the all-rates different model:</span></span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="co"># what were the most likely node states?</span></span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>nodestates2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'P'</span>,<span class="st">'S'</span>)[<span class="fu">apply</span>(fit2m<span class="sc">$</span>lik.anc, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">which</span>(x<span class="sc">==</span><span class="fu">max</span>(x)) )]</span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>treedat2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span>tree<span class="sc">$</span>tip.label, <span class="at">aminoacid =</span> <span class="fu">as.factor</span>(x))</span>
-<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>nodedat2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span><span class="fu">as.character</span>((<span class="fu">Ntip</span>(tree)<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="fu">Ntip</span>(tree)<span class="sc">+</span>tree<span class="sc">$</span>Nnode)), <span class="at">aminoacid=</span>nodestates2)</span>
-<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>treedat2 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(treedat2, nodedat2)</span>
-<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggtree</span>(tree) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">'ER Model,</span><span class="sc">\n</span><span class="st">Marginal Reconstruction'</span>) <span class="sc">+</span></span>
-<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>, <span class="at">size=</span><span class="dv">18</span>, <span class="at">face=</span><span class="st">"bold"</span>))</span>
-<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> p2 <span class="sc">%&lt;+%</span> treedat2</span>
-<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> p2 <span class="sc">+</span> <span class="fu">geom_tippoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid)) <span class="sc">+</span> <span class="fu">geom_nodepoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid)) </span>
-<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a>legend <span class="ot">&lt;-</span> <span class="fu">get_legend</span>(p2 <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.box.margin=</span><span class="fu">margin</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">12</span>)))</span>
-<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(p1,p2<span class="sc">+</span><span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">'none'</span>),legend, <span class="at">nrow=</span><span class="dv">1</span>, <span class="at">rel_widths=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,.<span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>fit1m <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ER'</span>, <span class="at">marginal=</span><span class="cn">FALSE</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>fit2m <span class="ot">&lt;-</span> <span class="fu">ace</span>(x, tree, <span class="at">type=</span><span class="st">'discrete'</span>, <span class="at">model=</span><span class="st">'ER'</span>, <span class="at">marginal=</span><span class="cn">TRUE</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's add in node labels for the tree:</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>tree<span class="sc">$</span>node.label <span class="ot">&lt;-</span> (<span class="fu">Ntip</span>(tree)<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="fu">Ntip</span>(tree) <span class="sc">+</span> tree<span class="sc">$</span>Nnode)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># what were the most likely node states?</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>nodestates1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'P'</span>,<span class="st">'S'</span>)[<span class="fu">apply</span>(fit1m<span class="sc">$</span>lik.anc, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">which</span>(x<span class="sc">==</span><span class="fu">max</span>(x)) )]</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>treedat1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span>tree<span class="sc">$</span>tip.label, <span class="at">aminoacid =</span> <span class="fu">as.factor</span>(x))</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>nodedat1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span><span class="fu">as.character</span>((<span class="fu">Ntip</span>(tree)<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="fu">Ntip</span>(tree)<span class="sc">+</span>tree<span class="sc">$</span>Nnode)), <span class="at">aminoacid=</span>nodestates1)</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>treedat1 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(treedat1, nodedat1)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggtree</span>(tree) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">'ER Model,</span><span class="sc">\n</span><span class="st">Joint Reconstruction'</span>) <span class="sc">+</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>, <span class="at">size=</span><span class="dv">18</span>, <span class="at">face=</span><span class="st">"bold"</span>))</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> p1 <span class="sc">%&lt;+%</span> treedat1</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> p1 <span class="sc">+</span> <span class="fu">geom_tippoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid)) <span class="sc">+</span> <span class="fu">geom_nodepoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid))  <span class="sc">+</span> </span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">'none'</span>)</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, the all-rates different model:</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a><span class="co"># what were the most likely node states?</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>nodestates2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'P'</span>,<span class="st">'S'</span>)[<span class="fu">apply</span>(fit2m<span class="sc">$</span>lik.anc, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">which</span>(x<span class="sc">==</span><span class="fu">max</span>(x)) )]</span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>treedat2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span>tree<span class="sc">$</span>tip.label, <span class="at">aminoacid =</span> <span class="fu">as.factor</span>(x))</span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>nodedat2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">label=</span><span class="fu">as.character</span>((<span class="fu">Ntip</span>(tree)<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="fu">Ntip</span>(tree)<span class="sc">+</span>tree<span class="sc">$</span>Nnode)), <span class="at">aminoacid=</span>nodestates2)</span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>treedat2 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(treedat2, nodedat2)</span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggtree</span>(tree) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">'ER Model,</span><span class="sc">\n</span><span class="st">Marginal Reconstruction'</span>) <span class="sc">+</span></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>, <span class="at">size=</span><span class="dv">18</span>, <span class="at">face=</span><span class="st">"bold"</span>))</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> p2 <span class="sc">%&lt;+%</span> treedat2</span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> p2 <span class="sc">+</span> <span class="fu">geom_tippoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid)) <span class="sc">+</span> <span class="fu">geom_nodepoint</span>(<span class="fu">aes</span>(<span class="at">col=</span>aminoacid)) </span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>legend <span class="ot">&lt;-</span> <span class="fu">get_legend</span>(p2 <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.box.margin=</span><span class="fu">margin</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">12</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in get_plot_component(plot, "guide-box"): Multiple components found;
+returning the first one. To return all, use `return_all = TRUE`.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(p1,p2<span class="sc">+</span><span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">'none'</span>),legend, <span class="at">nrow=</span><span class="dv">1</span>, <span class="at">rel_widths=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,.<span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">

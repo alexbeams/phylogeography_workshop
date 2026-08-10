@@ -10,7 +10,7 @@ title-block-banner: true
 anchor-sections: false
 ---
 
-Welcome to Day Two! We will briefly recap things we learned on Monday before moving on to birth-death models and state-dependent speciation and extinction (SSE) models in R.
+Welcome to Day Two! We focus on birth-death and state-dependent speciation and extinction (SSE) models.
 
 
 <!-- ================= Day 2 ================= -->
@@ -24,7 +24,7 @@ Day 2
 
 :::{.card .mb-3}
 :::{.card-body}
-[0930-1030: Review of ancestral character estimations and stochastic character mapping](topics/character_mapping/ace_and_simmap_review.pdf){.card-title .stretched-link}
+[(On your own time) Review of ancestral character estimations and stochastic character mapping](topics/character_mapping/ace_and_simmap_review.pdf){.card-title .stretched-link}
 
 :::{.text-muted}
 Slides
@@ -34,20 +34,7 @@ Slides
 
 :::{.card .mb-3}
 :::{.card-body}
-[1030-1130: Estimating parameters of BiSSE models for *Hymenoptera*](topics/sse_models/bisse_tutorial.qmd){.card-title .stretched-link}
-
-:::{.text-muted}
-Practical session in R
-:::
-:::
-:::
-
-
-:::{layout="[[10]]"}
-
-:::{.card .mb-3}
-:::{.card-body}
-[1130-1230: Intro to State-dependent Speciation and Extinction (SSE) models](topics/sse_models/sse_models2.pdf){.card-title .stretched-link}
+[0930-1100: Intro to Yule, birth-death, and birth-eath sampling models](topics/sse_models/intro_to_birth_death_models.pdf){.card-title .stretched-link}
 
 :::{.text-muted}
 Slides
@@ -55,27 +42,39 @@ Slides
 :::
 :::
 
+
+:::{.card .mb-3}
+:::{.card-body}
+[1130-1300: Estimating parameters of birth-death models](topics/sse_models/fit_bd.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in R
+:::
+:::
+:::
+
 :::{layout="[[10]]"}
 
 :::{.card .mb-3}
 :::{.card-body}
-[1330-1530: Simulating and fitting SSE models](topics/sse_models/sim_sse.qmd){.card-title .stretched-link}
+[1400-1500: Intro to State-dependent Speciation and Extinction (SSE) models](topics/sse_models/sse_models2.pdf){.card-title .stretched-link}
 
 :::{.text-muted}
-Practical session in R
+Slides
 :::
 :::
 :::
 
 :::{.card .mb-3}
 :::{.card-body}
-[1530-1630: Ancestral state reconstruction with BiSSE](topics/sse_models/asr_bisse.qmd){.card-title .stretched-link}
+[1500-1630: Estimating parameters of BiSSE models for *Hymenoptera*](topics/sse_models/bisse_tutorial.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Practical session in R
 :::
 :::
 :::
+
 
 
 <!--

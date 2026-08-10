@@ -203,8 +203,8 @@ window.Quarto = {
 
 
 
-<section id="identifiability-of-parameters-in-birth-death-models" class="level1">
-<h1>Identifiability of parameters in birth-death models</h1>
+<section id="estimating-parameters-in-birth-death-models" class="level1">
+<h1>Estimating parameters in birth-death models</h1>
 <section id="first-simulating-birth-death-trees" class="level2">
 <h2 class="anchored" data-anchor-id="first-simulating-birth-death-trees">First: simulating birth-death trees</h2>
 <p>So far, we have been treating phylogenetic trees as given without asking how they are created (by some biologist, presumably). If the traits we are interested in do not influence diversification, extinction/death, or the probability we observe a particular lineage, then the standard Markov models on trees seem sufficient. In some cases, traits might influence the process creating the phylogenetic relationships we observe, and we would like to detect these effects.</p>
@@ -259,6 +259,7 @@ window.Quarto = {
 \end{align*}
 \]</span></p>
 <p>If we truncate this system <span class="math inline">\(dP/dt = Q P\)</span> at large but finite <span class="math inline">\(N\)</span>, then we can approximate the solution as <span class="math inline">\(P_N(t) \approx e^{Q_Nt} P_{N}(0)\)</span>. The approximation should be reasonable if we choose <span class="math inline">\(N\)</span> sufficiently large. If we simulate only up to time <span class="math inline">\(t=4\)</span>, <span class="math inline">\(N\)</span> probably doesn’t need to be to huge. If we simulate for longer amounts of time, then we will need make <span class="math inline">\(N\)</span> larger.</p>
+<p>For comparison, we can also use the analytical solution <span class="math inline">\(P_n(t) = e^{-\lambda t} (1-e^{-\lambda t})^{n-1}\)</span>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># How long to simulate?</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="dv">4</span></span>
@@ -321,14 +322,20 @@ Attaching package: 'expm'</code></pre>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>inds <span class="ot">&lt;-</span> <span class="fu">sapply</span>(yulelist, is.null)</span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>yulelist <span class="ot">&lt;-</span> yulelist[<span class="sc">!</span>inds]</span>
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">sapply</span>(yulelist, Ntip)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">sapply</span>(yulelist, Ntip)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's also create a fucntion for our analytical solution for comparison:</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>getpn <span class="ot">&lt;-</span> <span class="cf">function</span>(n) <span class="fu">exp</span>(<span class="sc">-</span>lambda<span class="sc">*</span>t)<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span><span class="fu">exp</span>(<span class="sc">-</span>lambda<span class="sc">*</span>t))<span class="sc">^</span>(n<span class="dv">-1</span>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>pn.a <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">400</span>, getpn)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>So now we have simulated lots of Yule trees (~ 1000 of them) and we can compare the distribution of lineages with the prediction from the Master equation:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(n, <span class="at">freq=</span>F, <span class="at">main=</span><span class="st">'Distribution of lineages by time t=4'</span>, <span class="at">breaks=</span><span class="dv">20</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(pn, <span class="at">lwd=</span><span class="dv">2</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">'topright'</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Master equation solution'</span>), </span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span><span class="dv">2</span>,<span class="at">lty=</span><span class="dv">1</span>,<span class="at">col=</span><span class="st">'black'</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(pn.a, <span class="at">lwd=</span><span class="dv">3</span>, <span class="at">lty=</span><span class="dv">3</span>, <span class="at">col=</span><span class="st">'red'</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">'topright'</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Numerical approximation'</span>, <span class="st">'Analytical solution'</span>), </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span><span class="dv">3</span>,<span class="at">lty=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'red'</span>), <span class="at">title=</span><span class="st">'Master Equation solution'</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -359,7 +366,7 @@ Attaching package: 'expm'</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(numdieoffs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 25</code></pre>
+<pre><code>[1] 23</code></pre>
 </div>
 </div>
 <p>This is sort of interesting. In the first tree we simulated above, we set <span class="math inline">\(\lambda=1\)</span> and <span class="math inline">\(\mu=0\)</span>, for a net birth rate equal to 1. In this second example, we set <span class="math inline">\(\lambda=2\)</span> and <span class="math inline">\(\mu=1\)</span>. The net birth rate still equals 1, but extinction is far more likely now.</p>
@@ -404,9 +411,12 @@ Attaching package: 'expm'</code></pre>
 <p>If you do this, you may notice a tendency for birth-death trees to have shorter heights than their Yule counterparts (conditioning on the same number of taxa, of course). Indeed, conditioning on 50 taxa in the birth death process biases us towards to trees that grow rapidly. The ones that grow more slowly could be at greater risk of extinction. In the Yule process there is no extinction, so we are more likely to observe slowly-growing trees that eventually reach 50 taxa.</p>
 </section>
 </section>
-<section id="exercise" class="level2">
-<h2 class="anchored" data-anchor-id="exercise">Exercise</h2>
-<p>Exercise: Instead of simulating trees up to a fixed number of taxa, simulate trees up to a fixed time. Do you notice any differences between Yule and birth death trees in terms of the number of taxa produced by time <span class="math inline">\(t\)</span>?</p>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<ol type="1">
+<li><p>Simulate a large number of Yule and birth-death trees for a fixed number of taxa and compare the distributions of tree heights to determine whether there is in fact a meaningful difference.</p></li>
+<li><p>Instead of simulating trees up to a fixed number of taxa, simulate trees up to a fixed time. Do you notice any differences between Yule and birth death trees in terms of the number of taxa produced by time <span class="math inline">\(t\)</span>?</p></li>
+</ol>
 </section>
 <section id="estimating-parameters-using-likelihoods" class="level2">
 <h2 class="anchored" data-anchor-id="estimating-parameters-using-likelihoods">Estimating parameters using likelihoods</h2>
@@ -419,7 +429,6 @@ Attaching package: 'expm'</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>loglik.yule <span class="ot">&lt;-</span> <span class="fu">make.bd</span>(tree_yule)</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>loglik.bd <span class="ot">&lt;-</span> <span class="fu">make.bd</span>(tree_bd)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>These don’t actually use the Master equation to obtain <span class="math inline">\(p_n(t)\)</span>. Instead, they interpret trees as realizations of an <a href="https://en.wikipedia.org/wiki/Poisson_point_process#Inhomogeneous_Poisson_point_process">Inhomogeneous Poisson Process</a>. The underlying theory is the same, however.</p>
 <p>Let’s try finding the MLE for the Yule tree (supplying the ground truth as the initial guess in the optimization procedure):</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>mle.yule <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglik.yule, <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), <span class="at">method=</span><span class="st">'subplex'</span>)</span>
@@ -429,12 +438,12 @@ Attaching package: 'expm'</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.yule<span class="sc">$</span>lnLik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 87.03648</code></pre>
+<pre><code>[1] 104.5311</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.yule<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   lambda        mu 
-1.0086502 0.3715065 </code></pre>
+<pre><code>      lambda           mu 
+1.180524e+00 4.172325e-08 </code></pre>
 </div>
 </div>
 <p>Looks pretty close.</p>
@@ -447,12 +456,12 @@ Attaching package: 'expm'</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.bd<span class="sc">$</span>lnLik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 106.355</code></pre>
+<pre><code>[1] 108.2459</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.bd<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  lambda       mu 
-1.869143 1.203428 </code></pre>
+1.815216 1.104459 </code></pre>
 </div>
 </div>
 <p>Seems like it’s kind of in the ballpark.</p>
@@ -519,7 +528,7 @@ Attaching package: 'expm'</code></pre>
 <p>The birth-death trees with <span class="math inline">\(\lambda=2\)</span>, <span class="math inline">\(\mu=1\)</span> clearly have a tendency to convey information about the birth rate <span class="math inline">\(\lambda\)</span> being elevated above the net birth rate <span class="math inline">\(\lambda-\mu=1\)</span>. Again, however, the death rate is difficult to pin down.</p>
 </section>
 </section>
-<section id="exercises" class="level1">
+<section id="exercises-1" class="level1">
 <h1>Exercises:</h1>
 <section id="section" class="level2">
 <h2 class="anchored" data-anchor-id="section">1.</h2>
@@ -555,58 +564,47 @@ Attaching package: 'expm'</code></pre>
 <h2 class="anchored" data-anchor-id="birth-death-sampling-models-and-the-unidentifiability-problem">Birth-death-sampling models (and the unidentifiability problem)</h2>
 <p>In the previous section, we saw that it is in principle possible to estimate paramters of the Yule model and the birth-death model. The statistical behavior of the Maximum Likelihood Estimates might leave something to be desired (especially for the extinction rate <span class="math inline">\(\mu\)</span>), but in the limit as the number of taxa tends to infinity, our estimators should be converging in expectation to the <a href="https://en.wikipedia.org/wiki/Consistency_(statistics)">ground truth parameter values</a>.</p>
 <p>Models with this property are said to be <a href="https://en.wikipedia.org/wiki/Identifiability">identifiable</a>. The Yule Process and the birth death model are identifiable (assuming that the rates are fixed constants in time). Seemingly innocuous modifications to these models render them unidentifiable.</p>
-<p>The final example we will consider in this tutorial is the birth-death-sampling model. The primary motivation for considering the birth-death-sampling model comes from epidemiology. In that context, pathogens spread between hosts, and infection events correspond to bifurcation events in the pathogen phylogeny. In practice, the vast majority of individuals who are infected are never sampled. Consequently, observed pathogen phylogenies represent a small piece of the true underlying phylogeny.</p>
+<p>The final example we will consider in this tutorial is the birth-death-sampling model. The primary motivation for considering the birth-death-sampling model comes from epidemiology. In that context, pathogens spread between hosts, and infection events correspond to bifurcation events in the pathogen phylogeny. Infected people are also observed over a period of time (perhaps as they show up at the hospital). Consequently, the trees produced are not ultrametric, they are heterochronous. In practice, the vast majority of individuals who are infected are also never sampled, so observed pathogen phylogenies represent a small piece of the true underlying phylogeny.</p>
 <p>In this model, three things can happen:</p>
 <ol type="1">
 <li><p>A lineage can split in two (at rate <span class="math inline">\(\lambda\)</span>); this corresponds to a new transmission event</p></li>
 <li><p>A lineage can die (at rate <span class="math inline">\(\mu\)</span>); this corresponds to either (i) an infected host dying, or (ii) an infected host getting better before transmitting disease</p></li>
 <li><p>A lineage (which resides in an infected host) can be sampled (at rate <span class="math inline">\(\psi\)</span>)</p></li>
 </ol>
-<p>We only observe the lineages that get sampled. The phylogeny we observe describes ancestry of the sampled lineages. This is potentially a very small portion of the entire tree.</p>
-<p>You might be able to intuit the problem already. We didn’t emphasize this in the birth-death model earlier, but in that context we are in fact also observing a subset of the entire phylogeny. The Master equation abstracted away the tree produced by the stochastic process, but in fact it can be helpful to consider dynamic updates to a phylogeny as time proceeds. A birth event corresponds to a lineage bifurcating into two lineages. A death event is somewhat different: when a lienage dies, it gets pruned away from the tree entirely. Thus, a phylogeny produced under a birth-death model is missing all of the lineages that died off before the end of the simulation.</p>
+<p>Arguably the most important aspect of this process is that we only observe the lineages that get sampled. The phylogeny describes ancestry of these sampled lineages. This is potentially a very small portion of the entire tree.</p>
+<p>You might be able to intuit the problem already. We didn’t emphasize this in the birth-death model earlier, but in that context we are in fact also observing a subset of the entire phylogeny. If we simulate a birth-death model up to time <span class="math inline">\(t\)</span>, we never observe lineages that die out before time <span class="math inline">\(t\)</span>. The Master equation abstracted away the tree produced by the stochastic process, but in fact it can be helpful to consider dynamic updates to a phylogeny as time proceeds. A birth event corresponds to a lineage bifurcating into two lineages. A death event is somewhat different: when a lienage dies, it gets pruned away from the tree entirely. Thus, a phylogeny produced under a birth-death model is missing all of the lineages that died off before the end of the simulation.</p>
 <p>The heart of the identifiability problem in the birth-death-sampling model is that sampling functions in a very similar way to death. Lineages that are not sampled are pruned away from the tree, just like lineages that die.</p>
 <p>If a lineage can either bifurcate at rate <span class="math inline">\(\lambda\)</span>, go extinct at rate <span class="math inline">\(\mu\)</span>, or be sampled at rate <span class="math inline">\(\psi\)</span>, this is a competing rates problem. The probability a particular lineage gets sampled is <span class="math inline">\(\psi/(\lambda+\mu+\psi)\)</span>. The probability a lineage dies is <span class="math inline">\(\mu/(\lambda+\mu+\psi)\)</span>. You immediately see how to determine the probability a lineage bifurcates before those other two events take place. Some extensions of this model assume lineages can still transmit after sampling, but in this basic model we will assume that sampled lineages are quarantined and treated so that transmission is impossible.</p>
-<p>Now, if we simulate birth-death-sampling models and try to estimate parameters, we should expect to run into difficulties.</p>
-<p>We will use the castor package to do this.</p>
+<p>Now, if we simulate birth-death-sampling models and try to estimate parameters, we should expect to run into difficulties because it should be impossible to distinguish between lineages that are missing because they died out versus because they were never sampled. Because we cannot distinguish these types of lineages from each other, there should not be any way for us to determine the relative magnitudes of <span class="math inline">\(\psi\)</span> and <span class="math inline">\(\mu\)</span>.</p>
+<p>We will use the castor package to see if this reasoning is correct or not.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(castor)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: castor</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(castor)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(ape)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3</span>)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>tm <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify model parameters:</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="dv">1</span> </span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>psi <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>kappa <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>tree.bds <span class="ot">=</span> <span class="fu">generate_tree_hbds</span>(</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_time   =</span> tm,          <span class="co"># Maximum duration of the simulation process</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda     =</span> lambda,</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">mu         =</span> mu,</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">psi        =</span> psi,</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">kappa      =</span> kappa</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree.bds<span class="sc">$</span>tree, <span class="at">show.tip.label=</span>F, <span class="at">main=</span><span class="st">'Birth-death-sampling tree'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: Rcpp</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(ape)</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>tm <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify model parameters:</span></span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="dv">1</span> </span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>psi <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>kappa <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>tree.bds <span class="ot">=</span> <span class="fu">generate_tree_hbds</span>(</span>
-<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_time   =</span> tm,          <span class="co"># Maximum duration of the simulation process</span></span>
-<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda     =</span> lambda,</span>
-<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">mu         =</span> mu,</span>
-<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">psi        =</span> psi,</span>
-<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">kappa      =</span> kappa</span>
-<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree.bds<span class="sc">$</span>tree, <span class="at">show.tip.label=</span>F, <span class="at">main=</span><span class="st">'Birth-death-sampling tree'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="fit_bd_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>One immediate observation: these trees are generally not ultrametric, as the trees up to now have been. Because we specified a sampling rate, we observe lineages at random times. It is possible to modify the simulation so that sampling takes place at one particular time.</p>
+<p>These trees are generally not ultrametric, as the trees up to now have been. Because we specified a sampling rate, we observe lineages at random times. It is possible to modify the simulation so that sampling takes place at one particular time.</p>
 </section>
-<section id="exercises-1" class="level2">
-<h2 class="anchored" data-anchor-id="exercises-1">Exercises</h2>
+<section id="exercises-2" class="level2">
+<h2 class="anchored" data-anchor-id="exercises-2">Exercises</h2>
 <ol type="1">
 <li>Simulate a large number of birth-death-sampling trees and try to replicate our earlier benchmarking analysis to determine if it is possible to simultaneously estimate <span class="math inline">\(\lambda\)</span>, <span class="math inline">\(\mu\)</span>, and <span class="math inline">\(\psi\)</span>. You should probably use the fit_hbds_model_parametric function in castor.</li>
 </ol>
