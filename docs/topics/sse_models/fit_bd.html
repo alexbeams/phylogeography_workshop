@@ -366,7 +366,7 @@ Attaching package: 'expm'</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(numdieoffs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 29</code></pre>
+<pre><code>[1] 22</code></pre>
 </div>
 </div>
 <p>This is sort of interesting. In the first tree we simulated above, we set <span class="math inline">\(\lambda=1\)</span> and <span class="math inline">\(\mu=0\)</span>, for a net birth rate equal to 1. In this second example, we set <span class="math inline">\(\lambda=2\)</span> and <span class="math inline">\(\mu=1\)</span>. The net birth rate still equals 1, but extinction is far more likely now.</p>
@@ -438,12 +438,12 @@ Attaching package: 'expm'</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.yule<span class="sc">$</span>lnLik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 98.16115</code></pre>
+<pre><code>[1] 90.42356</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.yule<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      lambda           mu 
-1.033827e+00 1.519918e-07 </code></pre>
+<pre><code>   lambda        mu 
+1.0501530 0.3486025 </code></pre>
 </div>
 </div>
 <p>Looks pretty close.</p>
@@ -456,12 +456,12 @@ Attaching package: 'expm'</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.bd<span class="sc">$</span>lnLik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 118.751</code></pre>
+<pre><code>[1] 114.5025</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.bd<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  lambda       mu 
-2.943200 2.532354 </code></pre>
+<pre><code>   lambda        mu 
+1.8306248 0.7897795 </code></pre>
 </div>
 </div>
 <p>Seems like it’s kind of in the ballpark.</p>
