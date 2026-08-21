@@ -1,0 +1,120 @@
+# Remote runs of BEAST2
+
+This will be a live coding session where I log in the Fir server on campus
+and attempt to run a Bayesian discrete trait analysis with BSSVS (which we have
+not so far defined) in the hopes that it will finish running by tomorrow (when we will discuss BSSVS).
+
+If you want to follow along, make sure you can log in here:
+
+[https://ccdb.alliancecan.ca/security/login](https://ccdb.alliancecan.ca/security/login)
+
+The password that logs you in here will also be your password for logging in to the remote server through SSH.
+
+You will also need Duo two-factor authentication set up (it's pretty fast if you already have the Duo app):
+
+[https://docs.alliancecan.ca/wiki/Multifactor_authentication](https://docs.alliancecan.ca/wiki/Multifactor_authentication)
+
+It's best to set up SSH keys, but you could get throug this demo without setting them up.
+
+This has information about the server we will be logging in to:
+
+[https://docs.alliancecan.ca/wiki/Fir](https://docs.alliancecan.ca/wiki/Fir)
+
+If you navigate to this previous link, you should be able to determine what your SSH login is.
+
+To log in to the server, you need to be on the SFU network if you're on campus, or on the VPN if you are not.
+
+To log in, open the terminal and type
+```ssh username@servername``
+
+It will ask for a password if you don't have SSH keys set up, and then it will ask you for an authentication option (such as Duo). Once you press accept (or something similar) on the Duo app on your phone, you will be logged in.
+
+There should be a directory called scratch. Navigate into it:
+
+```cd scratch```
+
+Create a directory. I ran this:
+
+```mkdir mybeastrun```
+
+Navigate into the directory you just made
+
+```cd mybeastrun```
+
+(If you are trying to use the BDMM package, you will need to load that instead.)
+
+## Running BEAST2
+
+Unless you want to write up an .xml file in Vim or something, you probably want to upload one from your laptop that you created in BEAUti. To do this, navigate into the working directory where your .xml lives on your laptop (NOT in the server), and run
+
+```
+scp xmlfilename.xml username@servername/working_directory_to_mybeastrun/mybeastrun/ 
+```
+
+This will elicit a password/Duo interaction, but if successful, you should see the .xml in the server.
+
+Then, we create a file on the remote server (I just keep it in the same mybeastruns directory) that will invoke the BEAST2 run.
+
+First, create the file:
+
+```
+vim slurm_beast2.sh
+```
+
+This will open up a new document in Vim. Copy and paste this into it:
+
+```
+#!/bin/bash
+#SBATCH --account=def-ccolijn
+#SBATCH --job-name=my_beast2
+#SBATCH --time=01-00:00:00
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=2G
+
+# beast file to run
+BEAST_XML_FILE=xmlfilename.xml
+
+# module loading
+module load StdEnv/2020
+module load beast/2.7.5
+
+# run script
+beast $BEAST_XML_FILE
+```
+
+modifying xmlfilename.xml accordingly.
+
+Then, press :w followed by :q to save and quit Vim.
+
+If you invoke ls, you should see the .xml file and the .sh file in mybeastruns.
+
+To get the BEAST2 run going, invoke
+
+```
+source slurm_beast2.sh
+```
+
+and presto! you should see the server working.
+
+Once you're finished, you probably want to use scp to send the stuff on the server to your own machine for analysis (if it isn't too huge).
+
+The best way to do this might be to navigate back up into scratch, just above the mybeastruns folder, and then compress mybeastruns:
+
+```
+tar -cvzf mybeastruns.tar.gz mybeastruns
+```
+
+The command tar compresses and unzips stuff on Linux; the -cvzf means ``compress, verbose, zip, folder'', the first bit with .gar.gz is the name you assign to the compressed folder, and the last bit is the folder you are trying to compress.
+
+This way you can scp the compressed mybeastruns.tar.gz to yourself, instead of all of the stuff inside mybeastruns individually.
+
+In your laptop terminal (not the server), you would type
+
+```
+scp username@servername/working_directory/file_of_interest . 
+
+```
+The period ( . ) is key -- it says to scp the stuff into whatever working directory you're currently in.
+
+That's it. 
+

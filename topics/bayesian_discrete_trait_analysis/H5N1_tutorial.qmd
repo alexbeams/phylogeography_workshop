@@ -1,0 +1,17 @@
+# H5N1 tutorial -- [live coding session]
+
+We are going to analzye an influenza H5N1 dataset in BEAST2. We are going to carry out two types of analysis:
+
+## 1. 
+Load the multiple sequence alignment (H5N1.nex) without reading in geographic information. Get a basic BEAST2 run to work. (We will do this part as a group).
+
+
+## 2.
+Repeat step 1, but also read in geographic information to estimate migration rates alongside parameters of the nucleotide
+substitution model and the phylogeny. (We will also do this as a group.)
+
+
+Navigate [here](https://beast2-dev.github.io/beast-docs/beast2/PhylogeographyDiscrete/AR.html) for instructions to set up the analysis,
+but some modifications are needed for steps 1 and 2 above. By default, these instructions will carry out an analysis with BSSVS.
+
+

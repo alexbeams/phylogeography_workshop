@@ -34,7 +34,7 @@ Slides
 
 :::{.card .mb-3}
 :::{.card-body}
-[0930-1100: Intro to Yule, birth-death, and birth-eath sampling models](topics/sse_models/intro_to_birth_death_models.pdf){.card-title .stretched-link}
+[0930-1100: Intro to the Yule model](topics/yule_and_bd/Yule_models.pdf){.card-title .stretched-link}
 
 :::{.text-muted}
 Slides
@@ -53,11 +53,23 @@ Practical session in R
 :::
 :::
 
+:::{.card .mb-3}
+:::{.card-body}
+[0930-1100: Intro to Birth-death models](topics/yule_and_bd/intro_to_birth_death_models.pdf){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides
+:::
+:::
+:::
+
+
+
 :::{layout="[[10]]"}
 
 :::{.card .mb-3}
 :::{.card-body}
-[1400-1500: Intro to State-dependent Speciation and Extinction (SSE) models](topics/sse_models/sse_models2.pdf){.card-title .stretched-link}
+[1400-1500: Intro to State-dependent Speciation and Extinction (SSE) models](topics/sse_models/sse_models.pdf){.card-title .stretched-link}
 
 :::{.text-muted}
 Slides
