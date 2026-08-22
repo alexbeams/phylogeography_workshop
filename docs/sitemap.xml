@@ -14,11 +14,11 @@
   </url>
   <url>
     <loc>example.com/topics/intro_to_phylodynamics/multi_type_birth_death.html</loc>
-    <lastmod>2026-04-22T20:58:01.885Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.660Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/intro_to_phylodynamics/mtbd.html</loc>
-    <lastmod>2025-10-02T06:48:52.476Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.657Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/ancestral_character_estimation/ace_sims.html</loc>
@@ -26,7 +26,7 @@
   </url>
   <url>
     <loc>example.com/topics/ancestral_character_estimation/ace_sims_edit.html</loc>
-    <lastmod>2025-09-29T20:56:47.273Z</lastmod>
+    <lastmod>2026-08-21T23:26:32.859Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/character_mapping/fit_stochastic_mapping.html</loc>
@@ -34,11 +34,11 @@
   </url>
   <url>
     <loc>example.com/topics/requirements.html</loc>
-    <lastmod>2026-04-22T21:01:56.711Z</lastmod>
+    <lastmod>2026-04-17T22:21:19.575Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/bayesian_discrete_trait_analysis/remote_runs.html</loc>
-    <lastmod>2025-10-02T07:38:53.404Z</lastmod>
+    <lastmod>2026-08-21T23:26:32.882Z</lastmod>
   </url>
   <url>
     <loc>example.com/wednesday_preview.html</loc>
@@ -50,7 +50,7 @@
   </url>
   <url>
     <loc>example.com/about.html</loc>
-    <lastmod>2026-04-22T20:58:01.849Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.593Z</lastmod>
   </url>
   <url>
     <loc>example.com/thursday_preview.html</loc>
@@ -58,39 +58,39 @@
   </url>
   <url>
     <loc>example.com/wednesday.html</loc>
-    <lastmod>2026-08-21T19:28:28.824Z</lastmod>
+    <lastmod>2026-08-21T23:43:25.884Z</lastmod>
   </url>
   <url>
     <loc>example.com/friday.html</loc>
-    <lastmod>2026-04-22T20:58:01.878Z</lastmod>
+    <lastmod>2026-08-22T00:01:02.453Z</lastmod>
   </url>
   <url>
     <loc>example.com/index.html</loc>
-    <lastmod>2026-04-22T20:58:01.880Z</lastmod>
+    <lastmod>2026-08-21T23:39:22.787Z</lastmod>
   </url>
   <url>
     <loc>example.com/monday.html</loc>
-    <lastmod>2026-07-31T04:05:28.187Z</lastmod>
+    <lastmod>2026-08-21T23:58:48.634Z</lastmod>
   </url>
   <url>
     <loc>example.com/thursday.html</loc>
-    <lastmod>2026-04-22T20:58:01.881Z</lastmod>
+    <lastmod>2026-08-22T00:00:47.446Z</lastmod>
   </url>
   <url>
     <loc>example.com/schedule.html</loc>
-    <lastmod>2026-04-22T20:58:01.881Z</lastmod>
+    <lastmod>2026-03-25T18:32:36.648Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/bayesian_discrete_trait_analysis/H5N1_tutorial.html</loc>
-    <lastmod>2025-10-02T08:36:12.324Z</lastmod>
+    <lastmod>2026-08-21T23:26:32.881Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/character_mapping/stochastic_mapping.html</loc>
-    <lastmod>2026-07-31T04:05:28.188Z</lastmod>
+    <lastmod>2026-07-30T00:29:46.247Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/character_mapping/waiting_times_simulation.html</loc>
-    <lastmod>2026-07-31T04:05:28.188Z</lastmod>
+    <lastmod>2026-07-29T23:38:02.735Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/ancestral_character_estimation/nucleotide_models.html</loc>
@@ -98,7 +98,7 @@
   </url>
   <url>
     <loc>example.com/topics/mcmc_intro.html</loc>
-    <lastmod>2026-04-22T21:01:56.711Z</lastmod>
+    <lastmod>2026-04-17T21:50:29.003Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/intro_to_phylodynamics/mers.html</loc>
@@ -106,7 +106,7 @@
   </url>
   <url>
     <loc>example.com/topics/sse_models/fit_bd.html</loc>
-    <lastmod>2026-08-20T21:45:40.923Z</lastmod>
+    <lastmod>2026-08-21T23:33:12.520Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/sse_models/asr_bisse.html</loc>
@@ -114,6 +114,22 @@
   </url>
   <url>
     <loc>example.com/topics/sse_models/bisse_tutorial.html</loc>
-    <lastmod>2026-07-31T04:05:28.189Z</lastmod>
+    <lastmod>2026-05-06T21:39:53.714Z</lastmod>
+  </url>
+  <url>
+    <loc>example.com/index_old.html</loc>
+    <lastmod>2025-09-23T20:54:53.752Z</lastmod>
+  </url>
+  <url>
+    <loc>example.com/beast2/intro/beast_intro.html</loc>
+    <lastmod>2025-09-23T16:13:41.945Z</lastmod>
+  </url>
+  <url>
+    <loc>example.com/topics/sse_models/yule.html</loc>
+    <lastmod>2026-08-21T23:29:13.062Z</lastmod>
+  </url>
+  <url>
+    <loc>example.com/day2.html</loc>
+    <lastmod>2026-08-21T23:57:50.412Z</lastmod>
   </url>
 </urlset>

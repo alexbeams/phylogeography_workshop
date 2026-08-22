@@ -162,22 +162,27 @@ window.Quarto = {
   <li class="nav-item">
     <a class="nav-link" href="../../monday.html"> <i class="bi bi-pie-chart" role="img">
 </i> 
-<span class="menu-text">Day 1: Discrete trait analysis I in R</span></a>
+<span class="menu-text">Day 1</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../wednesday.html"> <i class="bi bi-map" role="img">
+    <a class="nav-link" href="../../day2.html"> <i class="bi bi-map" role="img">
 </i> 
-<span class="menu-text">Day 2: Discrete trait analysis II in R</span></a>
+<span class="menu-text">Day 2</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../wednesday.html"> <i class="bi bi-pie-chart" role="img">
+</i> 
+<span class="menu-text">Day 3</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../thursday.html"> <i class="bi bi-activity" role="img">
 </i> 
-<span class="menu-text">Day 3: Phylodynamics I in R and BEAST2</span></a>
+<span class="menu-text">Day 4</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../friday.html"> <i class="bi bi-tree" role="img">
 </i> 
-<span class="menu-text">Day 4: Phylodynamics II in BEAST2</span></a>
+<span class="menu-text">Day 5</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../about.html"> <i class="bi bi-space-shuttle" role="img">
@@ -203,213 +208,72 @@ window.Quarto = {
 
 
 
-<section id="estimating-parameters-in-birth-death-models" class="level1">
-<h1>Estimating parameters in birth-death models</h1>
-<section id="first-simulating-birth-death-trees" class="level2">
-<h2 class="anchored" data-anchor-id="first-simulating-birth-death-trees">First: simulating birth-death trees</h2>
-<p>So far, we have been treating phylogenetic trees as given without asking how they are created (by some biologist, presumably). If the traits we are interested in do not influence diversification, extinction/death, or the probability we observe a particular lineage, then the standard Markov models on trees seem sufficient. In some cases, traits might influence the process creating the phylogenetic relationships we observe, and we would like to detect these effects.</p>
-<p>It is for this reason that we start by considering models for tree generation (sometimes called “tree priors” by people who use BEAST, which we will get to later in the week).</p>
-<p>Let’s start by simulating some trees using Yule and birth-death models. We will use the diversitree package:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(diversitree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<section id="yule-process" class="level3">
-<h3 class="anchored" data-anchor-id="yule-process">Yule process</h3>
-<p>The <strong>Yule model</strong> is a special case of birth death models. The Yule model is characterized by having the death rate set to <span class="math inline">\(\mu=0\)</span>. Let’s simulate a tree from the Yule process with <span class="math inline">\(\lambda = 1\)</span> for four units of time:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">1</span>, <span class="at">mu=</span><span class="dv">0</span>), <span class="at">max.t =</span> <span class="dv">4</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree, <span class="at">show.tip.label=</span>F)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="fit_bd_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Recall that the probability of <span class="math inline">\(n\)</span> lineages by time <span class="math inline">\(t\)</span>, assuming we start with one lineage at time <span class="math inline">\(0\)</span>, is given by the solution to the differential equation</p>
-<p><span class="math display">\[
-\begin{align*}
-    \frac{dp_n}{dt} &amp;= \lambda (n-1) p_{n-1} - \lambda n p_n, \quad \text{for } n &gt; 1, \\
-    \frac{dp_1}{dt} &amp;= - \lambda p_1.
-\end{align*}
-\]</span></p>
-<p>This is the Forward Equation (do you remember what the Backward Equation is?).</p>
-<p>As a sanity check, let’s simulate a large number of Yule trees up to time <span class="math inline">\(t=4\)</span> to see whether the number of lineages we observe matches the prediction from the Forward Equation. We can easily obtain an approximate solution to the Forward Equation because it is a linear albeit infinite dimensional system of ODEs. This is a little easier to see if we rewrite it as an (infinite-dimensional) matrix equation:</p>
-<p><span class="math display">\[
-\begin{align*}
-    \frac{d}{dt}    
-    \begin{pmatrix}
-        p_1 \\ p_2 \\ . \\ . \\ . \\ p_n \\ p_{n+1} \\ .
-    \end{pmatrix}
-     =
-    \begin{pmatrix}
-        - \lambda &amp; 0 &amp; 0 &amp; 0 &amp; . &amp; . &amp; . &amp; 0 &amp; 0 &amp; . &amp; .\\
-         \lambda &amp; -2 \lambda &amp; 0 &amp; 0 &amp; . &amp; . &amp; . &amp; 0 &amp; 0 &amp; . &amp; .\\
-         0 &amp; 2 \lambda &amp; -3 \lambda &amp; 0 &amp; . &amp; . &amp; . &amp; 0 &amp; 0 &amp; . &amp; .\\
-         0 &amp; .  &amp; . &amp; . &amp; . &amp; . &amp; . &amp; . &amp; . &amp; . &amp; .\\
-         0 &amp; .  &amp; . &amp; . &amp; . &amp; . &amp; . &amp; . &amp; . &amp; . &amp; .\\
-         0 &amp; .  &amp; . &amp; . &amp; . &amp; . &amp; . &amp; (n-1) \lambda &amp; -n \lambda &amp; . &amp; .\\
-         0 &amp; .  &amp; . &amp; . &amp; . &amp; . &amp; . &amp; . &amp; n \lambda &amp; -(n+1) \lambda   &amp; .\\
-         0 &amp; .  &amp; . &amp; . &amp; . &amp; . &amp; . &amp; . &amp; . &amp; . &amp; .\\
-    \end{pmatrix}   
-    \begin{pmatrix}
-        p_1 \\ p_2 \\ . \\ . \\ . \\ p_n \\ p_{n+1} \\ .
-    \end{pmatrix}
-\end{align*}
-\]</span></p>
-<p>If we truncate this system <span class="math inline">\(dP/dt = Q P\)</span> at large but finite <span class="math inline">\(N\)</span>, then we can approximate the solution as <span class="math inline">\(P_N(t) \approx e^{Q_Nt} P_{N}(0)\)</span>. The approximation should be reasonable if we choose <span class="math inline">\(N\)</span> sufficiently large. If we simulate only up to time <span class="math inline">\(t=4\)</span>, <span class="math inline">\(N\)</span> probably doesn’t need to be to huge. If we simulate for longer amounts of time, then we will need make <span class="math inline">\(N\)</span> larger.</p>
-<p>For comparison, we can also use the analytical solution <span class="math inline">\(P_n(t) = e^{-\lambda t} (1-e^{-\lambda t})^{n-1}\)</span>.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># How long to simulate?</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Max number of lineages in the approximate solution?</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Birth rate:</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up the generator:</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">diag</span>(N)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(Q) <span class="ot">&lt;-</span> <span class="sc">-</span> (<span class="dv">1</span><span class="sc">:</span>N) <span class="sc">*</span> lambda</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(Q[<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span>N]) <span class="ot">&lt;-</span> (<span class="dv">1</span><span class="sc">:</span>(N<span class="dv">-1</span>))<span class="sc">*</span>lambda</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial condition: 1 lineage alive at time 0</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>p0 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>,N)</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>p0[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># load in routines to carry out matrix exponentiation for sparse matrices:</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(expm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: expm</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: Matrix</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'expm'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:Matrix':
-
-    expm</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:ape':
-
-    balance</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform the matrix exponentiation:</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>pn <span class="ot">&lt;-</span> <span class="fu">expAtv</span>(Q, p0, t)<span class="sc">$</span>eAtv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Probability should be conserved. Our truncation does not respect this (the lastlast column sum of <span class="math inline">\(Q_N\)</span> is negative, meaning there is a net flux of probability out of the truncated system). We can use this to check if our truncation is reasonable – if we chose <span class="math inline">\(N\)</span> sufficiently large, then the probability flux out of the system should be negligible. That is, the entries of <span class="math inline">\(P_N\)</span> should sum to something very close to one:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(pn)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1</code></pre>
-</div>
-</div>
-<p>If we chose <span class="math inline">\(N\)</span> too small in the code at the beginning, then we know that we will be losing probability from the system (which is nonsensical). The large value of <span class="math inline">\(N\)</span> I chose here is ensuring that we are conserving probability, which is good. Experiment with a smaller truncation size <span class="math inline">\(N\)</span> above and re-examine this if it doesn’t make sense to you.</p>
-<p>Now let’s simulate a large number of Yule trees to compare with the approximate solution from the Master Equation:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Next, we simulate a large number of Yule trees for t units of time:</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>yulelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>, <span class="cf">function</span>(x) <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">1</span>,<span class="at">mu=</span><span class="dv">0</span>), <span class="at">max.t=</span>t))</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Sometimes these fail to make a tree (no births by time t?), so we toss these out:</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>inds <span class="ot">&lt;-</span> <span class="fu">sapply</span>(yulelist, is.null)</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>yulelist <span class="ot">&lt;-</span> yulelist[<span class="sc">!</span>inds]</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">sapply</span>(yulelist, Ntip)</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's also create a fucntion for our analytical solution for comparison:</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>getpn <span class="ot">&lt;-</span> <span class="cf">function</span>(n) <span class="fu">exp</span>(<span class="sc">-</span>lambda<span class="sc">*</span>t)<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span><span class="fu">exp</span>(<span class="sc">-</span>lambda<span class="sc">*</span>t))<span class="sc">^</span>(n<span class="dv">-1</span>)</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>pn.a <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">400</span>, getpn)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>So now we have simulated lots of Yule trees (~ 1000 of them) and we can compare the distribution of lineages with the prediction from the Master equation:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(n, <span class="at">freq=</span>F, <span class="at">main=</span><span class="st">'Distribution of lineages by time t=4'</span>, <span class="at">breaks=</span><span class="dv">20</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(pn, <span class="at">lwd=</span><span class="dv">2</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(pn.a, <span class="at">lwd=</span><span class="dv">3</span>, <span class="at">lty=</span><span class="dv">3</span>, <span class="at">col=</span><span class="st">'red'</span>)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">'topright'</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Numerical approximation'</span>, <span class="st">'Analytical solution'</span>), </span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span><span class="dv">3</span>,<span class="at">lty=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'red'</span>), <span class="at">title=</span><span class="st">'Master Equation solution'</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="fit_bd_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>These appear to be in agreement. The approximation will break down if (i) we simulate over a longer period of time, <span class="math inline">\(t\)</span>, (ii) if we simulate with a larger birth rate <span class="math inline">\(\lambda\)</span>, or (iii) truncate the Master equation at a smaller value of <span class="math inline">\(N\)</span>. You should experiment with changing all three of these quantities.</p>
-<p><strong>To summarize</strong>: the solution to the Master equation gives us a way to quantify the probability we observe a Yule tree with <span class="math inline">\(n\)</span> lineages and height <span class="math inline">\(t\)</span>. Yule trees that differ only in topology but otherwise have the same height and number of lineages are equally likely to occur in this model.</p>
-<p>This is useful for <strong>parameter estimation</strong>. But before we do that, let’s look at the birth death model with a positive death rate.</p>
-</section>
-<section id="birth-death-process" class="level3">
-<h3 class="anchored" data-anchor-id="birth-death-process">Birth death process</h3>
+<section id="birth-death-process" class="level2">
+<h2 class="anchored" data-anchor-id="birth-death-process">Birth death process</h2>
+<p>Now, we consider the birth-death process. Lineages split at rate <span class="math inline">\(\lambda\)</span>, and can die at rate <span class="math inline">\(\mu\)</span>.</p>
 <p>If the death rate is positive (<span class="math inline">\(\mu &gt; 0\)</span>), the process is fundamentally different. This is because the process can go extinct.</p>
 <p>Let’s use the lapply function to generate a list of simulated outputs (lapply is like a for loop). Instead of simulating up to time <span class="math inline">\(t\)</span>, let’s simulate trees up to a fixed number of taxa – 50, in our case.</p>
 <p>Let’s see how frequently the process goes extinct before we reach 50 taxa.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>numtrees <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>treelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>numtrees,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                <span class="cf">function</span>(x) <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">2</span>, <span class="at">mu=</span><span class="dv">1</span>), <span class="at">max.taxa =</span> <span class="dv">50</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>dieoffs <span class="ot">&lt;-</span> <span class="fu">sapply</span>(treelist, is.null)</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>numdieoffs <span class="ot">&lt;-</span> <span class="fu">sum</span>(dieoffs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(diversitree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: ape</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>numtrees <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>treelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>numtrees,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                <span class="cf">function</span>(x) <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">2</span>, <span class="at">mu=</span><span class="dv">1</span>), <span class="at">max.taxa =</span> <span class="dv">50</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>dieoffs <span class="ot">&lt;-</span> <span class="fu">sapply</span>(treelist, is.null)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>numdieoffs <span class="ot">&lt;-</span> <span class="fu">sum</span>(dieoffs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>How many died off before reaching 50 taxa?</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(numdieoffs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(numdieoffs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 22</code></pre>
+<pre><code>[1] 27</code></pre>
 </div>
 </div>
 <p>This is sort of interesting. In the first tree we simulated above, we set <span class="math inline">\(\lambda=1\)</span> and <span class="math inline">\(\mu=0\)</span>, for a net birth rate equal to 1. In this second example, we set <span class="math inline">\(\lambda=2\)</span> and <span class="math inline">\(\mu=1\)</span>. The net birth rate still equals 1, but extinction is far more likely now.</p>
 <p><strong>Follow up question</strong>: if we look at a tree produced by <span class="math inline">\(\lambda=1\)</span>, <span class="math inline">\(\mu=0\)</span> and another tree (successfully) produced with <span class="math inline">\(\lambda=2\)</span>, <span class="math inline">\(\mu=1\)</span>, are they noticeably different?</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>tree_yule <span class="ot">&lt;-</span> <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">1</span>,<span class="at">mu=</span><span class="dv">0</span>),<span class="at">max.taxa=</span><span class="dv">50</span>)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>tree_bd <span class="ot">&lt;-</span> treelist[<span class="sc">!</span>dieoffs][[<span class="dv">1</span>]]</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree_yule, <span class="at">main=</span><span class="fu">bquote</span>(lambda<span class="sc">~</span><span class="st">'=1, '</span><span class="sc">~</span>mu<span class="sc">~</span><span class="st">'=0'</span>),</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">show.tip.label=</span>F)</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree_bd, <span class="at">main=</span><span class="fu">bquote</span>(lambda<span class="sc">~</span><span class="st">'=2, '</span><span class="sc">~</span>mu<span class="sc">~</span><span class="st">'=1'</span>),</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">show.tip.label=</span>F)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>tree_yule <span class="ot">&lt;-</span> <span class="fu">tree.bd</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">1</span>,<span class="at">mu=</span><span class="dv">0</span>),<span class="at">max.taxa=</span><span class="dv">50</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>tree_bd <span class="ot">&lt;-</span> treelist[<span class="sc">!</span>dieoffs][[<span class="dv">1</span>]]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree_yule, <span class="at">main=</span><span class="fu">bquote</span>(lambda<span class="sc">~</span><span class="st">'=1, '</span><span class="sc">~</span>mu<span class="sc">~</span><span class="st">'=0'</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">show.tip.label=</span>F)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree_bd, <span class="at">main=</span><span class="fu">bquote</span>(lambda<span class="sc">~</span><span class="st">'=2, '</span><span class="sc">~</span>mu<span class="sc">~</span><span class="st">'=1'</span>),</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">show.tip.label=</span>F)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="fit_bd_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="fit_bd_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>It isn’t super obvious whether these trees have different statistical properties. One clue is to examine the number of lineages through time:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(ape)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ltt.plot</span>(tree_yule, <span class="at">xlab=</span><span class="st">'Time'</span>, <span class="at">ylab=</span><span class="st">'No. of lineages'</span>,</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>,<span class="dv">0</span>),<span class="at">main=</span><span class="fu">bquote</span>(lambda<span class="sc">~</span><span class="st">'=1, '</span><span class="sc">~</span>mu<span class="sc">~</span><span class="st">'=0'</span>))</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ltt.plot</span>(tree_bd, <span class="at">xlab=</span><span class="st">'Time'</span>, <span class="at">ylab=</span><span class="st">'No. of lineages'</span>,</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>,<span class="dv">0</span>),<span class="at">main=</span><span class="fu">bquote</span>(lambda<span class="sc">~</span><span class="st">'=2, '</span><span class="sc">~</span>mu<span class="sc">~</span><span class="st">'=1'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(ape)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ltt.plot</span>(tree_yule, <span class="at">xlab=</span><span class="st">'Time'</span>, <span class="at">ylab=</span><span class="st">'No. of lineages'</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>,<span class="dv">0</span>),<span class="at">main=</span><span class="fu">bquote</span>(lambda<span class="sc">~</span><span class="st">'=1, '</span><span class="sc">~</span>mu<span class="sc">~</span><span class="st">'=0'</span>))</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ltt.plot</span>(tree_bd, <span class="at">xlab=</span><span class="st">'Time'</span>, <span class="at">ylab=</span><span class="st">'No. of lineages'</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>,<span class="dv">0</span>),<span class="at">main=</span><span class="fu">bquote</span>(lambda<span class="sc">~</span><span class="st">'=2, '</span><span class="sc">~</span>mu<span class="sc">~</span><span class="st">'=1'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="fit_bd_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="fit_bd_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>This suggests these trees are different (depending on the random seed used to simulate the trees!). You should try running this several times to see if you notice a pattern.</p>
 <p>If you do this, you may notice a tendency for birth-death trees to have shorter heights than their Yule counterparts (conditioning on the same number of taxa, of course). Indeed, conditioning on 50 taxa in the birth death process biases us towards to trees that grow rapidly. The ones that grow more slowly could be at greater risk of extinction. In the Yule process there is no extinction, so we are more likely to observe slowly-growing trees that eventually reach 50 taxa.</p>
-</section>
 </section>
 <section id="exercises" class="level2">
 <h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
@@ -426,42 +290,42 @@ Attaching package: 'expm'</code></pre>
 <p>The terminology ``likelihood’’ means that we consider <span class="math inline">\(p_n(t)\)</span> as a function of the model parameters (<span class="math inline">\(\lambda\)</span> in the Yule process, or <span class="math inline">\((\lambda, \mu)\)</span> in the birth-death process). Maximum likelihood means that, given our tree of height <span class="math inline">\(t\)</span> with <span class="math inline">\(n\)</span> taxa, we maximize <span class="math inline">\(p_n(t)\)</span> with respect to the parameters of the model. These optimal parmeter values are the Maximum Likelihood Estimate.</p>
 <p>We can create likelihood functions for these trees like so:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>loglik.yule <span class="ot">&lt;-</span> <span class="fu">make.bd</span>(tree_yule)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>loglik.bd <span class="ot">&lt;-</span> <span class="fu">make.bd</span>(tree_bd)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>loglik.yule <span class="ot">&lt;-</span> <span class="fu">make.bd</span>(tree_yule)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>loglik.bd <span class="ot">&lt;-</span> <span class="fu">make.bd</span>(tree_bd)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Let’s try finding the MLE for the Yule tree (supplying the ground truth as the initial guess in the optimization procedure):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>mle.yule <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglik.yule, <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), <span class="at">method=</span><span class="st">'subplex'</span>)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.yule<span class="sc">$</span>message)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mle.yule <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglik.yule, <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), <span class="at">method=</span><span class="st">'subplex'</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.yule<span class="sc">$</span>message)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "success! tolerance satisfied"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.yule<span class="sc">$</span>lnLik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.yule<span class="sc">$</span>lnLik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 90.42356</code></pre>
+<pre><code>[1] 92.3456</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.yule<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.yule<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   lambda        mu 
-1.0501530 0.3486025 </code></pre>
+<pre><code>      lambda           mu 
+9.158205e-01 1.908196e-17 </code></pre>
 </div>
 </div>
 <p>Looks pretty close.</p>
 <p>How about for the birth-death tree (again, supplying the ground truth as the initial guess in the optimization procedure):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>mle.bd <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglik.bd, <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>), <span class="at">method=</span><span class="st">'subplex'</span>)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.bd<span class="sc">$</span>message)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mle.bd <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(loglik.bd, <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>), <span class="at">method=</span><span class="st">'subplex'</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.bd<span class="sc">$</span>message)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "success! tolerance satisfied"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.bd<span class="sc">$</span>lnLik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.bd<span class="sc">$</span>lnLik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 114.5025</code></pre>
+<pre><code>[1] 116.5665</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.bd<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.bd<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   lambda        mu 
-1.8306248 0.7897795 </code></pre>
+<pre><code>  lambda       mu 
+2.072959 1.089829 </code></pre>
 </div>
 </div>
 <p>Seems like it’s kind of in the ballpark.</p>
@@ -471,28 +335,28 @@ Attaching package: 'expm'</code></pre>
 <h2 class="anchored" data-anchor-id="benchmarking-from-simulations">Benchmarking from simulations</h2>
 <p>Let’s simulate more trees. The make.bd function can be lapply’d to the treelist to give us a list of likelihood functions corresponding to our list of trees.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>treelist.yule <span class="ot">&lt;-</span> <span class="fu">trees</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">1</span>,<span class="at">mu=</span><span class="dv">0</span>),</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">type=</span><span class="fu">c</span>(<span class="st">"bd"</span>), <span class="at">n=</span><span class="dv">1500</span>,</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">max.taxa=</span><span class="dv">50</span>)</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co"># make a log-likelihood function for each tree:</span></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>logliklist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(treelist.yule, make.bd )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>treelist.yule <span class="ot">&lt;-</span> <span class="fu">trees</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">1</span>,<span class="at">mu=</span><span class="dv">0</span>),</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">type=</span><span class="fu">c</span>(<span class="st">"bd"</span>), <span class="at">n=</span><span class="dv">1500</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">max.taxa=</span><span class="dv">50</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co"># make a log-likelihood function for each tree:</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>logliklist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(treelist.yule, make.bd )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>What does the distribution of MLEs look like for this set of Yule trees?</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>mles <span class="ot">&lt;-</span> <span class="fu">lapply</span>(logliklist, <span class="cf">function</span>(x){<span class="fu">find.mle</span>(x, <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), <span class="at">method=</span><span class="st">'subplex'</span>)})</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>mles_pars <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(mles, <span class="cf">function</span>(x) x<span class="sc">$</span>par))</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mles_pars[,<span class="dv">1</span>],<span class="at">main=</span><span class="st">'Yule tree - estimated birth rate'</span>,</span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(<span class="fu">hat</span>(lambda)))</span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mles_pars[,<span class="dv">2</span>],<span class="at">main=</span><span class="st">'Yule tree - estimated death rate'</span>,</span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(<span class="fu">hat</span>(mu)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mles <span class="ot">&lt;-</span> <span class="fu">lapply</span>(logliklist, <span class="cf">function</span>(x){<span class="fu">find.mle</span>(x, <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), <span class="at">method=</span><span class="st">'subplex'</span>)})</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>mles_pars <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(mles, <span class="cf">function</span>(x) x<span class="sc">$</span>par))</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mles_pars[,<span class="dv">1</span>],<span class="at">main=</span><span class="st">'Yule tree - estimated birth rate'</span>,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(<span class="fu">hat</span>(lambda)))</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mles_pars[,<span class="dv">2</span>],<span class="at">main=</span><span class="st">'Yule tree - estimated death rate'</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(<span class="fu">hat</span>(mu)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="fit_bd_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="fit_bd_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -501,32 +365,31 @@ Attaching package: 'expm'</code></pre>
 <p>Remember that the true value of mu we used was mu=0. A lot of the models suggest values of <span class="math inline">\(\mu\)</span> &gt; 0, which suggests that Yule trees sometimes look birth-death-like.</p>
 <p>Let’s try this for birth-death trees next:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>treelist.bd <span class="ot">&lt;-</span> <span class="fu">trees</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">2</span>,<span class="at">mu=</span><span class="dv">1</span>),</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">type=</span><span class="fu">c</span>(<span class="st">"bd"</span>), <span class="at">n=</span><span class="dv">1500</span>,</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">max.taxa=</span><span class="dv">50</span>)</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="co"># make a log-likelihood function for each tree:</span></span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>logliklist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(treelist.bd, make.bd )</span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>mles <span class="ot">&lt;-</span> <span class="fu">lapply</span>(logliklist, <span class="cf">function</span>(x){<span class="fu">find.mle</span>(x, <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>), <span class="at">method=</span><span class="st">'subplex'</span>)})</span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>mles_pars <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(mles, <span class="cf">function</span>(x) x<span class="sc">$</span>par))</span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mles_pars[,<span class="dv">1</span>],<span class="at">main=</span><span class="st">'BD tree - estimated birth rate'</span>,</span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(<span class="fu">hat</span>(lambda)))</span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mles_pars[,<span class="dv">2</span>],<span class="at">main=</span><span class="st">'BD tree - estimated death rate'</span>,</span>
-<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(<span class="fu">hat</span>(mu)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>treelist.bd <span class="ot">&lt;-</span> <span class="fu">trees</span>(<span class="fu">c</span>(<span class="at">lambda=</span><span class="dv">2</span>,<span class="at">mu=</span><span class="dv">1</span>),</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">type=</span><span class="fu">c</span>(<span class="st">"bd"</span>), <span class="at">n=</span><span class="dv">1500</span>,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">max.taxa=</span><span class="dv">50</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="co"># make a log-likelihood function for each tree:</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>logliklist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(treelist.bd, make.bd )</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>mles <span class="ot">&lt;-</span> <span class="fu">lapply</span>(logliklist, <span class="cf">function</span>(x){<span class="fu">find.mle</span>(x, <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>), <span class="at">method=</span><span class="st">'subplex'</span>)})</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>mles_pars <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(mles, <span class="cf">function</span>(x) x<span class="sc">$</span>par))</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mles_pars[,<span class="dv">1</span>],<span class="at">main=</span><span class="st">'BD tree - estimated birth rate'</span>,</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(<span class="fu">hat</span>(lambda)))</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mles_pars[,<span class="dv">2</span>],<span class="at">main=</span><span class="st">'BD tree - estimated death rate'</span>,</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="fu">bquote</span>(<span class="fu">hat</span>(mu)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="fit_bd_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="fit_bd_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>The birth-death trees with <span class="math inline">\(\lambda=2\)</span>, <span class="math inline">\(\mu=1\)</span> clearly have a tendency to convey information about the birth rate <span class="math inline">\(\lambda\)</span> being elevated above the net birth rate <span class="math inline">\(\lambda-\mu=1\)</span>. Again, however, the death rate is difficult to pin down.</p>
-</section>
 </section>
 <section id="exercises-1" class="level1">
 <h1>Exercises:</h1>
@@ -539,7 +402,7 @@ Attaching package: 'expm'</code></pre>
 <p>The Generalized Likelihood Ratio Test is one way to assess whether <span class="math inline">\(\mu\)</span> is significantly different from zero. The model with more parameters will always fit the data better, but it may not fit the data “that much” better. The GLR test looks a log(ratio of likelihoods) = difference(log-Likelihoods) to produce a test statistic (also, rather annoyingly in this case, called <span class="math inline">\(\lambda\)</span>).</p>
 <p>Use</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">constrain</span>(loglik, mu <span class="sc">~</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">constrain</span>(loglik, mu <span class="sc">~</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>to create the constrained log-likelihood functions, and fit them to obtain new estimates for lambda.</p>
 <p>Then formulate a GLR test to assess significant departues from a null hypothesis of <span class="math inline">\(\mu=0\)</span>.</p>
@@ -578,28 +441,28 @@ Attaching package: 'expm'</code></pre>
 <p>Now, if we simulate birth-death-sampling models and try to estimate parameters, we should expect to run into difficulties because it should be impossible to distinguish between lineages that are missing because they died out versus because they were never sampled. Because we cannot distinguish these types of lineages from each other, there should not be any way for us to determine the relative magnitudes of <span class="math inline">\(\psi\)</span> and <span class="math inline">\(\mu\)</span>.</p>
 <p>We will use the castor package to see if this reasoning is correct or not.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(castor)</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(ape)</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3</span>)</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>tm <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify model parameters:</span></span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="dv">1</span> </span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>psi <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>kappa <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>tree.bds <span class="ot">=</span> <span class="fu">generate_tree_hbds</span>(</span>
-<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_time   =</span> tm,          <span class="co"># Maximum duration of the simulation process</span></span>
-<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda     =</span> lambda,</span>
-<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">mu         =</span> mu,</span>
-<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">psi        =</span> psi,</span>
-<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">kappa      =</span> kappa</span>
-<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree.bds<span class="sc">$</span>tree, <span class="at">show.tip.label=</span>F, <span class="at">main=</span><span class="st">'Birth-death-sampling tree'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(castor)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(ape)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>tm <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify model parameters:</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="dv">1</span> </span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>psi <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>kappa <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>tree.bds <span class="ot">=</span> <span class="fu">generate_tree_hbds</span>(</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_time   =</span> tm,          <span class="co"># Maximum duration of the simulation process</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda     =</span> lambda,</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">mu         =</span> mu,</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">psi        =</span> psi,</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">kappa      =</span> kappa</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree.bds<span class="sc">$</span>tree, <span class="at">show.tip.label=</span>F, <span class="at">main=</span><span class="st">'Birth-death-sampling tree'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>These trees are generally not ultrametric, as the trees up to now have been. Because we specified a sampling rate, we observe lineages at random times. It is possible to modify the simulation so that sampling takes place at one particular time.</p>
 </section>

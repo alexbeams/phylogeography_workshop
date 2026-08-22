@@ -10,14 +10,14 @@ title-block-banner: true
 anchor-sections: false
 ---
 
-Welcome to Day 4! We will start by analyzing output from BEAST2 before learning about more advanced functionality (like Bayesian stochastic search variable selection). We will finish by carrying out comparative analyses from discrete trait methods to see what we gain from more computationally intensive analyses in BEAST2.
+Welcome to Day 5! We will start by analyzing output from BEAST2 before learning about more advanced functionality (like Bayesian stochastic search variable selection). We will finish by carrying out comparative analyses from discrete trait methods to see what we gain from more computationally intensive analyses in BEAST2.
 
 
-<!-- ================= Day 4 ================= -->
+<!-- ================= Day 5 ================= -->
 :::{layout="[[12]]"}
 
 :::{.date}
-Friday<br>[October 3, 2025]
+Day 5
 :::
 
 :::{layout="[[10]]"}

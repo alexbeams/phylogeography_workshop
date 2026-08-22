@@ -10,18 +10,17 @@ title-block-banner: true
 anchor-sections: false
 ---
 
-Welcome to Day 3! The state-dependent speciation and extinction (SSE) models we learned about yesterday will position us to understand the basic phylodynamics models (multi-type birth death, strucutred coalescent) used in BEAST2.
+Welcome to Day 4! The state-dependent speciation and extinction (SSE) models we learned about yesterday will position us to understand the basic phylodynamics models (multi-type birth death, strucutred coalescent) used in BEAST2.
 
 Review the [Requirements](topics/requirements.qmd) page to make sure you have everything installed for BEAST2.
 
 If you want to get the most out of the afternoon sessions, make sure you have craeted an account with the Digital Research Alliance of Canada [https://ccdb.alliancecan.ca/security/login](https://ccdb.alliancecan.ca/security/login)
 
-<!-- ================= Day 3 ================= -->
+<!-- ================= Day 4 ================= -->
 :::{layout="[[12]]"}
 
 :::{.date}
-Thursday<br>[October 2, 2025]
-:::
+Day 4<br>
 
 :::{layout="[[10]]"}
 

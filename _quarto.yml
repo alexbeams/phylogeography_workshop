@@ -14,16 +14,19 @@ website:
       - text: "Home"
         href: index.qmd
         icon: house
-      - text: "Day 1: Discrete trait analysis I in R"
+      - text: "Day 1"
         href: monday.qmd
         icon: pie-chart
-      - text: "Day 2: Discrete trait analysis II in R"
-        href: wednesday.qmd
+      - text: "Day 2"
+        href: day2.qmd
         icon: map
-      - text: "Day 3: Phylodynamics I in R and BEAST2"
+      - text: "Day 3"
+        href: wednesday.qmd
+        icon: pie-chart
+      - text: "Day 4"
         href: thursday.qmd
         icon: activity
-      - text: "Day 4: Phylodynamics II in BEAST2"
+      - text: "Day 5"
         href: friday.qmd
         icon: tree
       - text: "About"

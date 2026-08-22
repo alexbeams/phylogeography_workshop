@@ -13,18 +13,18 @@ anchor-sections: false
 Welcome to Day Two! We focus on birth-death and state-dependent speciation and extinction (SSE) models.
 
 
-<!-- ================= Day 2 ================= -->
+<!-- ================= Day 3 ================= -->
 :::{layout="[[12]]"}
 
 :::{.date}
-Day 2
+Day 3
 :::
 
 :::{layout="[[10]]"}
 
 :::{.card .mb-3}
 :::{.card-body}
-[(On your own time) Review of ancestral character estimations and stochastic character mapping](topics/character_mapping/ace_and_simmap_review.pdf){.card-title .stretched-link}
+[0900-1030: Intro to State-dependent Speciation and Extinction (SSE) models](topics/sse_models/sse_models.pdf){.card-title .stretched-link}
 
 :::{.text-muted}
 Slides
@@ -34,52 +34,7 @@ Slides
 
 :::{.card .mb-3}
 :::{.card-body}
-[0930-1100: Intro to the Yule model](topics/yule_and_bd/Yule_models.pdf){.card-title .stretched-link}
-
-:::{.text-muted}
-Slides
-:::
-:::
-:::
-
-
-:::{.card .mb-3}
-:::{.card-body}
-[1130-1300: Estimating parameters of birth-death models](topics/sse_models/fit_bd.qmd){.card-title .stretched-link}
-
-:::{.text-muted}
-Practical session in R
-:::
-:::
-:::
-
-:::{.card .mb-3}
-:::{.card-body}
-[0930-1100: Intro to Birth-death models](topics/yule_and_bd/intro_to_birth_death_models.pdf){.card-title .stretched-link}
-
-:::{.text-muted}
-Slides
-:::
-:::
-:::
-
-
-
-:::{layout="[[10]]"}
-
-:::{.card .mb-3}
-:::{.card-body}
-[1400-1500: Intro to State-dependent Speciation and Extinction (SSE) models](topics/sse_models/sse_models.pdf){.card-title .stretched-link}
-
-:::{.text-muted}
-Slides
-:::
-:::
-:::
-
-:::{.card .mb-3}
-:::{.card-body}
-[1500-1630: Estimating parameters of BiSSE models for *Hymenoptera*](topics/sse_models/bisse_tutorial.qmd){.card-title .stretched-link}
+[1100-: Estimating parameters of BiSSE models for *Hymenoptera*](topics/sse_models/bisse_tutorial.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Practical session in R

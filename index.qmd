@@ -76,16 +76,17 @@ Day 2
 
 :::{.card .mb-3}
 :::{.card-body}
-[Day 2: Discrete trait analysis II in R](wednesday.qmd){.card-title .stretched-link}
+[Day 2: Introduction to stochastic processes in phylodynamics](day2.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
-Birth-death models, state-dependent speciation and extinction (SSE) models
+The Yule and birth-death models
 :::
 :::
 :::
 :::
 
-<!-- ================= Day 3 ================= -->
+
+<!-- ================= Day 2 ================= -->
 :::{layout="[[12]]"}
 
 :::{.date}
@@ -93,17 +94,17 @@ Day 3
 :::
 
 
-
 :::{.card .mb-3}
 :::{.card-body}
-[Day 3: Phylodynamics I in R and BEAST2](thursday.qmd){.card-title .stretched-link}
+[Day 3: Discrete trait analysis II in R](wednesday.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
-Joint estimation of character change with phylogeny, and Phylodynamics models in BEAST2
+State-dependent speciation and extinction (SSE) models
 :::
 :::
 :::
 :::
+
 
 <!-- ================= Day 4 ================= -->
 :::{layout="[[12]]"}
@@ -113,9 +114,29 @@ Day 4
 :::
 
 
+
 :::{.card .mb-3}
 :::{.card-body}
-[Day 4: Phylodynamics II in BEAST2](friday.qmd){.card-title .stretched-link}
+[Day 4: Phylodynamics I in R and BEAST2](thursday.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Joint estimation of character change with phylogeny, and Phylodynamics models in BEAST2
+:::
+:::
+:::
+:::
+
+<!-- ================= Day 5 ================= -->
+:::{layout="[[12]]"}
+
+:::{.date}
+Day 5
+:::
+
+
+:::{.card .mb-3}
+:::{.card-body}
+[Day 5: Phylodynamics II in BEAST2](friday.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Bayesian stochastic search variable selection

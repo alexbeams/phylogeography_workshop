@@ -1,0 +1,153 @@
+# The Yule Model 
+
+## First: simulating Yule trees
+
+So far, we have been treating phylogenetic trees as given
+      without asking how they are created (by some
+      biologist, presumably). If the traits we are
+      interested in do not influence diversification,
+      extinction/death, or the probability we observe
+      a particular lineage, then the standard Markov models
+      on trees seem sufficient. In some cases, traits
+      might influence the process creating the phylogenetic
+      relationships we observe, and we would like to detect
+      these effects.
+
+It is for this reason that we start by considering models for
+      tree generation (sometimes called "tree priors" by
+      people who use BEAST, which we will get to later in
+      the week).
+
+Let's start by simulating some trees using Yule model.
+We will use the diversitree package:
+
+```{r, message=FALSE, warning=FALSE}
+library(diversitree)
+```
+
+### Yule process
+
+The **Yule model** is a special case of birth death models. The Yule model is characterized 
+by having the death rate set to $\mu=0$. Let's simulate a tree from the Yule process with $\lambda = 1$ for four units of time:
+
+```{r}
+tree <- tree.bd(c(lambda=1, mu=0), max.t = 4)
+plot(tree, show.tip.label=F)
+```
+
+Recall that the probability of $n$ lineages by time $t$, assuming we start with one lineage at time $0$, is given by the solution to the differential equation
+
+$$
+\begin{align*}
+	\frac{dp_n}{dt} &= \lambda (n-1) p_{n-1} - \lambda n p_n, \quad \text{for } n > 1, \\
+	\frac{dp_1}{dt} &= - \lambda p_1.
+\end{align*}
+$$
+
+This is the Forward Equation (do you remember what the Backward Equation is?).
+
+As a sanity check, let's simulate a large number of Yule trees up to time $t=4$ to see whether the number of lineages
+we observe matches the prediction from the Forward Equation. We can easily obtain an approximate solution to the Forward Equation because it is a linear albeit infinite dimensional system of ODEs. This is a little easier to see if we rewrite it as an (infinite-dimensional) matrix equation:
+
+$$
+\begin{align*}
+	\frac{d}{dt}	
+	\begin{pmatrix}
+		p_1 \\ p_2 \\ . \\ . \\ . \\ p_n \\ p_{n+1} \\ . 
+	\end{pmatrix} 
+	 = 
+	\begin{pmatrix}
+		- \lambda & 0 & 0 & 0 & . & . & . & 0 & 0 & . & .\\
+		 \lambda & -2 \lambda & 0 & 0 & . & . & . & 0 & 0 & . & .\\
+		 0 & 2 \lambda & -3 \lambda & 0 & . & . & . & 0 & 0 & . & .\\
+		 0 & .  & . & . & . & . & . & . & . & . & .\\
+		 0 & .  & . & . & . & . & . & . & . & . & .\\
+		 0 & .  & . & . & . & . & . & (n-1) \lambda & -n \lambda & . & .\\
+		 0 & .  & . & . & . & . & . & . & n \lambda & -(n+1) \lambda   & .\\
+		 0 & .  & . & . & . & . & . & . & . & . & .\\
+	\end{pmatrix}	
+	\begin{pmatrix}
+		p_1 \\ p_2 \\ . \\ . \\ . \\ p_n \\ p_{n+1} \\ . 
+	\end{pmatrix} 
+\end{align*}
+$$
+
+If we truncate this system $dP/dt = Q P$ at large but finite $N$, then we can approximate the solution as
+$P_N(t) \approx e^{Q_Nt} P_{N}(0)$. The approximation should be reasonable if we choose $N$ sufficiently large. If we simulate only up to time $t=4$, $N$ probably doesn't need to be to huge. If we simulate for longer amounts of time, then we will need make $N$ larger.
+
+For comparison, we can also use the analytical solution $P_n(t) = e^{-\lambda t} (1-e^{-\lambda t})^{n-1}$.
+
+
+```{r}
+# How long to simulate?
+t <- 4
+
+# Max number of lineages in the approximate solution?
+N <- 1000
+
+# Birth rate:
+lambda <- 1
+
+# Set up the generator:
+Q <- diag(N)
+diag(Q) <- - (1:N) * lambda
+diag(Q[-1,-N]) <- (1:(N-1))*lambda
+
+# Initial condition: 1 lineage alive at time 0
+p0 <- rep(0,N)
+p0[1] <- 1
+
+# load in routines to carry out matrix exponentiation for sparse matrices:
+require(expm)
+
+# Perform the matrix exponentiation:
+pn <- expAtv(Q, p0, t)$eAtv
+
+```
+
+Probability should be conserved. Our truncation does not respect this (the lastlast  column sum of $Q_N$ is negative, meaning there is a net flux of probability out of the truncated system). We can use this to check if our truncation is reasonable -- if we chose $N$ sufficiently large, then the probability flux out of the system should be negligible. That is, the entries of $P_N$ should sum to something very close to one:
+
+```{r}
+sum(pn)
+```
+
+If we chose $N$ too small in the code at the beginning, then we know that we will be losing probability from the system (which is nonsensical). The large value of $N$ I chose here is ensuring that we are conserving probability, which is good. Experiment with a smaller truncation size $N$ above and re-examine this if it doesn't make sense to you. 
+
+Now let's simulate a large number of Yule trees to compare with the approximate solution from the Master Equation:
+
+```{r}
+## Next, we simulate a large number of Yule trees for t units of time:
+
+yulelist <- lapply(1:1000, function(x) tree.bd(c(lambda=1,mu=0), max.t=t))
+
+# Sometimes these fail to make a tree (no births by time t?), so we toss these out:
+inds <- sapply(yulelist, is.null)
+yulelist <- yulelist[!inds]
+
+n <- sapply(yulelist, Ntip)
+
+# Let's also create a fucntion for our analytical solution for comparison:
+getpn <- function(n) exp(-lambda*t)*(1-exp(-lambda*t))^(n-1)
+
+pn.a <- sapply(0:400, getpn)
+
+```
+
+So now we have simulated lots of Yule trees (~ 1000 of them) and we can compare the distribution of lineages with the prediction from the Master equation:
+
+```{r}
+hist(n, freq=F, main='Distribution of lineages by time t=4', breaks=20)
+lines(pn, lwd=2)
+lines(pn.a, lwd=3, lty=3, col='red')
+legend('topright', legend=c('Numerical approximation', 'Analytical solution'), 
+	lwd=3,lty=c(1,3),col=c('black','red'), title='Master Equation solution') 
+
+```
+
+These appear to be in agreement. The approximation will break down if (i) we simulate over a longer period of time, $t$, (ii) if we simulate with a larger birth rate $\lambda$, or (iii) truncate the Master equation at a smaller value of $N$. You should experiment with changing all three of these quantities.
+
+**To summarize**: the solution to the Master equation gives us a way to quantify the probability we observe a Yule tree with $n$ lineages and height $t$. Yule trees that differ only in topology but otherwise have the same height and number of lineages are equally likely to occur in this model.
+
+This is useful for **parameter estimation**. But before we do that, let's look at the birth death model with a positive death rate in the next lecture.
+
+

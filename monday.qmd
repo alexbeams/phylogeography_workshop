@@ -14,6 +14,8 @@ Welcome to Day one!
 
 After an introduction to this week's workshop, we will gain some experience working with phylogenetic trees in R before moving on to learn about ancestral character estimation and stochastic character mapping.
 
+The mathematical content today is about continuous-time Markov chains.
+
 <!-- ================= Day 1 ================= -->
 :::{layout="[[12]]"}
 
