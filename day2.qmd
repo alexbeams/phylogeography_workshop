@@ -1,0 +1,91 @@
+---
+title: MAGPIE PhylogeogRaphy Workshop (with BEAST 2)
+description: |
+  <br>This in-person workshop is offered and hosted by [MAGPIE](https://www.sfu.ca/magpie.html) in the Department of Mathematics at Simon Fraser University.
+
+  <center>[Register](https://docs.google.com/forms/d/e/1FAIpQLSeOv8vuo_HdsrBvmoONwcjoCHNAPPXnRvYSXVJmDQBSgpsrJw/viewform?usp=dialog){.btn .btn-outline-primary}</center>
+
+toc: false
+title-block-banner: true
+anchor-sections: false
+---
+
+Welcome to Day Two! Today is the mathiest. We will learn about the Yule model, the birth-death model, and variations that include incopmlete sampling/obesrvation of lineages. Buckle up. 
+
+
+By the end of today, you will be able to derive Kolmogorov equations forwards and backwards. You will even get to solve some PDEs!
+
+<!-- ================= Day 2 ================= -->
+:::{layout="[[12]]"}
+
+:::{.date}
+Day 2
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[(On your own time) Review of ancestral character estimations and stochastic character mapping](topics/character_mapping/ace_and_simmap_review.pdf){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides
+:::
+:::
+:::
+
+:::{.card .mb-3}
+:::{.card-body}
+[0900-1030: Intro to the Yule model](topics/yule_and_bd/Yule_models.pdf){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides
+:::
+:::
+:::
+
+:::{.card .mb-3}
+:::{.card-body}
+[1100-1230: Simulation and analysis of the Yule Model](topics/sse_models/yule.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in R
+:::
+:::
+:::
+
+:::{.card .mb-3}
+:::{.card-body}
+[1330-1500: Intro to Birth-death models](topics/yule_and_bd/intro_to_birth_death_models.pdf){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides
+:::
+:::
+:::
+
+
+
+:::{.card .mb-3}
+:::{.card-body}
+[1530-1700: Simulation and analysis of birth-death models](topics/sse_models/fit_bd.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in R
+:::
+:::
+:::
+
+
+
+
+<!--
+Can repeat for more days and sessions...
+-->
+
+<!--
+<br><br>
+![](img/duck_coffee.png){fig-alt="front logo"}
+-->
+
+{{< include _footer.html >}}

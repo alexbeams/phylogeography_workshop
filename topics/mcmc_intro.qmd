@@ -22,7 +22,7 @@ Monte Carlo integration works a little bit differently.
 
 Let's start
 by approximating the number $\pi$. We will do this by making use of the fact
-that the area of a circle is $\pi r^2$, where $r$ is the radius of a given circle.
+that the area of a circle is $\pi r^2,$ where $r$ is the radius of a given circle.
 
 Suppose there is a square dart board with a circle inscribed. My dart
 throws are random, so when I launch a dart at the board it lands randomly
@@ -452,7 +452,7 @@ The algorithm works as follows:
 		propose an update, y, which may become x_{k+1}
 		Evaluate f(y), and compare to f(x_k)
 			if f(y) > f(x_k), accept y as x_{k+1} = y;
-		otherwise, accept y as x_{k+1} = y with probability less than one;
+		otherwise, accept y as x_{k+1} = y with probability a = f(y)/f(x_k); 
 	Repeat ad infinitum
 
 We have most of the ingredients we need; what remains is how to propose and accept updates.

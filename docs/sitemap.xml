@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>example.com/topics/intro_to_workshop/intro_to_trees.html</loc>
-    <lastmod>2026-07-31T04:05:28.188Z</lastmod>
+    <lastmod>2026-05-28T23:16:28.915Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/sse_models/fit_bisse.html</loc>
@@ -22,7 +22,7 @@
   </url>
   <url>
     <loc>example.com/topics/ancestral_character_estimation/ace_sims.html</loc>
-    <lastmod>2026-07-31T04:05:28.187Z</lastmod>
+    <lastmod>2026-07-29T23:36:03.044Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/ancestral_character_estimation/ace_sims_edit.html</loc>
@@ -62,7 +62,7 @@
   </url>
   <url>
     <loc>example.com/friday.html</loc>
-    <lastmod>2026-08-22T00:01:02.453Z</lastmod>
+    <lastmod>2026-08-22T00:02:02.128Z</lastmod>
   </url>
   <url>
     <loc>example.com/index.html</loc>
@@ -74,7 +74,7 @@
   </url>
   <url>
     <loc>example.com/thursday.html</loc>
-    <lastmod>2026-08-22T00:00:47.446Z</lastmod>
+    <lastmod>2026-08-22T00:00:53.039Z</lastmod>
   </url>
   <url>
     <loc>example.com/schedule.html</loc>
@@ -94,11 +94,11 @@
   </url>
   <url>
     <loc>example.com/topics/ancestral_character_estimation/nucleotide_models.html</loc>
-    <lastmod>2026-07-31T04:05:28.187Z</lastmod>
+    <lastmod>2026-05-28T23:27:35.693Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/mcmc_intro.html</loc>
-    <lastmod>2026-04-17T21:50:29.003Z</lastmod>
+    <lastmod>2026-08-28T22:10:43.028Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/intro_to_phylodynamics/mers.html</loc>
