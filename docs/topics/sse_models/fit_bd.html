@@ -231,7 +231,7 @@ window.Quarto = {
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(numdieoffs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 27</code></pre>
+<pre><code>[1] 28</code></pre>
 </div>
 </div>
 <p>This is sort of interesting. In the first tree we simulated above, we set <span class="math inline">\(\lambda=1\)</span> and <span class="math inline">\(\mu=0\)</span>, for a net birth rate equal to 1. In this second example, we set <span class="math inline">\(\lambda=2\)</span> and <span class="math inline">\(\mu=1\)</span>. The net birth rate still equals 1, but extinction is far more likely now.</p>
@@ -302,12 +302,12 @@ window.Quarto = {
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.yule<span class="sc">$</span>lnLik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 92.3456</code></pre>
+<pre><code>[1] 94.95699</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.yule<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      lambda           mu 
-9.158205e-01 1.908196e-17 </code></pre>
+<pre><code>   lambda        mu 
+1.3120499 0.6912262 </code></pre>
 </div>
 </div>
 <p>Looks pretty close.</p>
@@ -320,12 +320,12 @@ window.Quarto = {
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.bd<span class="sc">$</span>lnLik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 116.5665</code></pre>
+<pre><code>[1] 114.0177</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.bd<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  lambda       mu 
-2.072959 1.089829 </code></pre>
+1.972203 1.075149 </code></pre>
 </div>
 </div>
 <p>Seems like it’s kind of in the ballpark.</p>

@@ -10,7 +10,7 @@ title-block-banner: true
 anchor-sections: false
 ---
 
-Welcome to Day Two! We focus on birth-death and state-dependent speciation and extinction (SSE) models.
+Welcome to Day three! We focus on birth-death and state-dependent speciation and extinction (SSE) models. We also examine a method developed by researchers in our group called Sampling Aware Ancestral State Inference (SAASI).
 
 
 <!-- ================= Day 3 ================= -->
@@ -34,7 +34,29 @@ Slides
 
 :::{.card .mb-3}
 :::{.card-body}
-[1100-: Estimating parameters of BiSSE models for *Hymenoptera*](topics/sse_models/bisse_tutorial.qmd){.card-title .stretched-link}
+[1100-1230: Estimating parameters of BiSSE models for *Hymenoptera*](topics/sse_models/bisse_tutorial.qmd){.card-title .stretched-link}
+
+:::{.text-muted}
+Practical session in R
+:::
+:::
+:::
+
+:::{layout="[[10]]"}
+
+:::{.card .mb-3}
+:::{.card-body}
+[1400-1500: Intro to SAASI](topics/saasi/saasi.pdf){.card-title .stretched-link}
+
+:::{.text-muted}
+Slides
+:::
+:::
+:::
+
+:::{.card .mb-3}
+:::{.card-body}
+[1530-1700: SAASI tutorial](https://magpie-sfu.github.io/saasi/articles/saasi-tutorial.html){.card-title .stretched-link}
 
 :::{.text-muted}
 Practical session in R
