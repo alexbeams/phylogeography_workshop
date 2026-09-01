@@ -36,7 +36,7 @@ Practical session in BEAST2
 
 :::{.card .mb-3}
 :::{.card-body}
-[Advanced BEAST2 topics: BSSVS](pages/embedR.qmd){.card-title .stretched-link}
+[Advanced BEAST2 topics: BSSVS](topics/bssvs/bssvs_phylogeography.pdf){.card-title .stretched-link}
 
 :::{.text-muted}
 Slides

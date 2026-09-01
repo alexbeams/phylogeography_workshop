@@ -63,7 +63,7 @@ Save your laptop's memory
 
 :::{.card .mb-3}
 :::{.card-body}
-[1330 - 1430: Multi-type birth death models](topics/intro_to_phylodynamics/mtbd_models.pdf){.card-title .stretched-link}
+[1330 - 1430: Multi-type birth death models](topics/bssvs/mtbd_models.pdf){.card-title .stretched-link}
 
 :::{.text-muted}
 Slides
