@@ -12,6 +12,10 @@ substitution model and the phylogeny. (We will also do this as a group.)
 
 
 Navigate [here](https://beast2-dev.github.io/beast-docs/beast2/PhylogeographyDiscrete/AR.html) for instructions to set up the analysis,
-but some modifications are needed for steps 1 and 2 above. By default, these instructions will carry out an analysis with BSSVS.
+but some modifications are needed for steps 1 and 2 above. By default, these instructions will carry out an analysis with BSSVS. Figure out how to disable BSSVS.
 
+## 3. 
+(For analysis on Day 5, but might be a good idea to run overnight to be ready in time.)
+
+Repeat step 2, but turn the BSSVS option on.
 

@@ -466,14 +466,14 @@
     "href": "friday.html",
     "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
     "section": "",
-    "text": "Welcome to Day 5! We will start by analyzing output from BEAST2 before learning about more advanced functionality (like Bayesian stochastic search variable selection). We will finish by carrying out comparative analyses from discrete trait methods to see what we gain from more computationally intensive analyses in BEAST2.\n\n\n\nDay 5\n\n\n\n\nAnalyze overnight BEAST2 runs\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nAdvanced BEAST2 topics: BSSVS\n\nSlides\n\n\n\n\n\n\n\nBSSVS\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nComparing discrete trait analysis and phylodynamics\n\nPractical session in BEAST2/R\n\n\n\n\n\n\n\nClosing\n\nSlides/Group discussion\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
+    "text": "Welcome to Day 5! We will start by analyzing output from BEAST2 before learning about more advanced functionality (like Bayesian stochastic search variable selection). We will finish by carrying out comparative analyses from discrete trait methods to see what we gain from more computationally intensive analyses in BEAST2.\n\n\n\nDay 5\n\n\n\n\n\nAdvanced BEAST2 topics: BSSVS\n\nSlides\n\n\n\n\n\n\n\n1030-1130: BEAST2 runs with BSSVS: Influenza H5N1\n\nPractical session in BEAST2\n\n\n\n\n\n\n\n1230-: Final analysis\n\nPractical session in BEAST2\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
   },
   {
     "objectID": "index.html",
     "href": "index.html",
     "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
     "section": "",
-    "text": "Welcome to the PhylogeogRaphy workshop (with BEAST2)!\nSessions are split into roughly two-hour chunks that align with typical start/end times of classes, and are meant to be as self-contained as possible – so, feel free to come and go as necessary! All materials will posted here for you to catch up on content if desired.\nParticipants should bring their own laptops for hands-on exercises.\nFor specific requirements, see the Requirements for workshop page.\n\n\n\n\nRequirements for workshop\n\nPre-workshop instructions\n\n\n\n\n\n\n\n\n\nSchedule\n\nTopics and agenda\n\n\n\n\n\n\n\n\nDay 1\n\n\n\n\n\nDay 1: Discrete trait analysis I in R\n\nIntroduction, ancestral character estimation, and stochastic character mapping\n\n\n\n\n\n\n\n\n\nDay 2\n\n\n\n\n\nDay 2: Introduction to stochastic processes in phylodynamics\n\nThe Yule and birth-death models\n\n\n\n\n\n\n\n\n\nDay 3\n\n\n\n\n\nDay 3: Discrete trait analysis II in R\n\nState-dependent speciation and extinction (SSE) models\n\n\n\n\n\n\n\n\n\nDay 4\n\n\n\n\n\nDay 4: Phylodynamics I in R and BEAST2\n\nJoint estimation of character change with phylogeny, and Phylodynamics models in BEAST2\n\n\n\n\n\n\n\n\n\nDay 5\n\n\n\n\n\nDay 5: Phylodynamics II in BEAST2\n\nBayesian stochastic search variable selection\n\n\n\n\n\n\n\n\nHosted by:"
+    "text": "Welcome to the PhylogeogRaphy workshop (with BEAST2)!\nSessions are split into roughly two-hour chunks that align with typical start/end times of classes, and are meant to be as self-contained as possible – so, feel free to come and go as necessary! All materials will posted here for you to catch up on content if desired.\nParticipants should bring their own laptops for hands-on exercises.\nFor specific requirements, see the Requirements for workshop page.\n\n\n\n\nRequirements for workshop\n\nPre-workshop instructions\n\n\n\n\n\n\n\n\n\nDay 1\n\n\n\n\n\nDay 1: Discrete trait analysis I in R\n\nIntroduction, ancestral character estimation, and stochastic character mapping\n\n\n\n\n\n\n\n\n\nDay 2\n\n\n\n\n\nDay 2: Introduction to stochastic processes in phylodynamics\n\nThe Yule and birth-death models\n\n\n\n\n\n\n\n\n\nDay 3\n\n\n\n\n\nDay 3: Discrete trait analysis II in R\n\nState-dependent speciation and extinction (SSE) models\n\n\n\n\n\n\n\n\n\nDay 4\n\n\n\n\n\nDay 4: Phylodynamics I in R and BEAST2\n\nJoint estimation of character change with phylogeny, and Phylodynamics models in BEAST2\n\n\n\n\n\n\n\n\n\nDay 5\n\n\n\n\n\nDay 5: Phylodynamics II in BEAST2\n\nBayesian stochastic search variable selection\n\n\n\n\n\n\n\n\nHosted by:"
   },
   {
     "objectID": "monday.html",
@@ -487,7 +487,7 @@
     "href": "thursday.html",
     "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
     "section": "",
-    "text": "Welcome to Day 4! The state-dependent speciation and extinction (SSE) models we learned about yesterday will position us to understand the basic phylodynamics models (multi-type birth death, strucutred coalescent) used in BEAST2.\nReview the Requirements page to make sure you have everything installed for BEAST2.\nIf you want to get the most out of the afternoon sessions, make sure you have craeted an account with the Digital Research Alliance of Canada https://ccdb.alliancecan.ca/security/login\n\n\n\nDay 4\n\n\n\n\n0930-1030: Bayesian discrete trait analysis\n\nSlides\n\n\n\n\n\n\n\n1030-1130: Basic BEAST2 runs: Influenza H5N1\n\nPractical session in BEAST2\n\n\n\n\n\n\n\n\n\n1130 - 1230: Running BEAST2 on a remote server\n\nSave your laptop’s memory\n\n\n\n\n\n\n1330 - 1430: Multi-type birth death models\n\nSlides\n\n\n\n\n\n\n1430 - 1530: MTBD BEAST2 tutorial\n\nPractical session in BEAST2\n\n\n\n\n\n\n\n1530 - 1630: Set up overnight BEAST2 analyses\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nOptional: Multi-type birth death models in R\n\nSimulate MTBD models in R\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
+    "text": "Welcome to Day 4! The state-dependent speciation and extinction (SSE) models we learned about yesterday will position us to understand the basic phylodynamics models (multi-type birth death, strucutred coalescent) used in BEAST2.\nReview the Requirements page to make sure you have everything installed for BEAST2.\nIf you want to get the most out of the afternoon sessions, make sure you have craeted an account with the Digital Research Alliance of Canada https://ccdb.alliancecan.ca/security/login\n\n\n\nDay 4\n\n\n\n\n0930-1030: Bayesian discrete trait analysis\n\nSlides\n\n\n\n\n\n\n\n1030-1130: Basic BEAST2 runs: Influenza H5N1\n\nPractical session in BEAST2\n\n\n\n\n\n\n\n\n\n1130 - 1230: Running BEAST2 on a remote server\n\nSave your laptop’s memory\n\n\n\n\n\n\n1330 - 1430: Multi-type birth death models\n\nSlides\n\n\n\n\n\n\n\n1430 - 1530: MTBD BEAST2 tutorial\n\nPractical session in BEAST2\n\n\n\n\n\n\n\nOptional: Multi-type birth death models in R\n\nSimulate MTBD models in R\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
   },
   {
     "objectID": "schedule.html",
@@ -501,7 +501,7 @@
     "href": "topics/bayesian_discrete_trait_analysis/H5N1_tutorial.html",
     "title": "H5N1 tutorial – [live coding session]",
     "section": "",
-    "text": "We are going to analzye an influenza H5N1 dataset in BEAST2. We are going to carry out two types of analysis:\n\n\nLoad the multiple sequence alignment (H5N1.nex) without reading in geographic information. Get a basic BEAST2 run to work. (We will do this part as a group).\n\n\n\nRepeat step 1, but also read in geographic information to estimate migration rates alongside parameters of the nucleotide substitution model and the phylogeny. (We will also do this as a group.)\nNavigate here for instructions to set up the analysis, but some modifications are needed for steps 1 and 2 above. By default, these instructions will carry out an analysis with BSSVS."
+    "text": "We are going to analzye an influenza H5N1 dataset in BEAST2. We are going to carry out two types of analysis:\n\n\nLoad the multiple sequence alignment (H5N1.nex) without reading in geographic information. Get a basic BEAST2 run to work. (We will do this part as a group).\n\n\n\nRepeat step 1, but also read in geographic information to estimate migration rates alongside parameters of the nucleotide substitution model and the phylogeny. (We will also do this as a group.)\nNavigate here for instructions to set up the analysis, but some modifications are needed for steps 1 and 2 above. By default, these instructions will carry out an analysis with BSSVS. Figure out how to disable BSSVS.\n\n\n\n(For analysis on Day 5, but might be a good idea to run overnight to be ready in time.)\nRepeat step 2, but turn the BSSVS option on."
   },
   {
     "objectID": "topics/bayesian_discrete_trait_analysis/H5N1_tutorial.html#section",
@@ -515,7 +515,7 @@
     "href": "topics/bayesian_discrete_trait_analysis/H5N1_tutorial.html#section-1",
     "title": "H5N1 tutorial – [live coding session]",
     "section": "",
-    "text": "Repeat step 1, but also read in geographic information to estimate migration rates alongside parameters of the nucleotide substitution model and the phylogeny. (We will also do this as a group.)\nNavigate here for instructions to set up the analysis, but some modifications are needed for steps 1 and 2 above. By default, these instructions will carry out an analysis with BSSVS."
+    "text": "Repeat step 1, but also read in geographic information to estimate migration rates alongside parameters of the nucleotide substitution model and the phylogeny. (We will also do this as a group.)\nNavigate here for instructions to set up the analysis, but some modifications are needed for steps 1 and 2 above. By default, these instructions will carry out an analysis with BSSVS. Figure out how to disable BSSVS."
   },
   {
     "objectID": "topics/character_mapping/stochastic_mapping.html",
@@ -894,5 +894,61 @@
     "title": "MAGPIE PhylogeogRaphy Workshop (with BEAST 2)",
     "section": "",
     "text": "Welcome to Day Two! Today is the mathiest. We will learn about the Yule model, the birth-death model, and variations that include incopmlete sampling/obesrvation of lineages. Buckle up.\nBy the end of today, you will be able to derive Kolmogorov equations forwards and backwards. You will even get to solve some PDEs!\n\n\n\nDay 2\n\n\n\n\n\n(On your own time) Review of ancestral character estimations and stochastic character mapping\n\nSlides\n\n\n\n\n\n\n\n0900-1030: Intro to the Yule model\n\nSlides\n\n\n\n\n\n\n\n1100-1230: Simulation and analysis of the Yule Model\n\nPractical session in R\n\n\n\n\n\n\n\n1330-1500: Intro to Birth-death models\n\nSlides\n\n\n\n\n\n\n\n1530-1700: Simulation and analysis of birth-death models\n\nPractical session in R\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHosted by:"
+  },
+  {
+    "objectID": "topics/bayesian_discrete_trait_analysis/H5N1_tutorial.html#for-morning-of-day-5-but-included-here-for-the-precocious-among-you",
+    "href": "topics/bayesian_discrete_trait_analysis/H5N1_tutorial.html#for-morning-of-day-5-but-included-here-for-the-precocious-among-you",
+    "title": "H5N1 tutorial – [live coding session]",
+    "section": "",
+    "text": "Repeat step 2, but turn the BSSVS option on."
+  },
+  {
+    "objectID": "topics/bayesian_discrete_trait_analysis/H5N1_tutorial.html#for-the-morning-of-day-5",
+    "href": "topics/bayesian_discrete_trait_analysis/H5N1_tutorial.html#for-the-morning-of-day-5",
+    "title": "H5N1 tutorial – [live coding session]",
+    "section": "",
+    "text": "Repeat step 2, but turn the BSSVS option on."
+  },
+  {
+    "objectID": "topics/closing.html",
+    "href": "topics/closing.html",
+    "title": "Final exercises",
+    "section": "",
+    "text": "For the rest of the afternoon (or until we want to go home), we will explore the following analyses:\n\n\nWe have a posterior collection of Influenza H5N1 trees that we obtained in BEAST2. These trees are not character-mapped with location. We should try running ace/simmap/SSE/SAASI/whatever to see how our estimates of ancestral locations do or do not agree across these models.\n\n\n\nWe have a second posterior collection of trees that used geographic information to jointly estimate migration rates with the phylogeny. Let’s compare these to the answers we get from Step 1.\n\n\n\nWe have a third posterior collection that is similar to the one from Step 2, except that we activated BSSVS to constrain a simpler migration model. Let’s see if we can adapt our analysis from Step 1 to incorporate LASSO or some other form of regularization on the models in ace/fitMk/etc. to determine if that is a viable alternative to the full BSSVS approach.\n\n\n\nPart of the rationale for joint estimation is to accommodate phylogenetic uncertainty in our ancestral state estimates. However, a two-step approach (using, e.g. the posterior collection from Step 1) should address this already. Do we gain anything by jointly estimating complicated models of geographic movement with our phylogeny? How does our phylogenetic reconstruction change if we include geographic information?"
+  },
+  {
+    "objectID": "topics/closing.html#section",
+    "href": "topics/closing.html#section",
+    "title": "Final exercises",
+    "section": "",
+    "text": "We have a posterior collection of Influenza H5N1 trees that we obtained in BEAST2. These trees are not character-mapped with location. We should try running ace/simmap/SSE/SAASI/whatever to see how our estimates of ancestral locations do or do not agree across these models."
+  },
+  {
+    "objectID": "topics/closing.html#section-1",
+    "href": "topics/closing.html#section-1",
+    "title": "Final exercises",
+    "section": "",
+    "text": "We have a second posterior collection of trees that used geographic information to jointly estimate migration rates with the phylogeny. Let’s compare these to the answers we get from Step 1."
+  },
+  {
+    "objectID": "topics/closing.html#section-2",
+    "href": "topics/closing.html#section-2",
+    "title": "Final exercises",
+    "section": "",
+    "text": "We have a third posterior collection that is similar to the one from Step 2, except that we activated BSSVS to constrain a simpler migration model. Let’s see if we can adapt our analysis from Step 1 to incorporate LASSO or some other form of regularization on the models in ace/fitMk/etc. to determine if that is a viable alternative to the full BSSVS approach."
+  },
+  {
+    "objectID": "topics/closing.html#comparing-tree-topologies",
+    "href": "topics/closing.html#comparing-tree-topologies",
+    "title": "Final exercises",
+    "section": "",
+    "text": "Part of the rationale for joint estimation is to accommodate phylogenetic uncertainty in our ancestral state estimates. However, a two-step approach (using, e.g. the posterior collection from Step 1) should address this already. Do we gain anything by jointly estimating complicated models of geographic movement with our phylogeny? How does our phylogenetic reconstruction change if we include geographic information?"
+  },
+  {
+    "objectID": "topics/bayesian_discrete_trait_analysis/H5N1_tutorial.html#section-2",
+    "href": "topics/bayesian_discrete_trait_analysis/H5N1_tutorial.html#section-2",
+    "title": "H5N1 tutorial – [live coding session]",
+    "section": "",
+    "text": "(For analysis on Day 5, but might be a good idea to run overnight to be ready in time.)\nRepeat step 2, but turn the BSSVS option on."
   }
 ]

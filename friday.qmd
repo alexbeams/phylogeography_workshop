@@ -24,18 +24,6 @@ Day 5
 
 :::{.card .mb-3}
 :::{.card-body}
-[Analyze overnight BEAST2 runs](pages/embedR.qmd){.card-title .stretched-link}
-
-:::{.text-muted}
-Practical session in BEAST2
-:::
-:::
-:::
-
-:::{layout="[[10]]"}
-
-:::{.card .mb-3}
-:::{.card-body}
 [Advanced BEAST2 topics: BSSVS](topics/bssvs/bssvs_phylogeography.pdf){.card-title .stretched-link}
 
 :::{.text-muted}
@@ -46,7 +34,7 @@ Slides
 
 :::{.card .mb-3}
 :::{.card-body}
-[BSSVS](pages/embedPython.qmd){.card-title .stretched-link}
+[1030-1130: BEAST2 runs with BSSVS: Influenza H5N1](topics/bayesian_discrete_trait_analysis/H5N1_tutorial.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Practical session in BEAST2
@@ -54,22 +42,13 @@ Practical session in BEAST2
 :::
 :::
 
-:::{.card .mb-3}
-:::{.card-body}
-[Comparing discrete trait analysis and phylodynamics](pages/embedPython.qmd){.card-title .stretched-link}
-
-:::{.text-muted}
-Practical session in BEAST2/R
-:::
-:::
-:::
 
 :::{.card .mb-3}
 :::{.card-body}
-[Closing](pages/embedPython.qmd){.card-title .stretched-link}
+[1230-: Final analysis](topics/closing.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
-Slides/Group discussion
+Practical session in BEAST2
 :::
 :::
 :::

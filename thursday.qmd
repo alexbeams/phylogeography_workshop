@@ -83,18 +83,6 @@ Practical session in BEAST2
 :::
 :::
 
-:::{layout="[[10]]"}
-
-:::{.card .mb-3}
-:::{.card-body}
-[1530 - 1630: Set up overnight BEAST2 analyses](intro_to_phylodynamics/mers.qmd){.card-title .stretched-link}
-
-:::{.text-muted}
-Practical session in BEAST2
-:::
-:::
-:::
-
 :::{.card .mb-3}
 :::{.card-body}
 [Optional: Multi-type birth death models in R](topics/intro_to_phylodynamics/multi_type_birth_death.qmd){.card-title .stretched-link}
