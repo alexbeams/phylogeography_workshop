@@ -160,7 +160,7 @@ window.Quarto = {
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../monday.html"> <i class="bi bi-pie-chart" role="img">
+    <a class="nav-link" href="../../day1.html"> <i class="bi bi-pie-chart" role="img">
 </i> 
 <span class="menu-text">Day 1</span></a>
   </li>  
@@ -170,17 +170,17 @@ window.Quarto = {
 <span class="menu-text">Day 2</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../wednesday.html"> <i class="bi bi-pie-chart" role="img">
+    <a class="nav-link" href="../../day3.html"> <i class="bi bi-pie-chart" role="img">
 </i> 
 <span class="menu-text">Day 3</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../thursday.html"> <i class="bi bi-activity" role="img">
+    <a class="nav-link" href="../../day4.html"> <i class="bi bi-activity" role="img">
 </i> 
 <span class="menu-text">Day 4</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../friday.html"> <i class="bi bi-tree" role="img">
+    <a class="nav-link" href="../../day5.html"> <i class="bi bi-tree" role="img">
 </i> 
 <span class="menu-text">Day 5</span></a>
   </li>  
@@ -352,10 +352,30 @@ Attaching package: 'expm'</code></pre>
 <p>These appear to be in agreement. The approximation will break down if (i) we simulate over a longer period of time, <span class="math inline">\(t\)</span>, (ii) if we simulate with a larger birth rate <span class="math inline">\(\lambda\)</span>, or (iii) truncate the Master equation at a smaller value of <span class="math inline">\(N\)</span>. You should experiment with changing all three of these quantities.</p>
 <p><strong>To summarize</strong>: the solution to the Master equation gives us a way to quantify the probability we observe a Yule tree with <span class="math inline">\(n\)</span> lineages and height <span class="math inline">\(t\)</span>. Yule trees that differ only in topology but otherwise have the same height and number of lineages are equally likely to occur in this model.</p>
 <p>This is useful for <strong>parameter estimation</strong>. But before we do that, let’s look at the birth death model with a positive death rate in the next lecture.</p>
-
-
 </section>
 </section>
+</section>
+<section id="exercises" class="level1">
+<h1>Exercises</h1>
+<ol type="1">
+<li>We can define a likelihood function and fit to a tree as follows:</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>lik.yule <span class="ot">&lt;-</span> <span class="fu">make.yule</span>(tree)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>fit.yule <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(lik.yule, <span class="at">x.init =</span> <span class="fl">0.1</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fit.yule)      <span class="co"># lambda estimate</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  lambda 
+1.149843 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logLik</span>(fit.yule)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'log Lik.' 109.3909 (df=1)</code></pre>
+</div>
+</div>
+<p>Carry out a simulation study to determine how well we are able to estimate <span class="math inline">\(\lambda\)</span>. Specifically, it would be good to find out whether our ability to estimate <span class="math inline">\(\lambda\)</span> is improved by having more tips in our tree. Simulate trees for fixed numbers of taxa. Do you notice any correlations between tree height and <span class="math inline">\(\hat{\lambda}\)</span>? It may be helpful to break up into groups.</p>
+
+
 </section>
 
 </main> <!-- /main -->

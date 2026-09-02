@@ -150,4 +150,14 @@ These appear to be in agreement. The approximation will break down if (i) we sim
 
 This is useful for **parameter estimation**. But before we do that, let's look at the birth death model with a positive death rate in the next lecture.
 
+# Exercises
+1. We can define a likelihood function and fit to a tree as follows:
 
+```{r}
+lik.yule <- make.yule(tree)
+fit.yule <- find.mle(lik.yule, x.init = 0.1)
+coef(fit.yule)      # lambda estimate
+logLik(fit.yule)
+```
+
+Carry out a simulation study to determine how well we are able to estimate $\lambda$. Specifically, it would be good to find out whether our ability to estimate $\lambda$ is improved by having more tips in our tree. Simulate trees for fixed numbers of taxa. Do you notice any correlations between tree height and $\hat{\lambda}$? It may be helpful to break up into groups.

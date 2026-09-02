@@ -211,7 +211,7 @@ window.Quarto = {
 <section id="birth-death-process" class="level2">
 <h2 class="anchored" data-anchor-id="birth-death-process">Birth death process</h2>
 <p>Now, we consider the birth-death process. Lineages split at rate <span class="math inline">\(\lambda\)</span>, and can die at rate <span class="math inline">\(\mu\)</span>.</p>
-<p>If the death rate is positive (<span class="math inline">\(\mu &gt; 0\)</span>), the process is fundamentally different. This is because the process can go extinct.</p>
+<p>If the death rate is positive (<span class="math inline">\(\mu &gt; 0\)</span>), the process is fundamentally different from the Yule model. This is because the process can go extinct.</p>
 <p>Let’s use the lapply function to generate a list of simulated outputs (lapply is like a for loop). Instead of simulating up to time <span class="math inline">\(t\)</span>, let’s simulate trees up to a fixed number of taxa – 50, in our case.</p>
 <p>Let’s see how frequently the process goes extinct before we reach 50 taxa.</p>
 <div class="cell">
@@ -231,7 +231,7 @@ window.Quarto = {
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(numdieoffs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 27</code></pre>
+<pre><code>[1] 32</code></pre>
 </div>
 </div>
 <p>This is sort of interesting. In the first tree we simulated above, we set <span class="math inline">\(\lambda=1\)</span> and <span class="math inline">\(\mu=0\)</span>, for a net birth rate equal to 1. In this second example, we set <span class="math inline">\(\lambda=2\)</span> and <span class="math inline">\(\mu=1\)</span>. The net birth rate still equals 1, but extinction is far more likely now.</p>
@@ -282,12 +282,11 @@ window.Quarto = {
 <li><p>Instead of simulating trees up to a fixed number of taxa, simulate trees up to a fixed time. Do you notice any differences between Yule and birth death trees in terms of the number of taxa produced by time <span class="math inline">\(t\)</span>?</p></li>
 </ol>
 </section>
-<section id="estimating-parameters-using-likelihoods" class="level2">
-<h2 class="anchored" data-anchor-id="estimating-parameters-using-likelihoods">Estimating parameters using likelihoods</h2>
-<p>There is another way to determine whether these trees are statistically indistinguishable or not. We can use the likelihood function, which quantifies the probability (density) of observing a particular tree given model parameters. If the trees are statistically indistinguishable, then it should <strong>not</strong> be possible for us to estimate the parameters of the models. If we <strong>can</strong> estimate parameters, then that means the trees contain information about whether the underlying process was Yule or birth-death.</p>
+<section id="likelihood-based-inference" class="level2">
+<h2 class="anchored" data-anchor-id="likelihood-based-inference">Likelihood-based inference</h2>
+<p>There is a principled way to determine whether a tree was produced by one process or the other. We can use the likelihood function, which quantifies the probability (density) of observing a particular tree given model parameters. The idea is to use a Generalized Likelihood Ratio test. This works because the Yule model is “nested” in the birth-death model. Setting <span class="math inline">\(\mu=0\)</span> in the birth-death model produces the Yule model.</p>
+<p>The idea behind the GLR test is that, although a more complicated model will always fit data better than a simpler one, it may not fit data “that much” better if the underlying process is in fact well-described by a simpler model. The GLR test provides way to quantify whether the improvement in fit of a more complicated model is meaningful, or not.</p>
 <p>We’ve been doing Maximum Likelihood a lot up to now. In case you need extra reading material, <a href="https://en.wikipedia.org/wiki/Maximum_likelihood_estimation">here you go</a>.</p>
-<p>We’ve seen a couple of examples of likelihood functions already in this tutorial. The solutions to the Master equations for these processes tell us the probability, <span class="math inline">\(p_n(t)\)</span>, of observing <span class="math inline">\(n\)</span> lineages by time <span class="math inline">\(t\)</span>. Put another way, this gives us the probability of observing a phylogenetic tree of height <span class="math inline">\(t\)</span> with <span class="math inline">\(n\)</span> taxa.</p>
-<p>The terminology ``likelihood’’ means that we consider <span class="math inline">\(p_n(t)\)</span> as a function of the model parameters (<span class="math inline">\(\lambda\)</span> in the Yule process, or <span class="math inline">\((\lambda, \mu)\)</span> in the birth-death process). Maximum likelihood means that, given our tree of height <span class="math inline">\(t\)</span> with <span class="math inline">\(n\)</span> taxa, we maximize <span class="math inline">\(p_n(t)\)</span> with respect to the parameters of the model. These optimal parmeter values are the Maximum Likelihood Estimate.</p>
 <p>We can create likelihood functions for these trees like so:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>loglik.yule <span class="ot">&lt;-</span> <span class="fu">make.bd</span>(tree_yule)</span>
@@ -302,12 +301,12 @@ window.Quarto = {
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.yule<span class="sc">$</span>lnLik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 92.3456</code></pre>
+<pre><code>[1] 96.51845</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.yule<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      lambda           mu 
-9.158205e-01 1.908196e-17 </code></pre>
+<pre><code>   lambda        mu 
+1.4395870 0.8383959 </code></pre>
 </div>
 </div>
 <p>Looks pretty close.</p>
@@ -320,16 +319,15 @@ window.Quarto = {
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.bd<span class="sc">$</span>lnLik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 116.5665</code></pre>
+<pre><code>[1] 106.8873</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mle.bd<span class="sc">$</span>par)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  lambda       mu 
-2.072959 1.089829 </code></pre>
+1.858154 1.170094 </code></pre>
 </div>
 </div>
-<p>Seems like it’s kind of in the ballpark.</p>
-<p>One downside with this is that we are dealing with fairly small trees, and stochasticity is probably introducing lots of noise. If our goal is to understand the types of information we are likely to recover from realizations of these processes, we need to look at a large number of simulations so that statistical regularity kicks in.</p>
+<p>Seems like it’s kind of in the ballpark. In the exercises at the end, you are tasked to carry out a GLR test on these trees.</p>
 </section>
 <section id="benchmarking-from-simulations" class="level2">
 <h2 class="anchored" data-anchor-id="benchmarking-from-simulations">Benchmarking from simulations</h2>
@@ -427,49 +425,80 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="birth-death-sampling-models-and-the-unidentifiability-problem">Birth-death-sampling models (and the unidentifiability problem)</h2>
 <p>In the previous section, we saw that it is in principle possible to estimate paramters of the Yule model and the birth-death model. The statistical behavior of the Maximum Likelihood Estimates might leave something to be desired (especially for the extinction rate <span class="math inline">\(\mu\)</span>), but in the limit as the number of taxa tends to infinity, our estimators should be converging in expectation to the <a href="https://en.wikipedia.org/wiki/Consistency_(statistics)">ground truth parameter values</a>.</p>
 <p>Models with this property are said to be <a href="https://en.wikipedia.org/wiki/Identifiability">identifiable</a>. The Yule Process and the birth death model are identifiable (assuming that the rates are fixed constants in time). Seemingly innocuous modifications to these models render them unidentifiable.</p>
-<p>The final example we will consider in this tutorial is the birth-death-sampling model. The primary motivation for considering the birth-death-sampling model comes from epidemiology. In that context, pathogens spread between hosts, and infection events correspond to bifurcation events in the pathogen phylogeny. Infected people are also observed over a period of time (perhaps as they show up at the hospital). Consequently, the trees produced are not ultrametric, they are heterochronous. In practice, the vast majority of individuals who are infected are also never sampled, so observed pathogen phylogenies represent a small piece of the true underlying phylogeny.</p>
-<p>In this model, three things can happen:</p>
+<p>The final examples we will consider in this tutorial is the birth-death-sampling model and the birth-death-sampling-through-time model (say that three times in a row).</p>
+<p>The birth-death-sampling model is just a birth-death model, with the extra feature that we only observe a fraction of the tips at the end. In these trees, tips are observed at the same point in time, and so the trees are ultrametric.</p>
+<p>The birth-death-sampling-through-time model accommodates a rate of sampling through time. The trees produced by this process are heterochronous, i.e.&nbsp;not ultrametric.</p>
+<p>The primary motivation for considering the birth-death-sampling-through-time model comes from epidemiology. In that context, pathogens spread between hosts, and infection events correspond to bifurcation events in the pathogen phylogeny. Infected people are also observed over a period of time (perhaps as they show up at the hospital).</p>
+<p>In the sampling-through-time model, three things can happen:</p>
 <ol type="1">
 <li><p>A lineage can split in two (at rate <span class="math inline">\(\lambda\)</span>); this corresponds to a new transmission event</p></li>
 <li><p>A lineage can die (at rate <span class="math inline">\(\mu\)</span>); this corresponds to either (i) an infected host dying, or (ii) an infected host getting better before transmitting disease</p></li>
 <li><p>A lineage (which resides in an infected host) can be sampled (at rate <span class="math inline">\(\psi\)</span>)</p></li>
 </ol>
-<p>Arguably the most important aspect of this process is that we only observe the lineages that get sampled. The phylogeny describes ancestry of these sampled lineages. This is potentially a very small portion of the entire tree.</p>
-<p>You might be able to intuit the problem already. We didn’t emphasize this in the birth-death model earlier, but in that context we are in fact also observing a subset of the entire phylogeny. If we simulate a birth-death model up to time <span class="math inline">\(t\)</span>, we never observe lineages that die out before time <span class="math inline">\(t\)</span>. The Master equation abstracted away the tree produced by the stochastic process, but in fact it can be helpful to consider dynamic updates to a phylogeny as time proceeds. A birth event corresponds to a lineage bifurcating into two lineages. A death event is somewhat different: when a lienage dies, it gets pruned away from the tree entirely. Thus, a phylogeny produced under a birth-death model is missing all of the lineages that died off before the end of the simulation.</p>
-<p>The heart of the identifiability problem in the birth-death-sampling model is that sampling functions in a very similar way to death. Lineages that are not sampled are pruned away from the tree, just like lineages that die.</p>
-<p>If a lineage can either bifurcate at rate <span class="math inline">\(\lambda\)</span>, go extinct at rate <span class="math inline">\(\mu\)</span>, or be sampled at rate <span class="math inline">\(\psi\)</span>, this is a competing rates problem. The probability a particular lineage gets sampled is <span class="math inline">\(\psi/(\lambda+\mu+\psi)\)</span>. The probability a lineage dies is <span class="math inline">\(\mu/(\lambda+\mu+\psi)\)</span>. You immediately see how to determine the probability a lineage bifurcates before those other two events take place. Some extensions of this model assume lineages can still transmit after sampling, but in this basic model we will assume that sampled lineages are quarantined and treated so that transmission is impossible.</p>
-<p>Now, if we simulate birth-death-sampling models and try to estimate parameters, we should expect to run into difficulties because it should be impossible to distinguish between lineages that are missing because they died out versus because they were never sampled. Because we cannot distinguish these types of lineages from each other, there should not be any way for us to determine the relative magnitudes of <span class="math inline">\(\psi\)</span> and <span class="math inline">\(\mu\)</span>.</p>
-<p>We will use the castor package to see if this reasoning is correct or not.</p>
+<p>These three rates appear in the Backward Kolmogorov Equation to calculate the tree likelihood. In the ultrametric case (sampling occurs at one point in time), the Backward Kolmogorov Equation looks like the birth-death model, but the initial conditions at the tips incorporate sampling probabilities.</p>
+<p>The most important aspect of these processes is that we only observe the lineages that get sampled. The phylogeny describes ancestry of these sampled lineages. This is potentially a very small portion of the entire tree.</p>
+<p>You might be able to intuit the problem already. We didn’t emphasize this in the birth-death model earlier, but in that context we are in fact also observing a subset of the entire phylogeny. If we simulate a birth-death model up to time <span class="math inline">\(t\)</span>, we never observe lineages that die out before time <span class="math inline">\(t\)</span>. The Master equation abstracted away the tree produced by the stochastic process, but in fact it can be helpful to consider dynamic updates to a phylogeny as time proceeds. A birth event corresponds to a lineage bifurcating into two lineages. A death event is somewhat different: when a lineage dies, it gets pruned away from the tree entirely. Thus, a phylogeny produced under a birth-death model is missing all of the lineages that died off before the end of the simulation.</p>
+<p>The heart of the identifiability problem in the birth-death-sampling model is that sampling functions in a very similar way to death. Lineages that are not sampled are pruned away from the tree, just like lineages that die. It turns out that this is a huge problem when sampling occurs at one point in time (ultrametric trees), but is less of a problem when sampling occurs through time (heterochronous trees).</p>
+<p>We will use the castor package to see if this for ourselves.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(castor)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(ape)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3</span>)</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>tm <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify model parameters:</span></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="dv">1</span> </span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>psi <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>kappa <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>tree.bds <span class="ot">=</span> <span class="fu">generate_tree_hbds</span>(</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_time   =</span> tm,          <span class="co"># Maximum duration of the simulation process</span></span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda     =</span> lambda,</span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">mu         =</span> mu,</span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">psi        =</span> psi,</span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">kappa      =</span> kappa</span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree.bds<span class="sc">$</span>tree, <span class="at">show.tip.label=</span>F, <span class="at">main=</span><span class="st">'Birth-death-sampling tree'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(castor)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: castor</code></pre>
 </div>
-<p>These trees are generally not ultrametric, as the trees up to now have been. Because we specified a sampling rate, we observe lineages at random times. It is possible to modify the simulation so that sampling takes place at one particular time.</p>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Rcpp</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(ape)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">21</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>lambda_true <span class="ot">=</span> <span class="fl">0.5</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>mu_true     <span class="ot">=</span> <span class="fl">0.3</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Regime 1: sampling through time</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>sim_through_time <span class="ot">=</span> <span class="fu">generate_tree_hbds</span>(</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_time   =</span> <span class="dv">20</span>,</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda     =</span> lambda_true,</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">mu         =</span> mu_true,</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">psi        =</span> <span class="fl">0.15</span>,   <span class="co"># continuous sampling rate</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">kappa      =</span> <span class="dv">0</span>,      <span class="co"># sampled lineages removed from pool (e.g. epi-style)</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">include_extant  =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">include_extinct =</span> <span class="cn">FALSE</span></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Regime 2: sampling only at the end (standard reconstructed tree)</span></span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>sim_end_only <span class="ot">=</span> <span class="fu">generate_tree_hbds</span>(</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_time   =</span> <span class="dv">20</span>,</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda     =</span> lambda_true,</span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">mu         =</span> mu_true,</span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">psi        =</span> <span class="dv">0</span>,</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">CSA_times  =</span> <span class="dv">20</span>,</span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">CSA_probs  =</span> <span class="fl">0.5</span>,    <span class="co"># rho-style sampling fraction</span></span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">CSA_kappas =</span> <span class="dv">1</span>,</span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">include_extant  =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">include_extinct =</span> <span class="cn">FALSE</span></span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb28-34"><a href="#cb28-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sim_through_time<span class="sc">$</span>tree,<span class="at">show.tip.label=</span>F, </span>
+<span id="cb28-36"><a href="#cb28-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">main=</span><span class="st">'Sampling thru time'</span>)</span>
+<span id="cb28-37"><a href="#cb28-37" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sim_end_only<span class="sc">$</span>tree,<span class="at">show.tip.label=</span>F,</span>
+<span id="cb28-38"><a href="#cb28-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">main=</span><span class="st">'Sampling at the end'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="fit_bd_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="exercises-2" class="level2">
 <h2 class="anchored" data-anchor-id="exercises-2">Exercises</h2>
 <ol type="1">
-<li>Simulate a large number of birth-death-sampling trees and try to replicate our earlier benchmarking analysis to determine if it is possible to simultaneously estimate <span class="math inline">\(\lambda\)</span>, <span class="math inline">\(\mu\)</span>, and <span class="math inline">\(\psi\)</span>. You should probably use the fit_hbds_model_parametric function in castor.</li>
+<li>Simulate a large number of trees under each of the two varieties of models (sampling at the end vs.&nbsp;sampling through time). Can you tell whether the model with sampling at the end is identifiable or not? Again, it may be helpful to break into groups to work on this problem.</li>
 </ol>
 
 
