@@ -15,19 +15,19 @@ website:
         href: index.qmd
         icon: house
       - text: "Day 1"
-        href: monday.qmd
+        href: day1.qmd
         icon: pie-chart
       - text: "Day 2"
         href: day2.qmd
         icon: map
       - text: "Day 3"
-        href: wednesday.qmd
+        href: day3.qmd
         icon: pie-chart
       - text: "Day 4"
-        href: thursday.qmd
+        href: day4.qmd
         icon: activity
       - text: "Day 5"
-        href: friday.qmd
+        href: day5.qmd
         icon: tree
       - text: "About"
         href: about.qmd

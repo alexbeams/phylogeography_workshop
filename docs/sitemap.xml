@@ -66,7 +66,7 @@
   </url>
   <url>
     <loc>example.com/index.html</loc>
-    <lastmod>2026-09-02T19:32:08.625Z</lastmod>
+    <lastmod>2026-09-02T21:05:03.677Z</lastmod>
   </url>
   <url>
     <loc>example.com/monday.html</loc>
@@ -106,7 +106,7 @@
   </url>
   <url>
     <loc>example.com/topics/sse_models/fit_bd.html</loc>
-    <lastmod>2026-08-31T19:27:40.308Z</lastmod>
+    <lastmod>2026-08-21T23:33:12.520Z</lastmod>
   </url>
   <url>
     <loc>example.com/topics/sse_models/asr_bisse.html</loc>
@@ -135,5 +135,21 @@
   <url>
     <loc>example.com/topics/closing.html</loc>
     <lastmod>2026-09-02T19:29:39.904Z</lastmod>
+  </url>
+  <url>
+    <loc>example.com/day1.html</loc>
+    <lastmod>2026-08-21T23:58:48.634Z</lastmod>
+  </url>
+  <url>
+    <loc>example.com/day5.html</loc>
+    <lastmod>2026-09-02T19:34:03.687Z</lastmod>
+  </url>
+  <url>
+    <loc>example.com/day4.html</loc>
+    <lastmod>2026-09-02T19:03:39.013Z</lastmod>
+  </url>
+  <url>
+    <loc>example.com/day3.html</loc>
+    <lastmod>2026-09-02T18:07:52.718Z</lastmod>
   </url>
 </urlset>

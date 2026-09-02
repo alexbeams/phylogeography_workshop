@@ -46,7 +46,7 @@ Day 1
 
 :::{.card .mb-3}
 :::{.card-body}
-[Day 1: Discrete trait analysis I in R](monday.qmd){.card-title .stretched-link}
+[Day 1: Discrete trait analysis I in R](day1.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Introduction, ancestral character estimation, and stochastic character mapping
@@ -85,7 +85,7 @@ Day 3
 
 :::{.card .mb-3}
 :::{.card-body}
-[Day 3: Discrete trait analysis II in R](wednesday.qmd){.card-title .stretched-link}
+[Day 3: Discrete trait analysis II in R](day3.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 State-dependent speciation and extinction (SSE) models
@@ -106,7 +106,7 @@ Day 4
 
 :::{.card .mb-3}
 :::{.card-body}
-[Day 4: Phylodynamics I in R and BEAST2](thursday.qmd){.card-title .stretched-link}
+[Day 4: Phylodynamics I in R and BEAST2](day4.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Joint estimation of character change with phylogeny, and Phylodynamics models in BEAST2
@@ -125,7 +125,7 @@ Day 5
 
 :::{.card .mb-3}
 :::{.card-body}
-[Day 5: Phylodynamics II in BEAST2](friday.qmd){.card-title .stretched-link}
+[Day 5: Phylodynamics II in BEAST2](day5.qmd){.card-title .stretched-link}
 
 :::{.text-muted}
 Bayesian stochastic search variable selection
