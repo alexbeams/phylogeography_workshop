@@ -365,12 +365,12 @@ Attaching package: 'expm'</code></pre>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>fit.yule <span class="ot">&lt;-</span> <span class="fu">find.mle</span>(lik.yule, <span class="at">x.init =</span> <span class="fl">0.1</span>)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fit.yule)      <span class="co"># lambda estimate</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  lambda 
-1.149843 </code></pre>
+<pre><code>   lambda 
+0.8021935 </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logLik</span>(fit.yule)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>'log Lik.' 109.3909 (df=1)</code></pre>
+<pre><code>'log Lik.' 4.120769 (df=1)</code></pre>
 </div>
 </div>
 <p>Carry out a simulation study to determine how well we are able to estimate <span class="math inline">\(\lambda\)</span>. Specifically, it would be good to find out whether our ability to estimate <span class="math inline">\(\lambda\)</span> is improved by having more tips in our tree. Simulate trees for fixed numbers of taxa. Do you notice any correlations between tree height and <span class="math inline">\(\hat{\lambda}\)</span>? It may be helpful to break up into groups.</p>

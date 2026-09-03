@@ -160,7 +160,7 @@ window.Quarto = {
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../monday.html"> <i class="bi bi-pie-chart" role="img">
+    <a class="nav-link" href="../../day1.html"> <i class="bi bi-pie-chart" role="img">
 </i> 
 <span class="menu-text">Day 1</span></a>
   </li>  
@@ -170,17 +170,17 @@ window.Quarto = {
 <span class="menu-text">Day 2</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../wednesday.html"> <i class="bi bi-pie-chart" role="img">
+    <a class="nav-link" href="../../day3.html"> <i class="bi bi-pie-chart" role="img">
 </i> 
 <span class="menu-text">Day 3</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../thursday.html"> <i class="bi bi-activity" role="img">
+    <a class="nav-link" href="../../day4.html"> <i class="bi bi-activity" role="img">
 </i> 
 <span class="menu-text">Day 4</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../friday.html"> <i class="bi bi-tree" role="img">
+    <a class="nav-link" href="../../day5.html"> <i class="bi bi-tree" role="img">
 </i> 
 <span class="menu-text">Day 5</span></a>
   </li>  
@@ -353,9 +353,9 @@ P S
 401 0.2746174 7.253826e-01
 402 0.9810853 1.891467e-02
 403 0.9998225 1.775021e-04
-404 1.0000000 2.429854e-12
-405 1.0000000 3.310031e-12
-406 1.0000000 2.125137e-11</code></pre>
+404 1.0000000 2.429848e-12
+405 1.0000000 3.309822e-12
+406 1.0000000 4.763853e-14</code></pre>
 </div>
 </div>
 <p>This is a datarame with the scaled likelihoods of the two states for each node. The tree has 400 tips, so the nodes are numbered 401 through 799 (a bifurcating tree with N tips has N-1 internal nodes). Each row in the dataframe above is one of the nodes, and the values in the columns are the relative likelihoods that it resides in state P or state S under the MLE. We can use this data to plot estimated states at the internal nodes.</p>
@@ -443,7 +443,7 @@ returning the first one. To return all, use `return_all = TRUE`.</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> (fit1<span class="sc">$</span>loglik <span class="sc">-</span> fit2<span class="sc">$</span>loglik)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>lambda</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 3.21004</code></pre>
+<pre><code>[1] 3.210039</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we have one degree of freedom because the more complicated model has one more paramter than the simpler model:</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>dfs <span class="ot">&lt;-</span> <span class="dv">1</span></span>
@@ -456,7 +456,7 @@ returning the first one. To return all, use `return_all = TRUE`.</code></pre>
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.07318771</code></pre>
+<pre><code>[1] 0.07318772</code></pre>
 </div>
 </div>
 <p>So, we have a p-value equal to 0.073. Most people would say that there is not sufficient evidence to reject the null hypothesis (ER model) in favor of the alternative (ARD model) based on this.</p>
